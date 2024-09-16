@@ -148,6 +148,8 @@ CHANGE_: 'change';
 
 CHARGE_: 'charge';
 
+DISPLACING_ : 'displacing';
+
 DURING_: 'during';
 
 EMIT_: 'emit';
@@ -214,7 +216,17 @@ SALES_: 'sales';
 
 ANNUALLY_: 'annually';
 
+BEGINNING_: 'beginning';
+
+DAY_: 'day';
+
+DAYS_: 'days';
+
 KG_: 'kg';
+
+MONTH_: 'month';
+
+MONTHS_: 'months';
 
 MT_: 'mt';
 
@@ -242,7 +254,13 @@ number: (SUB_|ADD_)? (FLOAT_ | INTEGER_);
 
 string: QUOTE_ (~QUOTE_)* QUOTE_;
 
-unit: (KG_ | MT_ | PERCENT_ | TCO2_ | UNIT_ | UNITS_ | YEAR_ | YEARS_);
+volumeUnit: (KG_ | MT_ | TCO2_ | UNIT_ | UNITS_);
+
+relativeUnit: (PERCENT_);
+
+temporalUnit: (YEAR_ | YEARS_| MONTH_ | MONTHS_ | DAY_ | DAYS_);
+
+unit: (volumeUnit | relativeUnit | temporalUnit);
 
 unitValue: expression unit  # regularUnitValue
   | expression unit DIV_ unit  # scaledUnitValue
@@ -290,8 +308,11 @@ identifier: stream  # identifierAsStream
  **/
 
 during: DURING_ YEAR_ expression  # duringSingleYear
-  | DURING_ YEARS_ expression TO_ expression  # duringYearRange
-  | DURING_ YEARS_ expression AND_ ONWARDS_  # minYear
+  | DURING_ granularity=temporalUnit BEGINNING_  # duringStart
+  | DURING_ granularity=temporalUnit lower=expression TO_ upper=expression  # duringRange
+  | DURING_ granularity=temporalUnit lower=expression TO_ ONWARDS_  # duringWithMin
+  | DURING_ granularity=temporalUnit BEGINNING_ TO_ upper=expression  # duringWithMax
+  | DURING_ granularity=temporalUnit BEGINNING_ TO_ ONWARDS_  # duringAll
   ;
 
 /**
@@ -342,8 +363,10 @@ rechargeStatement: RECHARGE_ population=unitValue WITH_ volume=unitValue  # rech
   | RECHARGE_ population=unitValue WITH_ volume=unitValue duration=during  # rechargeDuration
   ;
 
-recoverStatement: RECOVER_ volume=unitValue WITH_ yield=unitValue REUSE_  # recoverAllYears
+recycleStatement: RECOVER_ volume=unitValue WITH_ yield=unitValue REUSE_  # recoverAllYears
   | RECOVER_ valume=unitValue WITH_ yield=unitValue REUSE_ duration=during  # recoverDuration
+  | RECOVER_ valume=unitValue WITH_ yield=unitValue REUSE_ DISPLACING_ stream  # recoverTarget
+  | RECOVER_ valume=unitValue WITH_ yield=unitValue REUSE_ DISPLACING_ stream duration=during  # recoverTargetDuration
   ;
 
 replaceStatement: REPLACE_ volume=unitValue OF_ target=identifier WITH_ destination=string  # replaceAllYears
@@ -373,4 +396,4 @@ simulate: SIMULATE_ name=string FROM_ YEARS_ start=expression TO_ end=expression
 
 globalStatement: (defineVarStatement | setStatement);
 
-substanceStatement: (capStatement | changeStatement | emitStatement | initialChageStatement | rechargeStatement | recoverStatement | replaceStatement | retireStatement);
+substanceStatement: (capStatement | changeStatement | emitStatement | initialChageStatement | rechargeStatement | recycleStatement | replaceStatement | retireStatement);
