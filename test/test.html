@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Global Plastics Tool Tests</title>
+<link rel="stylesheet" href="./qunit.css" />
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+
+    <div id="ui-harness"></div>
+
+    <script src="./qunit.min.js"></script>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "engine": "../js/engine.js?v=EPOCH",
+                "test_engine": "./test_engine.js?v=EPOCH"
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        const SCROLL_ALLOWED = false;
+    </script>
+
+    <script type="module">
+        import { buildEngineTest } from "test_engine";
+        buildEngineTest();
+    </script>
+</body>
