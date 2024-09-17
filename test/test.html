@@ -9,11 +9,14 @@
     <div id="ui-harness"></div>
 
     <script src="./qunit.min.js"></script>
+    
+    <script src="../intermediate/static/qubectalk.js"></script>
 
     <script type="importmap">
         {
             "imports": {
                 "engine": "../js/engine.js?v=EPOCH",
+                "test_compiler": "./test_compiler.js?v=EPOCH",
                 "test_engine": "./test_engine.js?v=EPOCH"
             }
         }
@@ -24,7 +27,9 @@
     </script>
 
     <script type="module">
+        import { buildCompilerTest } from "test_compiler";
         import { buildEngineTest } from "test_engine";
+        buildCompilerTest();
         buildEngineTest();
     </script>
 </body>
