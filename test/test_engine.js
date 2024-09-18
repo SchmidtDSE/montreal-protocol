@@ -1,7 +1,8 @@
-import { Engine } from "engine";
+import { EngineNumber, YearMatcher, Scope, Engine } from "engine";
 
 function buildEngineTest() {
-  /*QUnit.module("EngineNumber", function () {
+  
+  QUnit.module("EngineNumber", function () {
     const makeExample = () => {
       return new EngineNumber(1.23, "kg");
     };
@@ -20,9 +21,9 @@ function buildEngineTest() {
       const number = makeExample();
       assert.ok(number.getUnits() === "kg");
     });
-  });*/
+  });
 
-  /*QUnit.module("YearMatcher", function () {
+  QUnit.module("YearMatcher", function () {
     QUnit.test("initializes", function (assert) {
       const matcher = new YearMatcher(null, null);
       assert.ok(matcher !== undefined);
@@ -30,33 +31,33 @@ function buildEngineTest() {
 
     QUnit.test("matches any", function (assert) {
       const matcher = new YearMatcher(null, null);
-      assert.ok(matcher.matches(1));
+      assert.ok(matcher.getInRange(1));
     });
 
     QUnit.test("matches after", function (assert) {
       const matcher = new YearMatcher(2, null);
-      assert.ok(!matcher.matches(1));
-      assert.ok(matcher.matches(2));
-      assert.ok(matcher.matches(3));
+      assert.ok(!matcher.getInRange(1));
+      assert.ok(matcher.getInRange(2));
+      assert.ok(matcher.getInRange(3));
     });
 
     QUnit.test("matches before", function (assert) {
       const matcher = new YearMatcher(null, 2);
-      assert.ok(matcher.matches(1));
-      assert.ok(matcher.matches(2));
-      assert.ok(!matcher.matches(3));
+      assert.ok(matcher.getInRange(1));
+      assert.ok(matcher.getInRange(2));
+      assert.ok(!matcher.getInRange(3));
     });
 
     QUnit.test("matches within", function (assert) {
       const matcher = new YearMatcher(2, 3);
-      assert.ok(!matcher.matches(1));
-      assert.ok(matcher.matches(2));
-      assert.ok(matcher.matches(3));
-      assert.ok(!matcher.matches(4));
+      assert.ok(!matcher.getInRange(1));
+      assert.ok(matcher.getInRange(2));
+      assert.ok(matcher.getInRange(3));
+      assert.ok(!matcher.getInRange(4));
     });
-  });*/
+  });
 
-  /*QUnit.module("Scope", function () {
+  QUnit.module("Scope", function () {
     QUnit.test("initalizes", function (assert) {
       const scope = new Scope("default", "test app", "test substance");
       assert.ok(scope !== undefined);
@@ -100,7 +101,7 @@ function buildEngineTest() {
       assert.ok(scope.getVariable("testVar") == 123);
     });
 
-    QUnit.test("shadows a var", function (assert) {
+    QUnit.test("reads upwards in scope", function (assert) {
       const oldScope = new Scope("default", "test app", null);
       oldScope.defineVariable("testVar");
       oldScope.setVariable("testVar", 123);
@@ -112,8 +113,23 @@ function buildEngineTest() {
       newScope.setVariable("testVar", 124);
       assert.ok(newScope.getVariable("testVar") == 124);
     });
+    
+    QUnit.test("shadows a variable", function (assert) {
+      const oldScope = new Scope("default", "test app", null);
+      oldScope.defineVariable("testVar");
+      oldScope.setVariable("testVar", 123);
+      assert.ok(oldScope.getVariable("testVar") == 123);
 
-    QUnit.test("unshadows a var", function (assert) {
+      const newScope = oldScope.getWithSubstance("test substance 2");
+      newScope.defineVariable("testVar")
+      newScope.setVariable("testVar", 124);
+      assert.ok(newScope.getVariable("testVar") == 124);
+
+      const restoredScope = newScope.getWithSubstance("test substance 3");
+      assert.ok(restoredScope.getVariable("testVar") == 123);
+    });
+
+    QUnit.test("edits scopes above", function (assert) {
       const oldScope = new Scope("default", "test app", null);
       oldScope.defineVariable("testVar");
       oldScope.setVariable("testVar", 123);
@@ -123,9 +139,9 @@ function buildEngineTest() {
       tempScope.setVariable("testVar", 124);
 
       const newScope = tempScope.getWithSubstance("test substance 3");
-      assert.ok(newScope.getVariable("testVar") == 123);
+      assert.ok(newScope.getVariable("testVar") == 124);
     });
-  });*/
+  });
   
   /*QUnit.module("convertUnits", function() {
     QUnit.test("volume to volume", function (assert) {
