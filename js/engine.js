@@ -437,7 +437,12 @@ class UnitConverter {
     const self = this;
     const strategy = {
       "kg": (x) => self._toKg(x),
-      "mt": (x) => self._toMt(x)
+      "mt": (x) => self._toMt(x),
+      "unit": (x) => self._toUnits(x),
+      "units": (x) => self._toUnits(x),
+      "tCO2e": (x) => self._toEmissions(x),
+      "year": (x) => self._toYears(x),
+      "years": (x) => self._toYears(x),
     }[destinationUnits];
     return strategy(source);
   }
@@ -498,11 +503,121 @@ class UnitConverter {
     }
   }
   
+  _toUnits(target) {
+    const self = this;
+    
+    target = self._normalize(target);
+    const currentUnits = target.getUnits();
+    
+    if (currentUnits === "units") {
+      return target;
+    } else if (currentUnits === "unit") {
+      return new EngineNumber(target.getValue(), "units");
+    } else if (currentUnits === "kg" || currentUnits === "mt") {
+      const conversion = self._stateGetter.getAmortizedUnitVolume();
+      const conversionValue = conversion.getValue();
+      const conversionUnitPieces = conversion.getUnits().split(" / ");
+      const expectedUnits = conversionUnitPieces[0];
+      const newUnits = conversionUnitPieces[1];
+      const targetConverted = self.convert(target, expectedUnits);
+      const originalValue = targetConverted.getValue();
+      const newValue = originalValue / conversionValue;
+      return new EngineNumber(newValue, "units");
+    } else if (currentUnits === "tCO2e") {
+      const originalValue = target.getValue();
+      const conversion = self._stateGetter.getAmortizedUnitEmissions();
+      const conversionValue = conversion.getValue();
+      const newValue = originalValue / conversionValue;
+      return new EngineNumber(newValue, "units");
+    } else if (currentUnits === "%") {
+      const originalValue = target.getValue();
+      const asRatio = originalValue / 100;
+      const total = self._stateGetter.getPopulation();
+      const newValue = total.getValue() * asRatio;
+      return new EngineNumber(newValue, "units");
+    } else {
+      throw "Unable to convert to pouplation: " + currentUnits;
+    }
+  }
+  
+  _toEmissions(target) {
+    const self = this;
+    
+    target = self._normalize(target);
+    const currentUnits = target.getUnits();
+    
+    if (currentUnits === "tCO2e") {
+      return target;
+    } else if (currentUnits === "kg" || currentUnits === "mt") {
+      const conversion = self._stateGetter.getSubstanceEmissions();
+      const conversionValue = conversion.getValue();
+      const conversionUnitPieces = conversion.getUnits().split(" / ");
+      const newUnits = conversionUnitPieces[0];
+      const expectedUnits = conversionUnitPieces[1];
+      const targetConverted = self.convert(target, expectedUnits);
+      const originalValue = targetConverted.getValue();
+      const newValue = originalValue * conversionValue;
+      return new EngineNumber(newValue, newUnits);
+    } else if (currentUnits === "unit" || currentUnits === "units") {
+      const originalValue = target.getValue();
+      const conversion = self._stateGetter.getAmortizedUnitVolume();
+      const conversionValue = conversion.getValue();
+      const newValue = originalValue * conversionValue;
+      return new EngineNumber(newValue, "tCO2e");
+    } else if (currentUnits === "%") {
+      const originalValue = target.getValue();
+      const asRatio = originalValue / 100;
+      const total = self._stateGetter.getEmissions();
+      const newValue = total.getValue() * asRatio;
+      return new EngineNumber(newValue, "tCO2e");
+    } else {
+      throw "Unable to convert to emissions: " + currentUnits;
+    }
+  }
+  
+  _toYears(target) {
+    const self = this;
+    
+    target = self._normalize(target);
+    const currentUnits = target.getUnits();
+    
+    if (currentUnits === "years") {
+      return target;
+    } else if (currentUnits === "year") {
+      return new EngineNumber(target.getValue(), "years");
+    } else if (currentUnits === "tCO2e") {
+      const perYearEmissionsValue = self._stateGetter.getEmissions().getValue();
+      const newYears = target.getValue() / perYearEmissionsValue;
+      return new EngineNumber(newYears, "years");
+    } else if (currentUnits === "kg" || currentUnits === "mt") {
+      const perYearVolume = self._stateGetter.getVolume();
+      const perYearVolumeUnits = perYearVolume.getUnits();
+      const perYearVolumeValue = perYearVolume.getValue();
+      const volumeConverted = self.convert(target, perYearVolumeUnits);
+      const volumeConvertedValue = volumeConverted.getValue();
+      const newYears = volumeConvertedValue / perYearVolumeValue;
+      return new EngineNumber(newYears, "years");
+    } else if (currentUnits === "unit" || currentUnits === "units") {
+      const perYearPopulation = self._stateGetter.getPopulationChange().getValue();
+      const newYears = target.getValue() / perYearPopulation;
+      return new EngineNumber(newYears, "years");
+    } else if (currentUnits === "%") {
+      const originalValue = target.getValue();
+      const asRatio = originalValue / 100;
+      const total = self._stateGetter.getYearsElapsed();
+      const newValue = total.getValue() * asRatio;
+      return new EngineNumber(newValue, "years");
+    } else {
+      throw "Unable to convert to years: " + currentUnits;
+    }
+  }
+  
   _normalize(target) {
     const self = this;
     target = self._normUnits(target);
     target = self._normTime(target);
     target = self._normEmissions(target);
+    target = self._normVolume(target);
     return target
   }
   
@@ -554,9 +669,35 @@ class UnitConverter {
     
     const originalValue = target.getValue();
     const newUnits = (currentUnits.split(" / "))[0];
-    const totalEmissions = self._stateGetter.getTotalEmissions();
+    const totalEmissions = self._stateGetter.getEmissions();
     const totalEmissionsValue = totalEmissions.getValue();
     const newValue = originalValue * totalEmissionsValue;
+    
+    return new EngineNumber(newValue, newUnits);
+  }
+  
+  _normVolume(target) {
+    const self = this;
+
+    const targetUnits = target.getUnits();
+
+    const divKg = targetUnits.endsWith(" / kg");
+    const divMt = targetUnits.endsWith(" / mt");
+    const needsNorm = divKg || divMt;
+    if (!needsNorm) {
+      return target;
+    }
+    
+    const targetUnitPieces = targetUnits.split(" / ");
+    const newUnits = targetUnitPieces[0];
+    const expectedUnits = targetUnitPieces[1];
+    
+    const volume = self._stateGetter.getVolume();
+    const volumeConverted = self.convert(volume, expectedUnits);
+    const conversionValue = volumeConverted.getValue();
+    
+    const originalValue = target.getValue();
+    const newValue = originalValue * conversionValue;
     
     return new EngineNumber(newValue, newUnits);
   }
