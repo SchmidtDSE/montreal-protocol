@@ -1,4 +1,4 @@
-import { EngineNumber, YearMatcher, Scope, Engine } from "engine";
+import { EngineNumber, YearMatcher, Scope, UnitConverter, Engine } from "engine";
 
 function buildEngineTest() {
   
@@ -143,7 +143,85 @@ function buildEngineTest() {
     });
   });
   
-  /*QUnit.module("convertUnits", function() {
+  QUnit.module("convertUnits", function() {
+    
+    class MockConverterStateGetter {
+      constructor() {
+        const self = this;
+        self._substanceEmissions = null;
+        self._amortizedUnitVolume = null;
+        self._population = null;
+        self._yearsElapsed = null;
+        self._totalEmissions = null;
+        self._volume = null;
+      }
+      
+      setSubstanceEmissions(newValue) {
+        const self = this;
+        self._substanceEmissions = newValue;
+      }
+      
+      getSubstanceEmissions() {
+        const self = this;
+        return self._substanceEmissions;
+      }
+      
+      setAmortizedUnitVolume(newValue) {
+        const self = this;
+        self._amortizedUnitVolume = newValue;
+      }
+      
+      getAmortizedUnitVolume() {
+        const self = this;
+        return self._amortizedUnitVolume;
+      }
+      
+      setPopulation(newValue) {
+        const self = this;
+        self._population = newValue;
+      }
+      
+      getPopulation() {
+        const self = this;
+        return self._population;
+      }
+      
+      setYearsElapsed(newValue) {
+        const self = this;
+        self._yearsElapsed = newValue;
+      }
+      
+      getYearsElapsed() {
+        const self = this;
+        return self._yearsElapsed;
+      }
+      
+      setTotalEmissions(newValue) {
+        const self = this;
+        self._totalEmissions = newValue;
+      }
+      
+      getTotalEmissions(newValue) {
+        const self = this;
+        return self._totalEmissions;
+      }
+      
+      setVolume(newValue) {
+        const self = this;
+        self._volume = newValue;
+      }
+      
+      getVolume() {
+        const self = this;
+        return self._volume;
+      }
+    }
+    
+    function convertUnits(source, destination, stateGetter) {
+      const converter = new UnitConverter(stateGetter);
+      return converter.convert(source, destination);
+    }
+    
     QUnit.test("volume to volume", function (assert) {
       const result = convertUnits(
         new EngineNumber(1, "mt"),
@@ -162,7 +240,7 @@ function buildEngineTest() {
       const result = convertUnits(
         new EngineNumber(20, "tCO2e"),
         "mt",
-        new MockConverterStateGetter(),
+        mockConverterStateGetter,
       );
       
       assert.ok(Math.abs(result.getValue() - 4) < 0.001);
@@ -176,7 +254,7 @@ function buildEngineTest() {
       const result = convertUnits(
         new EngineNumber(20, "units"),
         "kg",
-        new MockConverterStateGetter(),
+        mockConverterStateGetter,
       );
       
       assert.ok(Math.abs(result.getValue() - 200) < 0.001);
@@ -190,7 +268,7 @@ function buildEngineTest() {
       const result = convertUnits(
         new EngineNumber(20, "kg / unit"),
         "kg",
-        new MockConverterStateGetter(),
+        mockConverterStateGetter,
       );
       
       assert.ok(Math.abs(result.getValue() - 200) < 0.001);
@@ -199,12 +277,12 @@ function buildEngineTest() {
     
     QUnit.test("volume per time to volume", function (assert) {
       const mockConverterStateGetter = new MockConverterStateGetter();
-      mockConverterStateGetter.setYearsEllapsed(2);
+      mockConverterStateGetter.setYearsElapsed(new EngineNumber(2, "years"));
       
       const result = convertUnits(
         new EngineNumber(20, "kg / year"),
         "kg",
-        new MockConverterStateGetter(),
+        mockConverterStateGetter,
       );
       
       assert.ok(Math.abs(result.getValue() - 40) < 0.001);
@@ -213,13 +291,12 @@ function buildEngineTest() {
     
     QUnit.test("volume per emissions to volume", function (assert) {
       const mockConverterStateGetter = new MockConverterStateGetter();
-      mockConverterStateGetter.setSubstanceEmissions(new EngineNumber(5, "tCO2e / kg"));
-      mockConverterStateGetter.setVolume(new EngineNumber(2, "kg"));
+      mockConverterStateGetter.setTotalEmissions(new EngineNumber(10, "tCO2e"));
       
       const result = convertUnits(
         new EngineNumber(20, "kg / tCO2e"),
         "kg",
-        new MockConverterStateGetter(),
+        mockConverterStateGetter,
       );
       
       assert.ok(Math.abs(result.getValue() - 200) < 0.001);
@@ -227,19 +304,20 @@ function buildEngineTest() {
     });
     
     QUnit.test("percent to volume", function (assert) {
+      const mockConverterStateGetter = new MockConverterStateGetter();
       mockConverterStateGetter.setVolume(new EngineNumber(20, "kg"));
       
       const result = convertUnits(
         new EngineNumber(10, "%"),
         "kg",
-        new MockConverterStateGetter(),
+        mockConverterStateGetter,
       );
       
       assert.ok(Math.abs(result.getValue() - 2) < 0.001);
       assert.ok(result.getUnits() === "kg");
     });
     
-    QUnit.test("pop to pop", function (assert) {
+    /*QUnit.test("pop to pop", function (assert) {
       const result = convertUnits(
         new EngineNumber(5, "unit"),
         "units",
@@ -430,8 +508,9 @@ function buildEngineTest() {
       
       assert.ok(Math.abs(result.getValue() - 1) < 0.001);
       assert.ok(result.getUnits() === "tCO2e");
-    });
-  });*/
+    });*/
+    
+  });
 
   QUnit.module("Engine", function () {
     QUnit.test("initializes", function (assert) {
