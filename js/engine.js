@@ -426,13 +426,27 @@ class Scope {
 }
 
 
+/**
+ * Object simplifying conversion between units.
+ */
 class UnitConverter {
   
+  /**
+   * Create a new unit converter.
+   *
+   * @param stateGetter Object allowing access to engine state as needed for unit conversion.
+   */
   constructor(stateGetter) {
     const self = this;
     self._stateGetter = stateGetter;
   }
   
+  /**
+   * Convert a number to new units.
+   *
+   * @param source The EngineNumber to convert.
+   * @param destinationUnits The units to which source should be converted.
+   */
   convert(source, destinationUnits) {
     const self = this;
     const strategy = {
@@ -447,6 +461,12 @@ class UnitConverter {
     return strategy(source);
   }
   
+  /**
+   * Convert a number to kilograms.
+   *
+   * @param target The EngineNumber to convert.
+   * @returns Target converted to kilograms.
+   */
   _toKg(target) {
     const self = this;
     const asVolume = self._toVolume(target);
@@ -458,6 +478,12 @@ class UnitConverter {
     }
   }
   
+  /**
+   * Convert a number to metric tons.
+   *
+   * @param target The EngineNumber to convert.
+   * @returns Target converted to metric tons.
+   */
   _toMt(target) {
     const self = this;
     const asVolume = self._toVolume(target);
@@ -469,6 +495,12 @@ class UnitConverter {
     }
   }
   
+  /**
+   * Convert a number to a volume units.
+   *
+   * @param target The EngineNumber to convert.
+   * @returns Target converted to kilograms or metric tons.
+   */
   _toVolume(target) {
     const self = this;
     
@@ -503,6 +535,12 @@ class UnitConverter {
     }
   }
   
+  /**
+   * Convert a number to units (population).
+   *
+   * @param target The EngineNumber to convert.
+   * @returns Target converted to units (population).
+   */
   _toUnits(target) {
     const self = this;
     
@@ -540,6 +578,12 @@ class UnitConverter {
     }
   }
   
+  /**
+   * Convert a number to emissions as tCO2e.
+   *
+   * @param target The EngineNumber to convert.
+   * @returns Target converted to emissions as tCO2e.
+   */
   _toEmissions(target) {
     const self = this;
     
@@ -575,6 +619,12 @@ class UnitConverter {
     }
   }
   
+  /**
+   * Convert a number to years.
+   *
+   * @param target The EngineNumber to convert.
+   * @returns Target converted to years.
+   */
   _toYears(target) {
     const self = this;
     
@@ -612,6 +662,13 @@ class UnitConverter {
     }
   }
   
+  /**
+   * Normalize to non-ratio units if possible.
+   *
+   * @param target The number to convert from a units with ratio to single type units.
+   * @returns Number after conversion to non-ratio units or target unchanged if it does not have a
+   *    ratio units or could not be normalized.
+   */
   _normalize(target) {
     const self = this;
     target = self._normUnits(target);
@@ -621,6 +678,12 @@ class UnitConverter {
     return target
   }
   
+  /**
+   * Convert a number where a units ratio has population in the denominator to a non-ratio units.
+   *
+   * @param target The value to normalize by population.
+   * @returns Target without population in its units denominator.
+   */
   _normUnits(target) {
     const self = this;
     const currentUnits = target.getUnits();
@@ -642,6 +705,12 @@ class UnitConverter {
     return new EngineNumber(newValue, newUnits);
   }
   
+  /**
+   * Convert a number where a units ratio has time in the denominator to a non-ratio units.
+   *
+   * @param target The value to normalize by time.
+   * @returns Target without time in its units denominator.
+   */
   _normTime(target) {
     const self = this;
     const currentUnits = target.getUnits();
@@ -659,6 +728,12 @@ class UnitConverter {
     return new EngineNumber(newValue, newUnits);
   }
   
+  /**
+   * Convert a number where a units ratio has emissions in the denominator to a non-ratio units.
+   *
+   * @param target The value to normalize by emissions.
+   * @returns Target without emissions in its units denominator.
+   */
   _normEmissions(target) {
     const self = this;
     const currentUnits = target.getUnits();
@@ -676,6 +751,12 @@ class UnitConverter {
     return new EngineNumber(newValue, newUnits);
   }
   
+  /**
+   * Convert a number where a units ratio has volume in the denominator to a non-ratio units.
+   *
+   * @param target The value to normalize by volume.
+   * @returns Target without volume in its units denominator.
+   */
   _normVolume(target) {
     const self = this;
 
