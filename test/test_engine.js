@@ -837,11 +837,11 @@ function buildEngineTests() {
       );
 
       const manufactureVal2 = engine.getStream("manufacture");
-      assert.ok(Math.abs(manufactureVal2.getValue() - 10 - 1.25) < 0.0001);
+      assert.ok(Math.abs(manufactureVal2.getValue() - (10 - 1.25)) < 0.0001);
       assert.ok(manufactureVal2.getUnits() === "kg");
 
       const equipmentVal2 = engine.getStream("equipment");
-      assert.ok(Math.abs(equipmentVal2.getValue() - 10 + 1.25) < 0.0001);
+      assert.ok(Math.abs(equipmentVal2.getValue() - 15) < 0.0001);
       assert.ok(equipmentVal2.getUnits() === "units");
     });
     
