@@ -48,8 +48,7 @@ function buildEngineTests() {
 
     QUnit.test("set stream", function (assert) {
       const engine = new Engine(1, 3);
-
-      const scope = new Scope("default", "test app", "test substance");
+      
       engine.setStanza("default");
       engine.setApplication("test app");
       engine.setSubstance("test substance");

@@ -514,7 +514,8 @@ class ConverterStateGetter {
 
   getVolume() {
     const self = this;
-    return self._engine.getStream("sales");
+    const sales = self._engine.getStream("sales");;
+    return sales;
   }
 
   getAmortizedUnitEmissions() {

@@ -402,6 +402,7 @@ class StreamParameterization {
     self._recoveryRate = createZero("%");
     self._yieldRate = createZero("%");
     self._retirementRate = createZero("%");
+    self._displacementRate = new EngineNumber(100, "%");
   }
 
   setGhgIntensity(newValue) {
@@ -462,6 +463,16 @@ class StreamParameterization {
   getYieldRate() {
     const self = this;
     return self._yieldRate;
+  }
+  
+  setDisplacementRate(newValue) {
+    const self = this;
+    self._displacementRate = newValue;
+  }
+  
+  getDisplacementRate() {
+    const self = this;
+    return self._displacementRate;
   }
 
   setRetirementRate(newValue) {
@@ -530,7 +541,7 @@ class StreamKeeper {
 
   setStream(application, substance, name, value) {
     const self = this;
-    self._ensureSubstancePresent(application, substance);
+    self._ensureSubstancePresent(application, substance, "setStream");
     self._ensureStreamKnown(name);
 
     if (name === "sales") {
@@ -581,7 +592,7 @@ class StreamKeeper {
 
   getStream(application, substance, name) {
     const self = this;
-    self._ensureSubstancePresent(application, substance);
+    self._ensureSubstancePresent(application, substance, "getStream");
     self._ensureStreamKnown(name);
 
     if (name === "sales") {
@@ -678,6 +689,18 @@ class StreamKeeper {
     const parameterization = self._getParameterization(application, substance);
     return parameterization.getRecoveryRate();
   }
+  
+  setDisplacementRate(application, substance, newValue) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    parameterization.setDisplacementRate(newValue);
+  }
+
+  getDisplacementRate(application, substance) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    return parameterization.getDisplacementRate();
+  }
 
   setYieldRate(application, substance, newValue) {
     const self = this;
@@ -705,7 +728,7 @@ class StreamKeeper {
 
   _getParameterization(application, substance) {
     const self = this;
-    self._ensureSubstancePresent(application, substance);
+    self._ensureSubstancePresent(application, substance, "getParameterization");
     const key = self._getKey(application, substance);
     return self._substances.get(key);
   }
@@ -718,12 +741,12 @@ class StreamKeeper {
     return piecesSafe.join("\t");
   }
 
-  _ensureSubstancePresent(application, substance) {
+  _ensureSubstancePresent(application, substance, context) {
     const self = this;
 
     if (!self.hasSubstance(application, substance)) {
       const pairStr = application + ", " + substance;
-      throw "Not a known application substance pair: " + pairStr;
+      throw "Not a known application substance pair in " + context + ": " + pairStr;
     }
   }
 
