@@ -3,6 +3,14 @@ const STANZA_CONTEXT = 1;
 const APPLICATION_CONTEXT = 2;
 const SUBSTANCE_CONTEXT = 3;
 
+const STREAM_BASE_UNITS = new Map();
+STREAM_BASE_UNITS.set("manufacture", "kg");
+STREAM_BASE_UNITS.set("import", "kg");
+STREAM_BASE_UNITS.set("sales", "kg");
+STREAM_BASE_UNITS.set("emissions", "tCO2e");
+STREAM_BASE_UNITS.set("equipment", "units");
+STREAM_BASE_UNITS.set("priorEquipment", "units");
+
 
 /**
  * Representation of a number with units within the engine.
@@ -285,7 +293,7 @@ class Scope {
       const components = [self._stanza, self._application, self._substance];
       const contextLevel = components.filter((x) => x !== null)
         .map((x) => 1)
-        .reduce((a, b) => a + b);
+        .reduce((a, b) => a + b, 0);
       
       variableManager = new VariableManager(contextLevel);
     }
@@ -449,7 +457,15 @@ class UnitConverter {
    */
   convert(source, destinationUnits) {
     const self = this;
-    const strategy = {
+    
+    if (source.getUnits() === destinationUnits) {
+      return source;
+    }
+    
+    const destinationUnitPieces = destinationUnits.split(" / ");
+    const destinationNumeratorUnits = destinationUnitPieces[0];
+    
+    const numeratorStrategy = {
       "kg": (x) => self._toKg(x),
       "mt": (x) => self._toMt(x),
       "unit": (x) => self._toUnits(x),
@@ -457,8 +473,30 @@ class UnitConverter {
       "tCO2e": (x) => self._toEmissions(x),
       "year": (x) => self._toYears(x),
       "years": (x) => self._toYears(x),
-    }[destinationUnits];
-    return strategy(source);
+    }[destinationNumeratorUnits];
+    
+    const destinationNumerator = numeratorStrategy(source);
+    
+    const hasDenominator = destinationUnitPieces.length > 1;
+    const destinationDenominatorUnits = hasDenominator ? destinationUnitPieces[1] : "";
+    if (hasDenominator) {
+      const denominatorStrategy = {
+        "kg": () => self.convert(self._stateGetter.getVolume(), "kg"),
+        "mt": () => self.convert(self._stateGetter.getVolume(), "mt"),
+        "unit": () => self.convert(self._stateGetter.getPopulation(), "unit"),
+        "units": () => self.convert(self._stateGetter.getPopulation(), "units"),
+        "tCO2e": () => self.convert(self._stateGetter.getEmissions(), "tCO2e"),
+        "year": () => self.convert(self._stateGetter.getYearsElapsed(), "year"),
+        "years": () => self.convert(self._stateGetter.getYearsElapsed(), "years"),
+      }[destinationDenominatorUnits];
+      const destinationDenominator = denominatorStrategy();
+      return new EngineNumber(
+        destinationNumerator.getValue() / destinationDenominator.getValue(),
+        destinationNumerator.getUnits() + " / " + destinationDenominator.getUnits()
+      );
+    } else {
+      return destinationNumerator;
+    }
   }
   
   /**
@@ -786,16 +824,736 @@ class UnitConverter {
 }
 
 
+class ConverterStateGetter {
+  
+  constructor(engine) {
+    const self = this;
+    self._engine = engine;
+  }
+  
+  getSubstanceEmissions() {
+    const self = this;
+    throw "Not yet implemented.";
+  }
+  
+  getAmortizedUnitVolume() {
+    const self = this;
+    throw "Not yet implemented";
+  }
+  
+  getPopulation() {
+    const self = this;
+    throw "Not yet implemented";
+  }
+  
+  getYearsElapsed() {
+    const self = this;
+    throw "Not yet implemented";
+  }
+  
+  getEmissions() {
+    const self = this;
+    throw "Not yet implemented";
+  }
+  
+  getVolume() {
+    const self = this;
+    throw "Not yet implemented";
+  }
+  
+  getAmortizedUnitEmissions() {
+    const self = this;
+    throw "Not yet implemented";
+  }
+  
+  getPopulationChange() {
+    const self = this;
+    throw "Not yet implemented";
+  }
+  
+}
+
+
+class OverridingConverterStateGetter {
+  
+  constructor(innerGetter) {
+    const self = this;
+    self._innerGetter = innerGetter;
+    self._substanceEmissions = null;
+    self._amortizedUnitVolume = null;
+    self._population = null;
+    self._yearsElapsed = null;
+    self._totalEmissions = null;
+    self._volume = null;
+    self._amortizedUnitEmissions = null;
+    self._populationChange = null;
+  }
+  
+  setSubstanceEmissions(newValue) {
+    const self = this;
+    self._substanceEmissions = newValue;
+  }
+  
+  getSubstanceEmissions() {
+    const self = this;
+    if (self._substanceEmissions === null) {
+      return self._innerGetter.getSubstanceEmissions();
+    } else {
+      return self._substanceEmissions;
+    }
+  }
+  
+  setAmortizedUnitVolume(newValue) {
+    const self = this;
+    self._amortizedUnitVolume = newValue;
+  }
+  
+  getAmortizedUnitVolume() {
+    const self = this;
+    if (self._amortizedUnitVolume === null) {
+      return self._innerGetter.getAmortizedUnitVolume();
+    } else {
+      return self._amortizedUnitVolume;
+    }
+  }
+  
+  setPopulation(newValue) {
+    const self = this;
+    self._population = newValue;
+  }
+  
+  getPopulation() {
+    const self = this;
+    if (self._population === null) {
+      return self._innerGetter.getPopulation();
+    } else {
+      return self._population;
+    }
+  }
+  
+  setYearsElapsed(newValue) {
+    const self = this;
+    self._yearsElapsed = newValue;
+  }
+  
+  getYearsElapsed() {
+    const self = this;
+    if (self._yearsElapsed === null) {
+      return self._innerGetter.getYearsElapsed();
+    } else {
+      return self._yearsElapsed;
+    }
+  }
+  
+  setEmissions(newValue) {
+    const self = this;
+    self._totalEmissions = newValue;
+  }
+  
+  getEmissions() {
+    const self = this;
+    if (self._totalEmissions === null) {
+      return self._innerGetter.getEmissions();
+    } else {
+      return self._totalEmissions;
+    }
+  }
+  
+  setVolume(newValue) {
+    const self = this;
+    self._volume = newValue;
+  }
+  
+  getVolume() {
+    const self = this;
+    if (self._volume === null) {
+      return self._innerGetter.getVolume();
+    } else {
+      return self._volume;
+    }
+  }
+  
+  setAmortizedUnitEmissions(newValue) {
+    const self = this;
+    self._amortizedUnitEmissions = newValue;
+  }
+  
+  getAmortizedUnitEmissions() {
+    const self = this;
+    if (self._amortizedUnitEmissions === null) {
+      return self._innerGetter.getAmortizedUnitEmissions();
+    } else {
+      return self._amortizedUnitEmissions;
+    }
+  }
+  
+  setPopulationChange(newValue) {
+    const self = this;
+    self._populationChange = newValue;
+  }
+  
+  getPopulationChange() {
+    const self = this;
+    if (self._populationChange === null) {
+      return self._innerGetter.getPopulationChange();
+    } else {
+      return self._populationChange;
+    }
+  }
+  
+}
+
+
+class StreamParameterization {
+  
+  constructor() {
+    const self = this;
+    const createZero = (x) => new EngineNumber(0, x);
+    self._ghgIntensity = createZero("tCO2e / kg");
+    self._initialCharge = createZero("kg / unit");
+    self._rechargePopulation = createZero("%");
+    self._rechargeIntensity = createZero("kg / unit");
+    self._recoveryRate = createZero("%");
+    self._yieldRate = createZero("%");
+    self._retirementRate = createZero("%");
+  }
+  
+  setGhgIntensity(newValue) {
+    const self = this;
+    self._ghgIntensity = newValue;
+  }
+  
+  getGhgIntensity() {
+    const self = this;
+    return self._ghgIntensity;
+  }
+  
+  setInitialCharge(newValue) {
+    const self = this;
+    self._initialCharge = newValue;
+  }
+  
+  getInitialCharge() {
+    const self = this;
+    return self._initialCharge;
+  }
+  
+  setRechargePopulation(newValue) {
+    const self = this;
+    self._rechargePopulation = newValue;
+  }
+  
+  getRechargePopulation() {
+    const self = this;
+    return self._rechargePopulation;
+  }
+  
+  setRechargeIntensity(newValue) {
+    const self = this;
+    self._rechargeIntensity = newValue;
+  }
+  
+  getRechargeIntensity() {
+    const self = this;
+    return self._rechargeIntensity;
+  }
+  
+  setRecoveryRate(newValue) {
+    const self = this;
+    self._recoveryRate = newValue;
+  }
+  
+  getRecoveryRate() {
+    const self = this;
+    return self._recoveryRate;
+  }
+  
+  setYieldRate(newValue) {
+    const self = this;
+    self._yieldRate = newValue;
+  }
+  
+  getYieldRate() {
+    const self = this;
+    return self._yieldRate;
+  }
+  
+  setRetirementRate(newValue) {
+    const self = this;
+    self._retirementRate = newValue;
+  }
+  
+  getRetirementRate() {
+    const self = this;
+    return self._retirementRate;
+  }
+  
+}
+
+
+class StreamKeeper {
+  
+  constructor(unitConverter) {
+    const self = this;
+    self._substances = new Map();
+    self._streams = new Map();
+    self._unitConverter = unitConverter;
+  }
+  
+  hasSubstance(application, substance) {
+    const self = this;
+    const key = self._getKey(application, substance);
+    return self._substances.has(key);
+  }
+  
+  ensureSubstance(application, substance) {
+    const self = this;
+    
+    if (self.hasSubstance(application, substance)) {
+      return;
+    }
+    
+    const key = self._getKey(application, substance);
+    self._substances.set(key, new StreamParameterization());
+    
+    const makeZero = (units) => new EngineNumber(0, units);
+
+    // Sales: manufacture, import
+    self._streams.set(self._getKey(application, substance, "manufacture"), makeZero("kg"));
+    self._streams.set(self._getKey(application, substance, "import"), makeZero("kg"));
+
+    // Emissions: count, conversion
+    self._streams.set(self._getKey(application, substance, "emissions"), makeZero("tCO2e"));
+    
+    // Population
+    self._streams.set(self._getKey(application, substance, "equipment"), makeZero("units"));
+    self._streams.set(self._getKey(application, substance, "priorEquipment"), makeZero("units"));
+  }
+  
+  setStream(application, substance, name, value) {
+    const self = this;
+    self._ensureSubstancePresent(application, substance);
+    self._ensureStreamKnown(name);
+    
+    if (name === "sales") {
+      const manufactureValueRaw = self.getStream(application, substance, "manufacture");
+      const importValueRaw = self.getStream(application, substance, "import");
+      const manufactureValue = self._unitConverter.convert(manufactureValueRaw, "kg");
+      const importValue = self._unitConverter.convert(importValueRaw, "kg");
+      const manufactureAmount = manufactureValue.getValue();
+      const importAmount = importValue.getValue();
+      
+      const totalAmount = manufactureAmount + importAmount;
+      const isZero = totalAmount == 0;
+      const manufacturePercent = isZero ? 0.5 : (manufactureAmount / totalAmount);
+      const importPercent = isZero ? 0.5 : (importAmount / totalAmount);
+      
+      const manufactureShare = value.getValue() * manufacturePercent;
+      const importShare = value.getValue() * importPercent;
+      const manufactureNewValue = new EngineNumber(manufactureShare, value.getUnits());
+      const importNewValue = new EngineNumber(importShare, value.getUnits());
+      
+      self.setStream(application, substance, "manufacture", manufactureNewValue);
+      self.setStream(application, substance, "import", importNewValue);
+      return;
+    }
+    
+    const unitsNeeded = self._getUnits(name);
+    const valueConverted = self._unitConverter.convert(value, unitsNeeded);
+    self._streams.set(self._getKey(application, substance, name), valueConverted);
+  }
+  
+  getStream(application, substance, name) {
+    const self = this;
+    self._ensureSubstancePresent(application, substance);
+    self._ensureStreamKnown(name);
+    
+    if (name === "sales") {
+      const manufactureAmountRaw = self.getStream(application, substance, "manufacture");
+      const importAmountRaw = self.getStream(application, substance, "import");
+      const manufactureAmount = self._unitConverter.convert(manufactureAmountRaw, "kg");
+      const importAmount = self._unitConverter.convert(importAmountRaw, "kg");
+      const manufactureAmountValue = manufactureAmount.getValue();
+      const importAmountValue = importAmount.getValue();
+      const newTotal = manufactureAmountValue + importAmountValue;
+      return new EngineNumber(newTotal, "kg");
+    } else {
+      return self._streams.get(self._getKey(application, substance, name));
+    }
+  }
+  
+  isKnownStream(application, substance, name) {
+    const self = this;
+    return self._streams.has(self._getKey(application, substance, name));
+  }
+  
+  copyToPriorEquipment() {
+    const self = this;
+    const allKeys = Array.from(self._substances.keys());
+    allKeys.forEach((key) => {
+      const equipment = self._streams.get(key + "\t" + "equipment");
+      self._streams.set(key + "\t" + "priorEqipment", equipment);
+    });
+  }
+  
+  setGhgIntensity(application, substance, newValue) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    parameterization.setGhgIntensity(newValue);
+  }
+  
+  getGhgIntensity(application, substance) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    return parameterization.getGhgIntensity();
+  }
+  
+  setInitialCharge(application, substance, newValue) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    parameterization.setInitialCharge(newValue);
+  }
+  
+  getInitialCharge(application, substance) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    return parameterization.getInitialCharge();
+  }
+  
+  setRechargePopulation(application, substance, newValue) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    parameterization.setRechargePopulation(newValue);
+  }
+  
+  getRechargePopulation(application, substance) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    return parameterization.getRechargePopulation();
+  }
+  
+  setRechargeIntensity(application, substance, newValue) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    parameterization.setRechargeIntensity(newValue);
+  }
+  
+  getRechargeIntensity(application, substance) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    return parameterization.getRechargeIntensity();
+  }
+  
+  setRecoveryRate(application, substance, newValue) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    parameterization.setRecoveryRate(newValue);
+  }
+  
+  getRecoveryRate(application, substance) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    return parameterization.getRecoveryRate();
+  }
+  
+  setYieldRate(application, substance, newValue) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    parameterization.setYieldRate(newValue);
+  }
+  
+  getYieldRate(application, substance) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    return parameterization.getYieldRate();
+  }
+  
+  setRetirementRate(application, substance, newValue) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    parameterization.setRetirementRate(newValue);
+  }
+  
+  getRetirementRate(application, substance) {
+    const self = this;
+    const parameterization = self._getParameterization(application, substance);
+    return parameterization.getRetirementRate();
+  }
+  
+  _getParameterization(application, substance) {
+    const self = this;
+    self._ensureSubstancePresent(application, substance);
+    const key = self._getKey(application, substance);
+    return self._substances.get(key);
+  }
+  
+  _getKey(application, substance, name, substream) {
+    const self = this;
+    const pieces = [application, substance, name, substream];
+    const getIsNotGiven = (x) => x === null || x === undefined;
+    const piecesSafe = pieces.map((x) => getIsNotGiven(x) ? "-" : x + "");
+    return piecesSafe.join("\t");
+  }
+  
+  _ensureSubstancePresent(application, substance) {
+    const self = this;
+    
+    if (!self.hasSubstance(application, substance)) {
+      const pairStr = application + ", " + substance;
+      throw "Not a known application substance pair: " + pairStr;
+    }
+  }
+  
+  _ensureStreamKnown(name) {
+    const self = this;
+    if (!STREAM_BASE_UNITS.has(name)) {
+      throw "Unknown stream: " + name;
+    }
+  }
+  
+  _getUnits(name) {
+    const self = this;
+    self._ensureStreamKnown(name);
+    return STREAM_BASE_UNITS.get(name);
+  }
+  
+}
+
+
+/**
+ * Facade which runs engine mechanics.
+ */
 class Engine {
   
+  /**
+   * Create a new engine running from 
+   */
   constructor(startYear, endYear) {
     const self = this;
     self._startYear = startYear;
     self._endYear = endYear;
+    self._currentYear = self._startYear;
+    
+    self._stateGetter = new ConverterStateGetter(self);
+    self._unitConverter = new UnitConverter(self._stateGetter);
+    self._streamKeeper = new StreamKeeper(self._unitConverter);
+    self._scope = new Scope(null, null, null);
   }
   
+  /**
+   * Set the stanza for the engine current scope.
+   *
+   * @param newStanza The new stanza name.
+   */
+  setStanza(newStanza) {
+    const self = this;
+    self._scope = self._scope.getWithStanza(newStanza);
+  }
   
+  /**
+   * Set the application for the engine current scope.
+   *
+   * @param newApplication The new application name.
+   */
+  setApplication(newApplication) {
+    const self = this;
+    self._scope = self._scope.getWithApplication(newApplication);
+  }
   
+  /**
+   * Set the substance for the engine current scope.
+   *
+   * @param newSubstance The new application name.
+   */
+  setSubstance(newSubstance) {
+    const self = this;
+    self._scope = self._scope.getWithSubstance(newSubstance);
+    self._streamKeeper.ensureSubstance(self._scope.getApplication(), newSubstance);
+  }
+  
+  /**
+   * Get the engine's current scope.
+   *
+   * @return Scope object.
+   */
+  getScope() {
+    const self = this;
+    return self._scope;
+  }
+  
+  /**
+   * Increment the engine to simulate the next year.
+   */
+  incrementYear() {
+    const self = this;
+
+    self._currentYear += 1;
+    self._streamKeeper.copyToPriorEquipment();
+
+    if (self._currentYear > self._endYear) {
+      throw "Incremented past end year.";
+    }
+  }
+  
+  /**
+   * Get the year that the engine is currently simulating.
+   *
+   * @returns Current year simulating.
+   */
+  getYear() {
+    const self = this;
+    return self._currentYear;
+  }
+  
+  /**
+   * Determine if the engine has reached its final year.
+   *
+   * @returns True if reached the end year and false otherwise.
+   */
+  getIsDone() {
+    const self = this;
+    return self._currentYear == self._endYear;
+  }
+  
+  setStream(name, value, yearMatcher, scope, propagateChanges) {
+    const self = this;
+    
+    const noYearMatcher = yearMatcher === undefined || yearMatcher === null;
+    const inRange = noYearMatcher || yearMatcher.getInRange(self._currentYear);
+    if (!inRange) {
+      return;
+    }
+    
+    const useDefaultScope = scope === undefined || scope === null;
+    const scopeEffective = useDefaultScope ? self._scope : scope;
+    const application = scopeEffective.getApplication();
+    const substance = scopeEffective.getSubstance();
+
+    if (application === null || substance === null) {
+      throw "Tried setting stream without application and substance specified.";
+    }
+
+    self._streamKeeper.setStream(application, substance, name, value);
+    
+    if (propagateChanges === undefined || propagateChanges === null) {
+      propagateChanges = true;
+    }
+    
+    if (!propagateChanges) {
+      return;
+    }
+    
+    if (name === "sales" || name === "manufacture" || name === "import") {
+      self._recalcPopulationChange();
+      self._recalcEmissions();
+    } else if (name === "emissions") {
+      self._recalcSales();
+      self._recalcPopulationChange();
+    } else if (name === "equipment") {
+      self._recalcSales();
+      self._recalcEmissions();
+    } else if (name === "priorEqipment") {
+      self._recalcPopulationChange();
+    }
+  }
+  
+  getStream(name, scope) {
+    const self = this;
+    const scopeEffective = scope === undefined ? self._scope : scope;
+    const application = scopeEffective.getApplication();
+    const substance = scopeEffective.getSubstance();
+    return self._streamKeeper.getStream(application, substance, name);
+  }
+  
+  getVariable(name) {
+    const self = this;
+    return self._scope.getVariable(name);
+  }
+  
+  setVariable(name, value) {
+    const self = this;
+    self._scope.setVariable(name, value);
+  }
+  
+  _recalcPopulationChange() {
+    const self = this;
+    
+    const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
+    const unitConverter = new UnitConverter(stateGetter);
+    const application = self._scope.getApplication();
+    const substance = self._scope.getSubstance();
+    
+    if (application === null || substance === null) {
+      throw "Tried recalculating population change without application and substance.";
+    }
+    
+    // Get prior popoulation
+    const priorPopulationRaw = self.getStream("priorEquipment");
+    const priorPopulation = unitConverter.convert(priorPopulationRaw, "units");
+    stateGetter.setPopulation(priorPopulation);
+    
+    // Get retirement from prior population.
+    const retirementRaw = self._streamKeeper.getRetirementRate(application, substance);
+    const retiredPopulation = unitConverter.convert(retirementRaw, "units");
+    
+    // Get substance sales
+    const substanceSalesRaw = self.getStream("sales");
+    const substanceSales = self._unitConverter.convert(substanceSalesRaw, "kg");
+    
+    // Get recycling population
+    const recoveryVolumeRaw = self._streamKeeper.getRecoveryRate(application, substance);
+    const recoveryVolume = self._unitConverter.convert(recoveryVolumeRaw, "kg");
+    
+    // Get recycling amount
+    stateGetter.setVolume(recoveryVolume);
+    const recycledVolumeRaw = self._streamKeeper.getYieldRate(application, substance);
+    const recycledVolume = unitConverter.convert(recoveryRaw, "kg");
+    stateGetter.setVolume(null);
+    
+    // Get recharge population
+    const rechargePopRaw = self._streamKeeper.getRechargePopulation(application, substance);
+    const rechargePop = unitConverter.convert(rechargePopRaw, "units");
+    
+    // Get recharge amount
+    stateGetter.setPopulation(rechargePop);
+    const rechargeIntensityRaw = self._streamKeeper.getRechargeIntensity(application, substance);
+    const rechargeVolume = unitConverter.convert(rechargeIntensityRaw, "kg");
+    stateGetter.setPopulation(priorPopulation);
+    
+    // Get total volume available for new units
+    const salesKg = substanceSales.getVolume();
+    const recycledKg = recycledVolume.getVolume();
+    const rechargeKg = rechargeVolume.getVolume();
+    const availableForNewUnitsKg = salesKg + recycledKg - rechargeKg;
+    
+    // Convert to unit delta
+    const initialChargeRaw = self._streamKeeper.getInitialCharge(application, substance);
+    const initialCharge = unitConverter.convert(initialChargeRaw, "kg / unit");
+    const initialChargeKgUnit = initialCharge.getValue()
+    const deltaUnits = availableForNewUnitsKg / initialChargeKgUnit;
+    
+    // Find new total
+    const priorPopulationUnits = priorPopulation.getValue();
+    const newUnits = priorPopulationUnits + deltaUnits;
+    const newUnitsAllowed = newUnitsAllowed < 0 ? 0 : newUnitsAllowed;
+    const newVolume = new EngineNumber(newUnitsAllowed, "units");
+    
+    // Save
+    self.setStream("equipment", newVolume, null, null, false);
+  }
+  
+  _recalcEmissions() {
+    const self = this;
+    // Remove recycling
+    // Convert
+  }
+  
+  _recalcSales() {
+    const self = this;
+    // Add recharge
+    // Add 
+  }
+
 }
 
 export { EngineNumber, YearMatcher, Scope, UnitConverter, Engine };

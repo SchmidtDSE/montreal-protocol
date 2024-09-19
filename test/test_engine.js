@@ -203,7 +203,7 @@ function buildEngineTest() {
         self._totalEmissions = newValue;
       }
       
-      getEmissions(newValue) {
+      getEmissions() {
         const self = this;
         return self._totalEmissions;
       }
@@ -237,7 +237,9 @@ function buildEngineTest() {
         const self = this;
         return self._populationChange;
       }
+      
     }
+    
     
     function convertUnits(source, destination, stateGetter) {
       const converter = new UnitConverter(stateGetter);
@@ -605,19 +607,19 @@ function buildEngineTest() {
       assert.ok(engine !== undefined);
     });
 
-    /*QUnit.test("changes scope", function (assert) {
+    QUnit.test("changes scope", function (assert) {
       const engine = new Engine(1, 30);
 
-      const scopeOld = new Scope("default", "test app", "test substance");
-      engine.setScope(scopeOld);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
 
       const scopeOldRet = engine.getScope();
       assert.ok(scopeOldRet.getStanza() === "default");
       assert.ok(scopeOldRet.getApplication() === "test app");
-      assert.ok(scopeOldRet.getSubstance() === "test substance 2");
+      assert.ok(scopeOldRet.getSubstance() === "test substance");
 
-      const scopeNew = scopeOld.getWithSubstance("test substance 2");
-      engine.setScope(scopeNew);
+      engine.setSubstance("test substance 2");
 
       const scopeNewRet = engine.getScope();
       assert.ok(scopeNewRet.getStanza() === "default");
@@ -625,7 +627,7 @@ function buildEngineTest() {
       assert.ok(scopeNewRet.getSubstance() === "test substance 2");
     });
 
-    QUnit.test("increments year", function (assert) {
+    /*QUnit.test("increments year", function (assert) {
       const engine = new Engine(1, 3);
       assert.ok(engine.getYear() == 1);
       assert.ok(!engine.getIsDone());
@@ -643,7 +645,9 @@ function buildEngineTest() {
       const engine = new Engine(1, 3);
 
       const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
 
       engine.setStream(
         "manufacture",
@@ -663,20 +667,21 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const manufactureVal = engine.getVariable("manufacture");
+      const manufactureVal = engine.getStream("manufacture");
       assert.ok(manufactureVal.getValue() == 10);
       assert.ok(manufactureVal.getUnits() === "kg");
 
-      const importVal = engine.getVariable("import");
+      const importVal = engine.getStream("import");
       assert.ok(importVal.getValue() == 20);
       assert.ok(importVal.getUnits() === "kg");
     });
 
     QUnit.test("checks year", function (assert) {
       const engine = new Engine(1, 3);
-
-      const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
 
       engine.setStream(
         "manufacture",
@@ -696,7 +701,7 @@ function buildEngineTest() {
         new YearMatcher(2, null),
       );
 
-      const manufactureVal = engine.getVariable("manufacture");
+      const manufactureVal = engine.getStream("manufacture");
       assert.ok(manufactureVal.getValue() == 2);
       assert.ok(manufactureVal.getUnits() === "kg");
     });
@@ -704,8 +709,9 @@ function buildEngineTest() {
     QUnit.test("determines basic emissions", function (assert) {
       const engine = new Engine(1, 3);
 
-      const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
 
       engine.setInitialCharge(
         new EngineNumber(123, "kg / unit"),
@@ -721,7 +727,7 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const emissions = engine.getVariable("emissions");
+      const emissions = engine.getStream("emissions");
       assert.ok(emissions.getValue() == 246);
       assert.ok(emissions.getUnits() === "tCO2e");
     });
@@ -744,7 +750,7 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const count1 = engine.getVariable("manufacture");
+      const count1 = engine.getStream("manufacture");
       assert.ok(count1.getValue() == 10);
       assert.ok(count1.getUnits() === "kg");
 
@@ -756,7 +762,7 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const count2 = engine.getVariable("manufacture");
+      const count2 = engine.getStream("manufacture");
       assert.ok(count2.getValue() == 11);
       assert.ok(count2.getUnits() === "kg");
     });
@@ -773,11 +779,11 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const manufacture1ValDirect = engine.getVariable("manufacture");
+      const manufacture1ValDirect = engine.getStream("manufacture");
       assert.ok(manufacture1ValDirect.getValue() == 1);
       assert.ok(manufacture1ValDirect.getUnits() === "kg");
 
-      const manufacture1ValIndirect = engine.getStream("manufacture", null);
+      const manufacture1ValIndirect = engine.getStream("manufacture");
       assert.ok(manufacture1ValIndirect.getValue() == 1);
       assert.ok(manufacture1ValIndirect.getUnits() === "kg");
 
@@ -790,11 +796,11 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const manufacture2ValDirect = engine.getVariable("manufacture");
+      const manufacture2ValDirect = engine.getStream("manufacture");
       assert.ok(manufacture2ValDirect.getValue() == 2);
       assert.ok(manufacture2ValDirect.getUnits() === "kg");
 
-      const manufacture2ValIndirect = engine.getStream("manufacture", null);
+      const manufacture2ValIndirect = engine.getStream("manufacture");
       assert.ok(manufacture2ValIndirect.getValue() == 2);
       assert.ok(manufacture2ValIndirect.getUnits() === "kg");
 
@@ -883,10 +889,10 @@ function buildEngineTest() {
       );
 
       engine.setScope(scope1);
-      assert.ok(engine.getVariable("manufacture") == 7);
+      assert.ok(engine.getStream("manufacture") == 7);
 
       engine.setScope(scope2);
-      assert.ok(engine.getVariable("manufacture") == 3);
+      assert.ok(engine.getStream("manufacture") == 3);
     });
 
     QUnit.test("converts to units", function (assert) {
@@ -907,7 +913,7 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const manufactureVal1 = engine.getVariable("equipment");
+      const manufactureVal1 = engine.getStream("equipment");
       assert.ok(manufactureVal1.getValue() == 5);
       assert.ok(manufactureVal1.getUnits() === "units");
     });
@@ -936,7 +942,7 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const manufactureVal1 = engine.getVariable("equipment");
+      const manufactureVal1 = engine.getStream("equipment");
       assert.ok(manufactureVal1.getValue() == 10);
       assert.ok(manufactureVal1.getUnits() === "units");
 
@@ -948,7 +954,7 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const manufactureVal2 = engine.getVariable("equipment");
+      const manufactureVal2 = engine.getStream("equipment");
       assert.ok(manufactureVal2.getValue() == 9);
       assert.ok(manufactureVal2.getUnits() === "units");
     });
@@ -985,7 +991,7 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const manufactureVal2 = engine.getVariable("equipment");
+      const manufactureVal2 = engine.getStream("equipment");
       assert.ok(manufactureVal2.getValue() == 19);
       assert.ok(manufactureVal2.getUnits() === "units");
     });
@@ -1018,11 +1024,11 @@ function buildEngineTest() {
         new YearMatcher(null, null),
       );
 
-      const manufactureVal = engine.getVariable("manufacture");
+      const manufactureVal = engine.getStream("manufacture");
       assert.ok(manufactureVal.getValue() == 7);
       assert.ok(manufactureVal.getUnits() === "kg");
 
-      const reuseVal = engine.getVariable("reuse");
+      const reuseVal = engine.getStream("reuse");
       assert.ok(reuseVal.getValue() == 3);
       assert.ok(reuseVal.getUnits() === "kg");
     });*/
