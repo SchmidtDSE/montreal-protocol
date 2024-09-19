@@ -394,6 +394,11 @@ class Scope {
 class StreamParameterization {
   constructor() {
     const self = this;
+    self.resetInternals();
+  }
+
+  resetInternals() {
+    const self = this;
     const createZero = (x) => new EngineNumber(0, x);
     self._ghgIntensity = createZero("tCO2e / kg");
     self._initialCharge = {
@@ -634,12 +639,19 @@ class StreamKeeper {
     return self._streams.has(self._getKey(application, substance, name));
   }
 
-  copyToPriorEquipment() {
+  incrementYear() {
     const self = this;
+
+    // Move population
     const allKeys = Array.from(self._substances.keys());
     allKeys.forEach((key) => {
-      const equipment = self._streams.get(key + "\t" + "equipment");
-      self._streams.set(key + "\t" + "priorEqipment", equipment);
+      const keyPieces = key.split("\t");
+      const application = keyPieces[0];
+      const substance = keyPieces[1];
+      const equipment = self.getStream(application, substance, "equipment");
+      self.setStream(application, substance, "priorEquipment", equipment);
+
+      self._substances.get(key).resetInternals();
     });
   }
 

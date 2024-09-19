@@ -18,6 +18,7 @@ import {
  * Facade which runs engine mechanics.
  */
 class Engine {
+
   /**
    * Create a new engine running from
    */
@@ -84,7 +85,7 @@ class Engine {
     const self = this;
 
     self._currentYear += 1;
-    self._streamKeeper.copyToPriorEquipment();
+    self._streamKeeper.incrementYear();
 
     if (self._currentYear > self._endYear) {
       throw "Incremented past end year.";
@@ -241,6 +242,8 @@ class Engine {
       const substance = self._scope.getSubstance();
       self._streamKeeper.setInitialCharge(application, substance, stream, value);
     }
+
+    self._recalcPopulationChange();
   }
   
   getRechargeVolume() {
@@ -266,8 +269,47 @@ class Engine {
     
     const application = self._scope.getApplication();
     const substance = self._scope.getSubstance();
-    self._streamKeeper.setRechargeVolume(application, substance, volume);
+    self._streamKeeper.setRechargePopulation(application, substance, volume);
     self._streamKeeper.setRechargeIntensity(application, substance, intensity);
+
+    self._recalcPopulationChange();
+    self._recalcSales();
+    self._recalcEmissions();
+  }
+
+  retire(amount, yearMatcher) {
+    const self = this;
+    
+    if (!self._getIsInRange(yearMatcher)) {
+      return;
+    }
+    
+    const unitConverter = self._createUnitConverterWithTotal("priorEquipment");
+    const equipmentToRetire = unitConverter.convert(amount, "units");
+    const retireAsDelta = new EngineNumber(
+      equipmentToRetire.getValue() * -1,
+      equipmentToRetire.getUnits(),
+    );
+
+    self.changeStream("equipment", retireAsDelta);
+  }
+
+  recycle(recoveryWithUnits, yieldWithUnits, displaceLevel, yearMatcher) {
+    const self = this;
+    
+    if (!self._getIsInRange(yearMatcher)) {
+      return;
+    }
+
+    const application = self._scope.getApplication();
+    const substance = self._scope.getSubstance();
+    self._streamKeeper.setRecoveryRate(application, substance, recoveryWithUnits);
+    self._streamKeeper.setYieldRate(application, substance, yieldWithUnits);
+    self._streamKeeper.setDisplacementRate(application, substance, displaceLevel);
+
+    self._recalcSales();
+    self._recalcPopulationChange();
+    self._recalcEmissions();
   }
 
   emit(conversion, yearMatcher) {
@@ -280,6 +322,8 @@ class Engine {
     const application = self._scope.getApplication();
     const substance = self._scope.getSubstance();
     self._streamKeeper.setGhgIntensity(application, substance, conversion);
+
+    self._recalcEmissions();
   }
 
   changeStream(stream, amount, yearMatcher, scope) {
@@ -383,12 +427,33 @@ class Engine {
     const substanceSalesRaw = self.getStream("sales");
     const substanceSales = unitConverter.convert(substanceSalesRaw, "kg");
 
+    // Get recharge population
+    stateGetter.setPopulation(self.getStream("priorEquipment"));
+    const rechargePopRaw = self._streamKeeper.getRechargePopulation(
+      application,
+      substance,
+    );
+    const rechargePop = unitConverter.convert(rechargePopRaw, "units");
+    stateGetter.setPopulation(null);
+
+    // Switch to recharge population
+    stateGetter.setPopulation(rechargePop);
+
+    // Get recharge amount
+    const rechargeIntensityRaw = self._streamKeeper.getRechargeIntensity(
+      application,
+      substance,
+    );
+    const rechargeVolume = unitConverter.convert(rechargeIntensityRaw, "kg");
+
     // Get recycling volume
+    stateGetter.setVolume(rechargeVolume);
     const recoveryVolumeRaw = self._streamKeeper.getRecoveryRate(
       application,
       substance,
     );
     const recoveryVolume = unitConverter.convert(recoveryVolumeRaw, "kg");
+    stateGetter.setVolume(null);
 
     // Get recycling amount
     stateGetter.setVolume(recoveryVolume);
@@ -399,20 +464,7 @@ class Engine {
     const recycledVolume = unitConverter.convert(recycledVolumeRaw, "kg");
     stateGetter.setVolume(null);
 
-    // Get recharge population
-    const rechargePopRaw = self._streamKeeper.getRechargePopulation(
-      application,
-      substance,
-    );
-    const rechargePop = unitConverter.convert(rechargePopRaw, "units");
-
-    // Get recharge amount
-    stateGetter.setPopulation(rechargePop);
-    const rechargeIntensityRaw = self._streamKeeper.getRechargeIntensity(
-      application,
-      substance,
-    );
-    const rechargeVolume = unitConverter.convert(rechargeIntensityRaw, "kg");
+    // Return to prior population
     stateGetter.setPopulation(priorPopulation);
 
     // Get total volume available for new units
@@ -425,11 +477,10 @@ class Engine {
       substance,
     );
     const displacementRate = unitConverter.convert(displacementRateRaw, "%");
-    const displacementRateRatio = displacementRate.getValue() / 100;
-    const nonDisplacementRateRatio = 1 - displacementRateRatio;
-    const recycledNonDisplacedKg = recycledKg * nonDisplacementRateRatio;
+    const displacementRateRatio = 1 - displacementRate.getValue() / 100;
+    const recycledNonDisplaced = recycledKg * displacementRateRatio;
     
-    const availableForNewUnitsKg = salesKg + recycledNonDisplacedKg - rechargeKg;
+    const availableForNewUnitsKg = salesKg + recycledNonDisplaced - rechargeKg;
 
     // Convert to unit delta
     const initialChargeRaw = self.getInitialCharge("sales");
@@ -530,53 +581,36 @@ class Engine {
     }
     
     // Get recharge population
+    stateGetter.setPopulation(self.getStream("priorEquipment"));
     const rechargePopRaw = self._streamKeeper.getRechargePopulation(
       application,
       substance,
     );
     const rechargePop = unitConverter.convert(rechargePopRaw, "units");
+    stateGetter.setPopulation(null);
+
+    // Switch into recharge population
+    stateGetter.setPopulation(rechargePop);
 
     // Get recharge amount
-    stateGetter.setPopulation(rechargePop);
     const rechargeIntensityRaw = self._streamKeeper.getRechargeIntensity(
       application,
       substance,
     );
     const rechargeVolume = unitConverter.convert(rechargeIntensityRaw, "kg");
-    stateGetter.setPopulation(null);
     
     // Determine initial charge
-    const initialChargeRaw = self._streamKeeper.getInitialCharge(
-      application,
-      substance,
-      "sales"
-    );
+    const initialChargeRaw = self.getInitialCharge("sales");
     const initialCharge = unitConverter.convert(initialChargeRaw, "kg / unit");
 
-    // Determine needs for new equipment deployment.
-    stateGetter.setAmortizedUnitVolume(initialCharge);
-    const populationChangeRaw = self._streamKeeper.getPopulationChange(
-      application,
-      substance,
-    );
-    const volumeForNew = unitConverter.convert(populationChangeRaw, "kg");
-    stateGetter.setAmortizedUnitVolume(null);
-    
-    // Determine sales prior to recycling
-    const kgForRecharge = rechargeVolume.getValue();
-    const kgForNew = volumeForNew.getValue();
-    const kgNoRecycling = kgForRecharge + kgForNew;
-    const volumeNoRecycling = new EngineNumber(kgNoRecycling, "kg");
-    
-    // Assume this volume for unit conversion
-    stateGetter.setVolume(volumeNoRecycling);
-    
     // Get recycling volume
+    stateGetter.setVolume(rechargeVolume);
     const recoveryVolumeRaw = self._streamKeeper.getRecoveryRate(
       application,
       substance,
     );
     const recoveryVolume = unitConverter.convert(recoveryVolumeRaw, "kg");
+    stateGetter.setVolume(null);
 
     // Get recycling amount
     stateGetter.setVolume(recoveryVolume);
@@ -585,7 +619,7 @@ class Engine {
       substance,
     );
     const recycledVolume = unitConverter.convert(recycledVolumeRaw, "kg");
-    stateGetter.setVolume(volumeNoRecycling);
+    stateGetter.setVolume(null);
     
     // Get recycling displaced
     const recycledKg = recycledVolume.getValue();
@@ -597,6 +631,24 @@ class Engine {
     const displacementRate = unitConverter.convert(displacementRateRaw, "%");
     const displacementRateRatio = displacementRate.getValue() / 100;
     const recycledDisplacedKg = recycledKg * displacementRateRatio;
+
+    // Switch out of recharge population
+    stateGetter.setPopulation(null);
+
+    // Determine needs for new equipment deployment.
+    stateGetter.setAmortizedUnitVolume(initialCharge);
+    const populationChangeRaw = stateGetter.getPopulationChange();
+    const volumeForNew = unitConverter.convert(populationChangeRaw, "kg");
+    stateGetter.setAmortizedUnitVolume(null);
+    
+    // Determine sales prior to recycling
+    const kgForRecharge = rechargeVolume.getValue();
+    const kgForNew = volumeForNew.getValue();
+    const kgNoRecycling = kgForRecharge + kgForNew;
+    const volumeNoRecycling = new EngineNumber(kgNoRecycling, "kg");
+    
+    // Assume this volume for unit conversion
+    stateGetter.setVolume(volumeNoRecycling);
     
     // Return original
     stateGetter.setVolume(null);

@@ -110,6 +110,30 @@ function buildEngineTests() {
       assert.ok(manufactureVal.getUnits() === "kg");
     });
 
+    QUnit.test("determines populations", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test sub");
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(2, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      const manufactureVal1 = engine.getStream("equipment");
+      assert.ok(manufactureVal1.getValue() == 5);
+      assert.ok(manufactureVal1.getUnits() === "units");
+    });
+
     QUnit.test("determines basic emissions", function (assert) {
       const engine = new Engine(1, 3);
 
@@ -362,37 +386,54 @@ function buildEngineTests() {
       assert.ok(population.getUnits() === "units");
     });
 
-    // Test split sales with different initial charge and intervention
-
-    /*QUnit.test("converts to units", function (assert) {
+    QUnit.test("different initial charges with intervention", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
       engine.setApplication("test app");
-      engine.setSubstance("test sub");
+      engine.setSubstance("test substance");
 
-      engine.setStream(
+      engine.setInitialCharge(
+        new EngineNumber(5, "kg / unit"),
         "manufacture",
-        new EngineNumber(10, "kg"),
         new YearMatcher(null, null),
       );
 
       engine.setInitialCharge(
-        new EngineNumber(2, "kg / unit"),
-        "sales",
+        new EngineNumber(10, "kg / unit"),
+        "import",
         new YearMatcher(null, null),
       );
 
-      const manufactureVal1 = engine.getStream("equipment");
-      assert.ok(manufactureVal1.getValue() == 5);
-      assert.ok(manufactureVal1.getUnits() === "units");
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(25, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setStream(
+        "import",
+        new EngineNumber(20, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.cap(
+        "import",
+        new EngineNumber(50, "%"),
+        new YearMatcher(null, null),
+      )
+
+      const population = engine.getStream("equipment");
+      assert.ok(Math.abs(population.getValue() - 6) < 0.0001);
+      assert.ok(population.getUnits() === "units");
     });
 
-    QUnit.test("retires equipment", function (assert) {
+    QUnit.test("retires equipment in first year", function (assert) {
       const engine = new Engine(1, 3);
 
-      const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
 
       engine.setStream(
         "manufacture",
@@ -407,7 +448,41 @@ function buildEngineTests() {
       );
 
       engine.retire(
+        new EngineNumber(10, "% / year"),
+        new YearMatcher(null, null),
+      );
+
+      const manufactureVal1 = engine.getStream("equipment");
+      assert.ok(manufactureVal1.getValue() == 10);
+      assert.ok(manufactureVal1.getUnits() === "units");
+
+      engine.incrementYear();
+
+      const manufactureVal2 = engine.getStream("equipment");
+      assert.ok(manufactureVal2.getValue() == 10);
+      assert.ok(manufactureVal2.getUnits() === "units");
+    });
+
+    QUnit.test("retires equipment in multiple years", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
+
+      engine.setStream(
         "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      engine.retire(
         new EngineNumber(10, "% / year"),
         new YearMatcher(null, null),
       );
@@ -419,7 +494,6 @@ function buildEngineTests() {
       engine.incrementYear();
 
       engine.retire(
-        "manufacture",
         new EngineNumber(10, "% / year"),
         new YearMatcher(null, null),
       );
@@ -428,12 +502,13 @@ function buildEngineTests() {
       assert.ok(manufactureVal2.getValue() == 9);
       assert.ok(manufactureVal2.getUnits() === "units");
     });
-  
-    QUnit.test("recharges", function (assert) {
+
+    QUnit.test("recharges in first year", function (assert) {
       const engine = new Engine(1, 3);
 
-      const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
 
       engine.setStream(
         "manufacture",
@@ -446,8 +521,6 @@ function buildEngineTests() {
         "sales",
         new YearMatcher(null, null),
       );
-
-      engine.incrementYear();
 
       engine.recharge(
         new EngineNumber(10, "% / year"),
@@ -455,22 +528,15 @@ function buildEngineTests() {
         new YearMatcher(null, null),
       );
 
-      engine.setStream(
-        "manufacture",
-        new EngineNumber(10, "kg"),
-        new YearMatcher(null, null),
-      );
+      const equipmentVal1 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal1.getValue() - 10) < 0.0001);
+      assert.ok(equipmentVal1.getUnits() === "units");
 
-      const manufactureVal2 = engine.getStream("equipment");
-      assert.ok(manufactureVal2.getValue() == 19);
-      assert.ok(manufactureVal2.getUnits() === "units");
-    });
+      const salesVal1 = engine.getStream("sales");
+      assert.ok(Math.abs(salesVal1.getValue() - 10) < 0.0001);
+      assert.ok(salesVal1.getUnits() === "kg");
 
-    QUnit.test("recycles", function (assert) {
-      const engine = new Engine(1, 3);
-
-      const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      engine.incrementYear();
 
       engine.setStream(
         "manufacture",
@@ -484,24 +550,301 @@ function buildEngineTests() {
         new YearMatcher(null, null),
       );
 
-      engine.incrementYear();
+      const equipmentVal2 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal2.getValue() - 20) < 0.0001);
+      assert.ok(equipmentVal2.getUnits() === "units");
+    });
+  
+    QUnit.test("recharges in multiple years", function (assert) {
+      const engine = new Engine(1, 3);
 
-      recycle(collectionWithUnits, yieldWithUnits, displaceName, yearMatcher)
-      engine.recycle(
-        new EngineNumber(30, "%"),
-        new EngineNumber(100, "%"),
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
+
+      engine.setStream(
         "manufacture",
+        new EngineNumber(10, "kg"),
         new YearMatcher(null, null),
       );
 
-      const manufactureVal = engine.getStream("manufacture");
-      assert.ok(manufactureVal.getValue() == 7);
-      assert.ok(manufactureVal.getUnits() === "kg");
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
 
-      const reuseVal = engine.getStream("reuse");
-      assert.ok(reuseVal.getValue() == 3);
-      assert.ok(reuseVal.getUnits() === "kg");
-    });*/
+      engine.recharge(
+        new EngineNumber(10, "% / year"),
+        new EngineNumber(1, "kg / unit"),
+        new YearMatcher(null, null),
+      );
+
+      const equipmentVal1 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal1.getValue() - 10) < 0.0001);
+      assert.ok(equipmentVal1.getUnits() === "units");
+
+      const salesVal1 = engine.getStream("sales");
+      assert.ok(Math.abs(salesVal1.getValue() - 10) < 0.0001);
+      assert.ok(salesVal1.getUnits() === "kg");
+
+      engine.incrementYear();
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      engine.recharge(
+        new EngineNumber(10, "% / year"),
+        new EngineNumber(1, "kg / unit"),
+        new YearMatcher(null, null),
+      );
+
+      const equipmentVal2 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal2.getValue() - 19) < 0.0001);
+      assert.ok(equipmentVal2.getUnits() === "units");
+
+      const salesVal2 = engine.getStream("sales");
+      assert.ok(Math.abs(salesVal2.getValue() - 10) < 0.0001);
+      assert.ok(salesVal2.getUnits() === "kg");
+    });
+
+    QUnit.test("recycles with no displacement", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      engine.recharge(
+        new EngineNumber(50, "% / year"),
+        new EngineNumber(1, "kg / unit"),
+        new YearMatcher(null, null),
+      );
+
+      engine.recycle(
+        new EngineNumber(50, "%"),
+        new EngineNumber(100, "%"),
+        new EngineNumber(0, "%"),
+        new YearMatcher(null, null),
+      );
+
+      const manufactureVal1 = engine.getStream("manufacture");
+      assert.ok(Math.abs(manufactureVal1.getValue() - 10) < 0.0001);
+      assert.ok(manufactureVal1.getUnits() === "kg");
+
+      const equipmentVal1 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal1.getValue() - 10) < 0.0001);
+      assert.ok(equipmentVal1.getUnits() === "units");
+
+      engine.incrementYear();
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      engine.recharge(
+        new EngineNumber(50, "% / year"),
+        new EngineNumber(1, "kg / unit"),
+        new YearMatcher(null, null),
+      );
+
+      engine.recycle(
+        new EngineNumber(50, "%"),
+        new EngineNumber(100, "%"),
+        new EngineNumber(0, "%"),
+        new YearMatcher(null, null),
+      );
+
+      const manufactureVal2 = engine.getStream("manufacture");
+      assert.ok(Math.abs(manufactureVal2.getValue() - 10) < 0.0001);
+      assert.ok(manufactureVal2.getUnits() === "kg");
+
+      const equipmentVal2 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal2.getValue() - 17.5) < 0.0001);
+      assert.ok(equipmentVal2.getUnits() === "units");
+    });
+
+    QUnit.test("recycles with full displacement", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      engine.recharge(
+        new EngineNumber(50, "% / year"),
+        new EngineNumber(1, "kg / unit"),
+        new YearMatcher(null, null),
+      );
+
+      engine.recycle(
+        new EngineNumber(50, "%"),
+        new EngineNumber(100, "%"),
+        new EngineNumber(100, "%"),
+        new YearMatcher(null, null),
+      );
+
+      const manufactureVal1 = engine.getStream("manufacture");
+      assert.ok(Math.abs(manufactureVal1.getValue() - 10) < 0.0001);
+      assert.ok(manufactureVal1.getUnits() === "kg");
+
+      const equipmentVal1 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal1.getValue() - 10) < 0.0001);
+      assert.ok(equipmentVal1.getUnits() === "units");
+
+      engine.incrementYear();
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      engine.recharge(
+        new EngineNumber(50, "% / year"),
+        new EngineNumber(1, "kg / unit"),
+        new YearMatcher(null, null),
+      );
+
+      engine.recycle(
+        new EngineNumber(50, "%"),
+        new EngineNumber(100, "%"),
+        new EngineNumber(100, "%"),
+        new YearMatcher(null, null),
+      );
+
+      const manufactureVal2 = engine.getStream("manufacture");
+      assert.ok(Math.abs(manufactureVal2.getValue() - 7.5) < 0.0001);
+      assert.ok(manufactureVal2.getUnits() === "kg");
+
+      const equipmentVal2 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal2.getValue() - 12.5) < 0.0001);
+      assert.ok(equipmentVal2.getUnits() === "units");
+    });
+
+    QUnit.test("recycles with half displacement", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      engine.recharge(
+        new EngineNumber(50, "% / year"),
+        new EngineNumber(1, "kg / unit"),
+        new YearMatcher(null, null),
+      );
+
+      engine.recycle(
+        new EngineNumber(50, "%"),
+        new EngineNumber(100, "%"),
+        new EngineNumber(50, "%"),
+        new YearMatcher(null, null),
+      );
+
+      const manufactureVal1 = engine.getStream("manufacture");
+      assert.ok(Math.abs(manufactureVal1.getValue() - 10) < 0.0001);
+      assert.ok(manufactureVal1.getUnits() === "kg");
+
+      const equipmentVal1 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal1.getValue() - 10) < 0.0001);
+      assert.ok(equipmentVal1.getUnits() === "units");
+
+      engine.incrementYear();
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(10, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(1, "kg / unit"),
+        "sales",
+        new YearMatcher(null, null),
+      );
+
+      engine.recharge(
+        new EngineNumber(50, "% / year"),
+        new EngineNumber(1, "kg / unit"),
+        new YearMatcher(null, null),
+      );
+
+      engine.recycle(
+        new EngineNumber(50, "%"),
+        new EngineNumber(100, "%"),
+        new EngineNumber(50, "%"),
+        new YearMatcher(null, null),
+      );
+
+      const manufactureVal2 = engine.getStream("manufacture");
+      assert.ok(Math.abs(manufactureVal2.getValue() - 10 - 1.25) < 0.0001);
+      assert.ok(manufactureVal2.getUnits() === "kg");
+
+      const equipmentVal2 = engine.getStream("equipment");
+      assert.ok(Math.abs(equipmentVal2.getValue() - 10 + 1.25) < 0.0001);
+      assert.ok(equipmentVal2.getUnits() === "units");
+    });
+    
   });
 }
 
