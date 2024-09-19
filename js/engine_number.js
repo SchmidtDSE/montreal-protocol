@@ -480,31 +480,7 @@ class ConverterStateGetter {
 
   getAmortizedUnitVolume() {
     const self = this;
-    const population = self.getPopulation();
-    const volume = self.getVolume();
-    const noPriorValues = population.getValue() == 0;
-
-    if (noPriorValues) {
-      return self.getInitialCharge();
-    } else {
-      const ratioValue = volume.getValue() / population.getValue();
-      const populationUnits = population.getUnits();
-      const volumeUnits = volume.getUnits();
-      const populationUnitsExpected = populationUnits === "unit" || populationUnits === "units";
-      const volumeUnitsExpected = volumeUnits === "mt" || volumeUnits === "kg";
-      const unitsExpected = populationUnitsExpected && volumeUnitsExpected;
-      if (!unitsExpected) {
-        throw "Unexpected units for getAmortizedUnitVolume.";
-      }
-      
-      const ratioUnits = volumeUnits + " / " + populationUnits;
-      return new EngineNumber(ratioValue, ratioUnits);
-    }
-  }
-
-  getInitialCharge() {
-    const self = this;
-    return self._engine.getInitialCharge();
+    return self._engine.getInitialCharge("sales");
   }
 
   getPopulation() {

@@ -132,8 +132,7 @@ function buildEngineTests() {
       );
 
       const emissions = engine.getStream("emissions");
-      console.log(emissions);
-      assert.ok(emissions.getValue() == 246);
+      assert.ok(Math.abs(emissions.getValue() - 246) < 0.0001);
       assert.ok(emissions.getUnits() === "tCO2e");
     });
 
@@ -326,6 +325,44 @@ function buildEngineTests() {
       assert.ok(Math.abs(sub2Manufacture.getValue() - 3) < 0.0001);
       assert.ok(sub2Manufacture.getUnits() === "kg");
     });
+
+    QUnit.test("different initial charges", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
+
+      engine.setInitialCharge(
+        new EngineNumber(5, "kg / unit"),
+        "manufacture",
+        new YearMatcher(null, null),
+      );
+
+      engine.setInitialCharge(
+        new EngineNumber(10, "kg / unit"),
+        "import",
+        new YearMatcher(null, null),
+      );
+
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(25, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      engine.setStream(
+        "import",
+        new EngineNumber(20, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      const population = engine.getStream("equipment");
+      assert.ok(Math.abs(population.getValue() - 7) < 0.0001);
+      assert.ok(population.getUnits() === "units");
+    });
+
+    // Test split sales with different initial charge and intervention
 
     /*QUnit.test("converts to units", function (assert) {
       const engine = new Engine(1, 3);

@@ -396,7 +396,10 @@ class StreamParameterization {
     const self = this;
     const createZero = (x) => new EngineNumber(0, x);
     self._ghgIntensity = createZero("tCO2e / kg");
-    self._initialCharge = createZero("kg / unit");
+    self._initialCharge = {
+      "manufacture": createZero("kg / unit"),
+      "import": createZero("kg / unit")
+    };
     self._rechargePopulation = createZero("%");
     self._rechargeIntensity = createZero("kg / unit");
     self._recoveryRate = createZero("%");
@@ -415,14 +418,16 @@ class StreamParameterization {
     return self._ghgIntensity;
   }
 
-  setInitialCharge(newValue) {
+  setInitialCharge(stream, newValue) {
     const self = this;
-    self._initialCharge = newValue;
+    self._ensureSalesStreamAllowed(stream);
+    self._initialCharge[stream] = newValue;
   }
 
-  getInitialCharge() {
+  getInitialCharge(stream) {
     const self = this;
-    return self._initialCharge;
+    self._ensureSalesStreamAllowed(stream);
+    return self._initialCharge[stream];
   }
 
   setRechargePopulation(newValue) {
@@ -483,6 +488,14 @@ class StreamParameterization {
   getRetirementRate() {
     const self = this;
     return self._retirementRate;
+  }
+
+  _ensureSalesStreamAllowed(name) {
+    const self = this;
+    if (name !== "manufacture" && name !== "import") {
+      debugger;
+      throw "Must address a sales substream.";
+    }
   }
 }
 
@@ -642,16 +655,16 @@ class StreamKeeper {
     return parameterization.getGhgIntensity();
   }
 
-  setInitialCharge(application, substance, newValue) {
+  setInitialCharge(application, substance, substream, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
-    parameterization.setInitialCharge(newValue);
+    parameterization.setInitialCharge(substream, newValue);
   }
 
-  getInitialCharge(application, substance) {
+  getInitialCharge(application, substance, substream) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
-    return parameterization.getInitialCharge();
+    return parameterization.getInitialCharge(substream);
   }
 
   setRechargePopulation(application, substance, newValue) {

@@ -185,11 +185,45 @@ class Engine {
     self._scope.setVariable(name, value);
   }
   
-  getInitialCharge() {
+  getInitialCharge(stream) {
     const self = this;
-    const application = self._scope.getApplication();
-    const substance = self._scope.getSubstance();
-    return self._streamKeeper.getInitialCharge(application, substance);
+
+    if (stream === "sales") {
+      const manufactureRaw = self.getStream("manufacture");
+      const manufactureValue = self._unitConverter.convert(manufactureRaw, "kg");
+
+      const importRaw = self.getStream("import");
+      const importValue = self._unitConverter.convert(importRaw, "kg");
+
+      const total = manufactureValue.getValue() + importValue.getValue();
+      const emptyStreams = total == 0;
+
+      const manufactureInitialChargeRaw = self.getInitialCharge("manufacture");
+      const manufactureInitialCharge = self._unitConverter.convert(
+        manufactureInitialChargeRaw,
+        "kg / unit",
+      );
+      const importInitialChargeRaw = self.getInitialCharge("import");
+      const importInitialCharge = self._unitConverter.convert(
+        importInitialChargeRaw,
+        "kg / unit",
+      );
+
+      const manufactureKg = emptyStreams ? 1 : manufactureValue.getValue();
+      const importKg = emptyStreams ? 1 : importValue.getValue();
+      const manufactureKgUnit = manufactureInitialCharge.getValue();
+      const importKgUnit = importInitialCharge.getValue();
+      const manufactureUnits = manufactureKg / manufactureKgUnit;
+      const importUnits = importKg / importKgUnit;
+      const newSumWeighted = (manufactureKgUnit * manufactureUnits + importKgUnit * importUnits);
+      const newSumWeight = manufactureUnits + importUnits;
+      const pooledKgUnit = newSumWeighted / newSumWeight;
+      return new EngineNumber(pooledKgUnit, "kg / unit");
+    } else {
+      const application = self._scope.getApplication();
+      const substance = self._scope.getSubstance();
+      return self._streamKeeper.getInitialCharge(application, substance, stream);
+    }
   }
   
   setInitialCharge(value, stream, yearMatcher) {
@@ -199,9 +233,14 @@ class Engine {
       return;
     }
     
-    const application = self._scope.getApplication();
-    const substance = self._scope.getSubstance();
-    self._streamKeeper.setInitialCharge(application, substance, value);
+    if (stream === "sales") {
+      self.setInitialCharge(value, "manufacture");
+      self.setInitialCharge(value, "import");
+    } else {
+      const application = self._scope.getApplication();
+      const substance = self._scope.getSubstance();
+      self._streamKeeper.setInitialCharge(application, substance, stream, value);
+    }
   }
   
   getRechargeVolume() {
@@ -251,10 +290,7 @@ class Engine {
     }
 
     const currentValue = self.getStream(stream, scope);
-
-    const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
-    const unitConverter = new UnitConverter(stateGetter);
-    stateGetter.setTotal(stream, currentValue);
+    const unitConverter = self._createUnitConverterWithTotal(stream);
 
     const convertedDelta = unitConverter.convert(amount, currentValue.getUnits());
     const newAmount = currentValue.getValue() + convertedDelta.getValue();
@@ -270,10 +306,7 @@ class Engine {
     }
 
     const currentValue = self.getStream(stream);
-
-    const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
-    const unitConverter = new UnitConverter(stateGetter);
-    stateGetter.setTotal(stream, currentValue);
+    const unitConverter = self._createUnitConverterWithTotal(stream);
 
     const convertedMax = unitConverter.convert(amount, currentValue.getUnits());
     const newAmount = Math.min(currentValue.getValue(), convertedMax.getValue());
@@ -288,11 +321,7 @@ class Engine {
       return;
     }
 
-    const currentValue = self.getStream(stream);
-
-    const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
-    const unitConverter = new UnitConverter(stateGetter);
-    stateGetter.setTotal(stream, currentValue);
+    const unitConverter = self._createUnitConverterWithTotal(stream);
     const amount = unitConverter.convert(amountRaw, "kg");
 
     const amountNegative = new EngineNumber(-1 * amount.getValue(), amount.getUnits());
@@ -300,6 +329,23 @@ class Engine {
 
     const destinationScope = self._scope.getWithSubstance(destinationSubstance);
     self.changeStream(stream, amount, null, destinationScope);
+  }
+
+  _createUnitConverterWithTotal(stream) {
+    const self = this;
+    
+    const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
+    const unitConverter = new UnitConverter(stateGetter);
+    
+    const currentValue = self.getStream(stream);
+    stateGetter.setTotal(stream, currentValue);
+    
+    const isSalesSubstream = stream === "manufacture" || stream === "import";
+    if (isSalesSubstream) {
+      stateGetter.setAmortizedUnitVolume(self.getInitialCharge(stream));
+    }
+    
+    return unitConverter;
   }
 
   _getIsInRange(yearMatcher) {
@@ -331,6 +377,7 @@ class Engine {
       substance,
     );
     const retiredPopulation = unitConverter.convert(retirementRaw, "units");
+    const retireUnits = retiredPopulation.getValue();
 
     // Get substance sales
     const substanceSalesRaw = self.getStream("sales");
@@ -385,17 +432,14 @@ class Engine {
     const availableForNewUnitsKg = salesKg + recycledNonDisplacedKg - rechargeKg;
 
     // Convert to unit delta
-    const initialChargeRaw = self._streamKeeper.getInitialCharge(
-      application,
-      substance,
-    );
+    const initialChargeRaw = self.getInitialCharge("sales");
     const initialCharge = unitConverter.convert(initialChargeRaw, "kg / unit");
     const initialChargeKgUnit = initialCharge.getValue();
     const deltaUnits = availableForNewUnitsKg / initialChargeKgUnit;
 
     // Find new total
     const priorPopulationUnits = priorPopulation.getValue();
-    const newUnits = priorPopulationUnits + deltaUnits;
+    const newUnits = priorPopulationUnits + deltaUnits - retireUnits;
     const newUnitsAllowed = newUnits < 0 ? 0 : newUnits;
     const newVolume = new EngineNumber(newUnitsAllowed, "units");
 
@@ -505,17 +549,17 @@ class Engine {
     const initialChargeRaw = self._streamKeeper.getInitialCharge(
       application,
       substance,
+      "sales"
     );
     const initialCharge = unitConverter.convert(initialChargeRaw, "kg / unit");
 
     // Determine needs for new equipment deployment.
-    stateGetter.setAmortizedUnitVolume(initalCharge);
+    stateGetter.setAmortizedUnitVolume(initialCharge);
     const populationChangeRaw = self._streamKeeper.getPopulationChange(
       application,
       substance,
     );
-    const populationChange = unitConverter.convert(populationChangeRaw, "units");
-    const volumeForNew = unitConverter.convert(populationChange, "kg");
+    const volumeForNew = unitConverter.convert(populationChangeRaw, "kg");
     stateGetter.setAmortizedUnitVolume(null);
     
     // Determine sales prior to recycling
