@@ -94,9 +94,7 @@ class UnitConverter {
       const destinationDenominator = denominatorStrategy();
       return new EngineNumber(
         destinationNumerator.getValue() / destinationDenominator.getValue(),
-        destinationNumerator.getUnits() +
-          " / " +
-          destinationDenominator.getUnits(),
+        destinationUnits
       );
     } else {
       return destinationNumerator;

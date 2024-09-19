@@ -1,3 +1,5 @@
+import {YearMatcher, Scope} from "engine_state";
+
 function buildEngineStateTests() {
   QUnit.module("YearMatcher", function () {
     QUnit.test("initializes", function (assert) {
@@ -120,4 +122,4 @@ function buildEngineStateTests() {
   });
 }
 
-exports {buildEngineStateTests};
+export {buildEngineStateTests};

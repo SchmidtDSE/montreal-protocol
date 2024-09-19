@@ -34,8 +34,12 @@
     <script type="module">
         import { buildCompilerTests } from "test_compiler";
         import { buildEngineNumberTests } from "test_engine_number";
+        import { buildEngineStateTests } from "test_engine_state";
+        import { buildEngineTests } from "test_engine";
 
         buildCompilerTests();
         buildEngineNumberTests();
+        buildEngineStateTests();
+        buildEngineTests();
     </script>
 </body>

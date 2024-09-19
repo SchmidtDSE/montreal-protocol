@@ -25,4 +25,4 @@ function buildCompilerTests() {
   });
 }
 
-export { buildCompilerTest };
+export { buildCompilerTests };

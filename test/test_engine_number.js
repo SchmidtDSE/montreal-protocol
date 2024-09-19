@@ -1,3 +1,6 @@
+import { EngineNumber, UnitConverter } from "engine_number";
+
+
 function buildEngineNumberTests() {
   QUnit.module("EngineNumber", function () {
     const makeExample = () => {
@@ -485,7 +488,71 @@ function buildEngineNumberTests() {
       assert.ok(Math.abs(result.getValue() - 0.2) < 0.001);
       assert.ok(result.getUnits() === "years");
     });
+    
+    QUnit.test("normalize by population", function (assert) {
+      const mockConverterStateGetter = new MockConverterStateGetter();
+      mockConverterStateGetter.setPopulation(
+        new EngineNumber(2, "units"),
+      );
+
+      const result = convertUnits(
+        new EngineNumber(20, "kg"),
+        "kg / unit",
+        mockConverterStateGetter,
+      );
+
+      assert.ok(Math.abs(result.getValue() - 10) < 0.001);
+      assert.ok(result.getUnits() === "kg / unit");
+    });
+    
+    QUnit.test("normalize by volume", function (assert) {
+      const mockConverterStateGetter = new MockConverterStateGetter();
+      mockConverterStateGetter.setVolume(
+        new EngineNumber(2, "kg"),
+      );
+
+      const result = convertUnits(
+        new EngineNumber(10, "units"),
+        "unit / kg",
+        mockConverterStateGetter,
+      );
+
+      assert.ok(Math.abs(result.getValue() - 5) < 0.001);
+      assert.ok(result.getUnits() === "unit / kg");
+    });
+    
+    QUnit.test("normalize by emissions", function (assert) {
+      const mockConverterStateGetter = new MockConverterStateGetter();
+      mockConverterStateGetter.setEmissions(
+        new EngineNumber(2, "tCO2e"),
+      );
+
+      const result = convertUnits(
+        new EngineNumber(10, "units"),
+        "unit / tCO2e",
+        mockConverterStateGetter,
+      );
+
+      assert.ok(Math.abs(result.getValue() - 5) < 0.001);
+      assert.ok(result.getUnits() === "unit / tCO2e");
+    });
+    
+    QUnit.test("normalize by time", function (assert) {
+      const mockConverterStateGetter = new MockConverterStateGetter();
+      mockConverterStateGetter.setYearsElapsed(
+        new EngineNumber(2, "years"),
+      );
+
+      const result = convertUnits(
+        new EngineNumber(10, "units"),
+        "unit / year",
+        mockConverterStateGetter,
+      );
+
+      assert.ok(Math.abs(result.getValue() - 5) < 0.001);
+      assert.ok(result.getUnits() === "unit / year");
+    });
   });
 }
 
-exports {buildEngineNumberTests};
+export {buildEngineNumberTests};

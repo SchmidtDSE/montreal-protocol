@@ -1,3 +1,8 @@
+import { EngineNumber } from "engine_number";
+
+import {Engine} from "engine";
+
+
 function buildEngineTests() {
   QUnit.module("Engine", function () {
     QUnit.test("initializes", function (assert) {
