@@ -119,27 +119,30 @@ function buildEngineTests() {
 
       engine.setInitialCharge(
         new EngineNumber(123, "kg / unit"),
+        "sales",
         new YearMatcher(null, null),
       );
 
-      engine.emit("emit 1 tCO2 / kg", new YearMatcher(null, null));
+      engine.emit(new EngineNumber(1, "tCO2e / kg"), new YearMatcher(null, null));
 
       engine.setStream(
         "manufacture",
-        new EngineNumber(2, "kg"),
+        new EngineNumber(2, "units"),
         new YearMatcher(null, null),
       );
 
       const emissions = engine.getStream("emissions");
+      console.log(emissions);
       assert.ok(emissions.getValue() == 246);
       assert.ok(emissions.getUnits() === "tCO2e");
     });
 
-    /*QUnit.test("change stream", function (assert) {
+    QUnit.test("change stream", function (assert) {
       const engine = new Engine(1, 3);
 
-      const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test substance");
 
       engine.setStream(
         "manufacture",
@@ -168,13 +171,28 @@ function buildEngineTests() {
       const count2 = engine.getStream("manufacture");
       assert.ok(count2.getValue() == 11);
       assert.ok(count2.getUnits() === "kg");
+
+      engine.incrementYear();
+
+      engine.changeStream(
+        "manufacture",
+        new EngineNumber(10, "% / year"),
+        new YearMatcher(null, null),
+      );
+
+      const count3 = engine.getStream("manufacture");
+      assert.ok(count3.getValue() == 12.1);
+      assert.ok(count3.getUnits() === "kg");
     });
 
     QUnit.test("manages parallel stream", function (assert) {
       const engine = new Engine(1, 3);
 
       const scope1 = new Scope("default", "test app", "sub 1");
-      engine.setScope(scope1);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("sub 1");
 
       engine.setStream(
         "manufacture",
@@ -190,8 +208,7 @@ function buildEngineTests() {
       assert.ok(manufacture1ValIndirect.getValue() == 1);
       assert.ok(manufacture1ValIndirect.getUnits() === "kg");
 
-      const scope2 = new Scope("default", "test app", "sub 2");
-      engine.setScope(scope2);
+      engine.setSubstance("sub 2");
 
       engine.setStream(
         "manufacture",
@@ -215,28 +232,32 @@ function buildEngineTests() {
     QUnit.test("manages variables", function (assert) {
       const engine = new Engine(1, 3);
 
-      const oldScope = new Scope("default", "test app", null);
-      engine.setScope(oldScope);
+      engine.setStanza("default");
+      engine.setApplication("test app");
 
       engine.defineVariable("testVar");
-      egnine.setVariable("testVar", 123);
+      engine.setVariable("testVar", 123);
       assert.ok(engine.getVariable("testVar") == 123);
 
-      const tempScope = oldScope.getWithSubstance("test substance 2");
-      engine.setScope(tempScope);
+      engine.setSubstance("sub 1");
       engine.setVariable("testVar", 124);
       assert.ok(engine.getVariable("testVar") == 124);
 
-      const newScope = tempScope.getWithSubstance("test substance 3");
-      engine.setScope(newScope);
-      assert.ok(engine.getVariable("testVar") == 123);
+      engine.setSubstance("sub 2");
+      engine.defineVariable("testVar");
+      engine.setVariable("testVar", 125);
+      assert.ok(engine.getVariable("testVar") == 125);
+
+      engine.setSubstance("sub 3");
+      assert.ok(engine.getVariable("testVar") == 124);
     });
 
     QUnit.test("applies caps", function (assert) {
       const engine = new Engine(1, 3);
 
-      const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test sub");
 
       engine.setStream(
         "manufacture",
@@ -250,8 +271,9 @@ function buildEngineTests() {
         new YearMatcher(null, null),
       );
 
-      const firstCapVal = engine.get("manufacture");
-      assert.ok(firstCapVal == 10);
+      const firstCapVal = engine.getStream("manufacture");
+      assert.ok(Math.abs(firstCapVal.getValue() - 10) < 0.0001);
+      assert.ok(firstCapVal.getUnits() === "kg");
 
       engine.cap(
         "manufacture",
@@ -259,15 +281,17 @@ function buildEngineTests() {
         new YearMatcher(null, null),
       );
 
-      const secondCapVal = engine.get("manufacture");
-      assert.ok(secondCapVal == 5);
+      const secondCapVal = engine.getStream("manufacture");
+      assert.ok(Math.abs(secondCapVal.getValue() - 5) < 0.0001);
+      assert.ok(secondCapVal.getUnits() === "kg");
     });
 
     QUnit.test("replaces substances", function (assert) {
       const engine = new Engine(1, 3);
 
-      const scope1 = new Scope("default", "test app", "sub 1");
-      engine.setScope(scope1);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("sub 1");
 
       engine.setStream(
         "manufacture",
@@ -275,8 +299,9 @@ function buildEngineTests() {
         new YearMatcher(null, null),
       );
 
-      const scope2 = new Scope("default", "test app", "sub 2");
-      engine.setScope(scope2);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("sub 2");
 
       engine.setStream(
         "manufacture",
@@ -291,18 +316,23 @@ function buildEngineTests() {
         new YearMatcher(null, null),
       );
 
-      engine.setScope(scope1);
-      assert.ok(engine.getStream("manufacture") == 7);
+      engine.setSubstance("sub 1");
+      const sub1Manufacture = engine.getStream("manufacture");
+      assert.ok(Math.abs(sub1Manufacture.getValue() - 7) < 0.0001);
+      assert.ok(sub1Manufacture.getUnits() === "kg");
 
-      engine.setScope(scope2);
-      assert.ok(engine.getStream("manufacture") == 3);
+      engine.setSubstance("sub 2");
+      const sub2Manufacture = engine.getStream("manufacture");
+      assert.ok(Math.abs(sub2Manufacture.getValue() - 3) < 0.0001);
+      assert.ok(sub2Manufacture.getUnits() === "kg");
     });
 
-    QUnit.test("converts to units", function (assert) {
+    /*QUnit.test("converts to units", function (assert) {
       const engine = new Engine(1, 3);
 
-      const scope = new Scope("default", "test app", "test substance");
-      engine.setScope(scope);
+      engine.setStanza("default");
+      engine.setApplication("test app");
+      engine.setSubstance("test sub");
 
       engine.setStream(
         "manufacture",

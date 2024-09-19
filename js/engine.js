@@ -161,13 +161,27 @@ class Engine {
     return self._streamKeeper.getStream(application, substance, name);
   }
 
+  defineVariable(name) {
+    const self = this;
+    if (name === "yearsElapsed") {
+      throw "Cannot override yearsElapsed.";
+    }
+    self._scope.defineVariable(name);
+  }
+
   getVariable(name) {
     const self = this;
+    if (name === "yearsElapsed") {
+      return self._currentYear - self._startYear;
+    }
     return self._scope.getVariable(name);
   }
 
   setVariable(name, value) {
     const self = this;
+    if (name === "yearsElapsed") {
+      throw "Cannot set yearsElapsed.";
+    }
     self._scope.setVariable(name, value);
   }
   
@@ -178,12 +192,10 @@ class Engine {
     return self._streamKeeper.getInitialCharge(application, substance);
   }
   
-  setInitialCharge(value, yearMatcher) {
+  setInitialCharge(value, stream, yearMatcher) {
     const self = this;
     
-    const noYearMatcher = yearMatcher === undefined || yearMatcher === null;
-    const inRange = noYearMatcher || yearMatcher.getInRange(self._currentYear);
-    if (!inRange) {
+    if (!self._getIsInRange(yearMatcher)) {
       return;
     }
     
@@ -209,9 +221,7 @@ class Engine {
   recharge(volume, intensity, yearMatcher) {
     const self = this;
     
-    const noYearMatcher = yearMatcher === undefined || yearMatcher === null;
-    const inRange = noYearMatcher || yearMatcher.getInRange(self._currentYear);
-    if (!inRange) {
+    if (!self._getIsInRange(yearMatcher)) {
       return;
     }
     
@@ -219,6 +229,83 @@ class Engine {
     const substance = self._scope.getSubstance();
     self._streamKeeper.setRechargeVolume(application, substance, volume);
     self._streamKeeper.setRechargeIntensity(application, substance, intensity);
+  }
+
+  emit(conversion, yearMatcher) {
+    const self = this;
+    
+    if (!self._getIsInRange(yearMatcher)) {
+      return;
+    }
+
+    const application = self._scope.getApplication();
+    const substance = self._scope.getSubstance();
+    self._streamKeeper.setGhgIntensity(application, substance, conversion);
+  }
+
+  changeStream(stream, amount, yearMatcher, scope) {
+    const self = this;
+    
+    if (!self._getIsInRange(yearMatcher)) {
+      return;
+    }
+
+    const currentValue = self.getStream(stream, scope);
+
+    const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
+    const unitConverter = new UnitConverter(stateGetter);
+    stateGetter.setTotal(stream, currentValue);
+
+    const convertedDelta = unitConverter.convert(amount, currentValue.getUnits());
+    const newAmount = currentValue.getValue() + convertedDelta.getValue();
+    const outputWithUnits = new EngineNumber(newAmount, currentValue.getUnits());
+    self.setStream(stream, outputWithUnits, null, scope);
+  }
+
+  cap(stream, amount, yearMatcher) {
+    const self = this;
+    
+    if (!self._getIsInRange(yearMatcher)) {
+      return;
+    }
+
+    const currentValue = self.getStream(stream);
+
+    const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
+    const unitConverter = new UnitConverter(stateGetter);
+    stateGetter.setTotal(stream, currentValue);
+
+    const convertedMax = unitConverter.convert(amount, currentValue.getUnits());
+    const newAmount = Math.min(currentValue.getValue(), convertedMax.getValue());
+    const outputWithUnits = new EngineNumber(newAmount, currentValue.getUnits());
+    self.setStream(stream, outputWithUnits);
+  }
+
+  replace(amountRaw, stream, destinationSubstance, yearMatcher) {
+    const self = this;
+    
+    if (!self._getIsInRange(yearMatcher)) {
+      return;
+    }
+
+    const currentValue = self.getStream(stream);
+
+    const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
+    const unitConverter = new UnitConverter(stateGetter);
+    stateGetter.setTotal(stream, currentValue);
+    const amount = unitConverter.convert(amountRaw, "kg");
+
+    const amountNegative = new EngineNumber(-1 * amount.getValue(), amount.getUnits());
+    self.changeStream(stream, amountNegative);
+
+    const destinationScope = self._scope.getWithSubstance(destinationSubstance);
+    self.changeStream(stream, amount, null, destinationScope);
+  }
+
+  _getIsInRange(yearMatcher) {
+    const noYearMatcher = yearMatcher === undefined || yearMatcher === null;
+    const inRange = noYearMatcher || yearMatcher.getInRange(self._currentYear);
+    return inRange;
   }
 
   _recalcPopulationChange() {

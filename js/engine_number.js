@@ -482,19 +482,29 @@ class ConverterStateGetter {
     const self = this;
     const population = self.getPopulation();
     const volume = self.getVolume();
-    const ratioValue = volume.getValue() / population.getValue();
-    
-    const populationUnits = population.getUnits();
-    const volumeUnits = volume.getUnits();
-    const populationUnitsExpected = populationUnits === "unit" || populationUnits === "units";
-    const volumeUnitsExpected = volumeUnits === "mt" || volumeUnits === "kg";
-    const unitsExpected = populationUnitsExpected && volumeUnitsExpected;
-    if (!unitsExpected) {
-      throw "Unexpected units for getAmortizedUnitVolume.";
+    const noPriorValues = population.getValue() == 0;
+
+    if (noPriorValues) {
+      return self.getInitialCharge();
+    } else {
+      const ratioValue = volume.getValue() / population.getValue();
+      const populationUnits = population.getUnits();
+      const volumeUnits = volume.getUnits();
+      const populationUnitsExpected = populationUnits === "unit" || populationUnits === "units";
+      const volumeUnitsExpected = volumeUnits === "mt" || volumeUnits === "kg";
+      const unitsExpected = populationUnitsExpected && volumeUnitsExpected;
+      if (!unitsExpected) {
+        throw "Unexpected units for getAmortizedUnitVolume.";
+      }
+      
+      const ratioUnits = volumeUnits + " / " + populationUnits;
+      return new EngineNumber(ratioValue, ratioUnits);
     }
-    
-    const ratioUnits = volumeUnits + " / " + populationUnits;
-    return new EngineNumber(ratioValue, ratioUnits);
+  }
+
+  getInitialCharge() {
+    const self = this;
+    return self._engine.getInitialCharge();
   }
 
   getPopulation() {
@@ -504,7 +514,8 @@ class ConverterStateGetter {
 
   getYearsElapsed() {
     const self = this;
-    return new EngineNumber(1, "year");
+    const numYears = self._engine.getVariable("yearsElapsed") > 0 ? 1 : 0;
+    return new EngineNumber(numYears, "year");
   }
 
   getEmissions() {
@@ -558,6 +569,19 @@ class OverridingConverterStateGetter {
     self._volume = null;
     self._amortizedUnitEmissions = null;
     self._populationChange = null;
+  }
+
+  setTotal(streamName, value) {
+    const self = this;
+    const strategy = {
+      "sales": (x) => self.setVolume(x),
+      "manufacture": (x) => self.setVolume(x),
+      "import": (x) => self.setVolume(x),
+      "equipment": (x) => self.setPopulation(x),
+      "priorEquipment": (x) => self.setPopulation(x),
+      "emissions": (x) => self.setEmissions(x),
+    }[streamName];
+    strategy(value);
   }
 
   setSubstanceEmissions(newValue) {
