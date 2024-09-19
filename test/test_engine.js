@@ -80,9 +80,7 @@ function buildEngineTests() {
       assert.ok(importVal.getUnits() === "kg");
     });
     
-    // TODO: Test for set initial charge
-
-    /*QUnit.test("checks year", function (assert) {
+    QUnit.test("checks year", function (assert) {
       const engine = new Engine(1, 3);
       
       engine.setStanza("default");
@@ -121,7 +119,6 @@ function buildEngineTests() {
 
       engine.setInitialCharge(
         new EngineNumber(123, "kg / unit"),
-        "sales",
         new YearMatcher(null, null),
       );
 
@@ -138,7 +135,7 @@ function buildEngineTests() {
       assert.ok(emissions.getUnits() === "tCO2e");
     });
 
-    QUnit.test("change stream", function (assert) {
+    /*QUnit.test("change stream", function (assert) {
       const engine = new Engine(1, 3);
 
       const scope = new Scope("default", "test app", "test substance");

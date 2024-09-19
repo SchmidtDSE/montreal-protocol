@@ -189,7 +189,7 @@ class Engine {
     
     const application = self._scope.getApplication();
     const substance = self._scope.getSubstance();
-    self._streamKeeper.setInitialCharge(application, substance, newValue);
+    self._streamKeeper.setInitialCharge(application, substance, value);
   }
   
   getRechargeVolume() {
