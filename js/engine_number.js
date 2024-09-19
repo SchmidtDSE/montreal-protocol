@@ -73,6 +73,7 @@ class UnitConverter {
       tCO2e: (x) => self._toEmissions(x),
       year: (x) => self._toYears(x),
       years: (x) => self._toYears(x),
+      "%": (x) => self._toPercent(x),
     }[destinationNumeratorUnits];
 
     const destinationNumerator = numeratorStrategy(source);
@@ -303,6 +304,32 @@ class UnitConverter {
       throw "Unable to convert to years: " + currentUnits;
     }
   }
+  
+  _toPercent(target) {
+    const self = this;
+
+    target = self._normalize(target);
+    const currentUnits = target.getUnits();
+
+    const getTotal = () => { 
+      if (currentUnits === "years" || currentUnits === "year") {
+        return self._stateGetter.getYearsElapsed();
+      } else if (currentUnits === "tCO2e") {
+        return self._stateGetter.getEmissions();
+      } else if (currentUnits === "kg" || currentUnits === "mt") {
+        const volume = self._stateGetter.getVolume();
+        return self.convert(volume, currentUnits);
+      } else if (currentUnits === "unit" || currentUnits === "units") {
+        return self._stateGetter.getPopulation();
+      } else {
+        throw "Unable to convert to %: " + currentUnits;
+      }
+    };
+    
+    const total = getTotal();
+    const percentValue = target.getValue() / total.getValue() * 100;
+    return new EngineNumber(percentValue, "%");
+  }
 
   /**
    * Normalize to non-ratio units if possible.
@@ -434,42 +461,87 @@ class ConverterStateGetter {
 
   getSubstanceEmissions() {
     const self = this;
-    throw "Not yet implemented.";
+    const emissions = self.getEmissions();
+    const volume = self.getVolume();
+    const ratioValue = emissions.getValue() / volume.getValue();
+    
+    const emissionsUnits = emissions.getUnits();
+    const volumeUnits = volume.getUnits();
+    const emissionsUnitsExpected = emissionsUnits === "tCO2e";
+    const volumeUnitsExpected = volumeUnits === "mt" || volumeUnits === "kg";
+    const unitsExpected = emissionsUnitsExpected && volumeUnitsExpected;
+    if (!unitsExpected) {
+      throw "Unexpected units for getSubstanceEmissions.";
+    }
+    
+    const ratioUnits = emissionsUnits + " / " + volumeUnits;
+    return new EngineNumber(ratioValue, ratioUnits);
   }
 
   getAmortizedUnitVolume() {
     const self = this;
-    throw "Not yet implemented";
+    const population = self.getPopulation();
+    const volume = self.getVolume();
+    const ratioValue = volume.getValue() / population.getValue();
+    
+    const populationUnits = population.getUnits();
+    const volumeUnits = volume.getUnits();
+    const populationUnitsExpected = populationUnits === "unit" || populationUnits === "units";
+    const volumeUnitsExpected = volumeUnits === "mt" || volumeUnits === "kg";
+    const unitsExpected = populationUnitsExpected && volumeUnitsExpected;
+    if (!unitsExpected) {
+      throw "Unexpected units for getAmortizedUnitVolume.";
+    }
+    
+    const ratioUnits = volumeUnits + " / " + populationUnits;
+    return new EngineNumber(ratioValue, ratioUnits);
   }
 
   getPopulation() {
     const self = this;
-    throw "Not yet implemented";
+    return self._engine.getStream("equipment");
   }
 
   getYearsElapsed() {
     const self = this;
-    throw "Not yet implemented";
+    return new EngineNumber(1, "year");
   }
 
   getEmissions() {
     const self = this;
-    throw "Not yet implemented";
+    return self._engine.getStream("emissions");
   }
 
   getVolume() {
     const self = this;
-    throw "Not yet implemented";
+    return self._engine.getStream("sales");
   }
 
   getAmortizedUnitEmissions() {
     const self = this;
-    throw "Not yet implemented";
+    const emissions = self.getEmissions();
+    const population = self.getPopulation();
+    const ratioValue = emissions.getValue() / population.getValue();
+    
+    const populationUnits = population.getUnits();
+    const volumeUnits = volume.getUnits();
+    const populationUnitsExpected = populationUnits === "unit" || populationUnits === "units";
+    const volumeUnitsExpected = volumeUnits === "mt" || volumeUnits === "kg";
+    const unitsExpected = populationUnitsExpected && volumeUnitsExpected;
+    if (!unitsExpected) {
+      throw "Unexpected units for getAmortizedUnitEmissions.";
+    }
+    
+    const ratioUnits = emissionsUnits + " / " + populationUnits;
+    return new EngineNumber(ratioValue, ratioUnits);
   }
 
   getPopulationChange() {
     const self = this;
-    throw "Not yet implemented";
+    const priorEquipment = self._engine.getStream("priorEquipment");
+    const newEquipment = self._engine.getStream("equipment");
+    const deltaValue = newEquipment.getValue() - priorEquipment.getValue();
+    return new EngineNumber(deltaValue, "units");
   }
 }
 

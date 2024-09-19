@@ -1,5 +1,7 @@
 import { EngineNumber } from "engine_number";
 
+import { Scope, YearMatcher } from "engine_state";
+
 import {Engine} from "engine";
 
 
@@ -30,7 +32,7 @@ function buildEngineTests() {
       assert.ok(scopeNewRet.getSubstance() === "test substance 2");
     });
 
-    /*QUnit.test("increments year", function (assert) {
+    QUnit.test("increments year", function (assert) {
       const engine = new Engine(1, 3);
       assert.ok(engine.getYear() == 1);
       assert.ok(!engine.getIsDone());
@@ -78,8 +80,10 @@ function buildEngineTests() {
       assert.ok(importVal.getValue() == 20);
       assert.ok(importVal.getUnits() === "kg");
     });
+    
+    // TODO: Test for set initial charge
 
-    QUnit.test("checks year", function (assert) {
+    /*QUnit.test("checks year", function (assert) {
       const engine = new Engine(1, 3);
       
       engine.setStanza("default");

@@ -170,6 +170,56 @@ class Engine {
     const self = this;
     self._scope.setVariable(name, value);
   }
+  
+  getInitialCharge() {
+    const self = this;
+    const application = self._scope.getApplication();
+    const substance = self._scope.getSubstance();
+    return self._streamKeeper.getInitialCharge(application, substance);
+  }
+  
+  setInitialCharge(value, yearMatcher) {
+    const self = this;
+    
+    const noYearMatcher = yearMatcher === undefined || yearMatcher === null;
+    const inRange = noYearMatcher || yearMatcher.getInRange(self._currentYear);
+    if (!inRange) {
+      return;
+    }
+    
+    const application = self._scope.getApplication();
+    const substance = self._scope.getSubstance();
+    self._streamKeeper.setInitialCharge(application, substance, newValue);
+  }
+  
+  getRechargeVolume() {
+    const self = this;
+    const application = self._scope.getApplication();
+    const substance = self._scope.getSubstance();
+    return self._streamKeeper.getRechargeVolume(application, substance);
+  }
+  
+  getRechargeIntensity() {
+    const self = this;
+    const application = self._scope.getApplication();
+    const substance = self._scope.getSubstance();
+    return self._streamKeeper.getRechargeIntensity(application, substance);
+  }
+  
+  recharge(volume, intensity, yearMatcher) {
+    const self = this;
+    
+    const noYearMatcher = yearMatcher === undefined || yearMatcher === null;
+    const inRange = noYearMatcher || yearMatcher.getInRange(self._currentYear);
+    if (!inRange) {
+      return;
+    }
+    
+    const application = self._scope.getApplication();
+    const substance = self._scope.getSubstance();
+    self._streamKeeper.setRechargeVolume(application, substance, volume);
+    self._streamKeeper.setRechargeIntensity(application, substance, intensity);
+  }
 
   _recalcPopulationChange() {
     const self = this;
@@ -212,7 +262,7 @@ class Engine {
       application,
       substance,
     );
-    const recycledVolume = unitConverter.convert(recoveryRaw, "kg");
+    const recycledVolume = unitConverter.convert(recycledVolumeRaw, "kg");
     stateGetter.setVolume(null);
 
     // Get recharge population
@@ -232,9 +282,9 @@ class Engine {
     stateGetter.setPopulation(priorPopulation);
 
     // Get total volume available for new units
-    const salesKg = substanceSales.getVolume();
-    const recycledKg = recycledVolume.getVolume();
-    const rechargeKg = rechargeVolume.getVolume();
+    const salesKg = substanceSales.getValue();
+    const recycledKg = recycledVolume.getValue();
+    const rechargeKg = rechargeVolume.getValue();
     const availableForNewUnitsKg = salesKg + recycledKg - rechargeKg;
 
     // Convert to unit delta
@@ -249,7 +299,7 @@ class Engine {
     // Find new total
     const priorPopulationUnits = priorPopulation.getValue();
     const newUnits = priorPopulationUnits + deltaUnits;
-    const newUnitsAllowed = newUnitsAllowed < 0 ? 0 : newUnitsAllowed;
+    const newUnitsAllowed = newUnits < 0 ? 0 : newUnits;
     const newVolume = new EngineNumber(newUnitsAllowed, "units");
 
     // Save
