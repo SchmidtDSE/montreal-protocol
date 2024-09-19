@@ -2,11 +2,8 @@ function loadRemote(path) {
   return fetch(path).then((response) => response.text());
 }
 
-
-function buildCompilerTest() {
-
+function buildCompilerTests() {
   QUnit.module("Compiler", function () {
-  
     QUnit.test("gets toolkit", function (assert) {
       const toolkit = QubecTalk.getToolkit();
       assert.ok(toolkit !== undefined);
@@ -16,9 +13,8 @@ function buildCompilerTest() {
       assert.ok(toolkit["QubecTalkListener"] !== undefined);
       assert.ok(toolkit["QubecTalkVisitor"] !== undefined);
     });
-    
-    
-    QUnit.test('loads remote files', assert => {
+
+    QUnit.test("loads remote files", (assert) => {
       const done = assert.async();
 
       loadRemote("/test/qta/basic.qta").then((content) => {
@@ -26,10 +22,7 @@ function buildCompilerTest() {
         done();
       });
     });
-    
   });
-
 }
-
 
 export { buildCompilerTest };
