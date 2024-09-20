@@ -97,6 +97,60 @@ function buildCompilerTests() {
         },
       ],
     );
+
+    buildTest(
+      "interprets a retire command",
+      "/test/qta/retire.qta", [
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 2, 0, "test", "test");
+          const manufacture = record.getManufacture();
+          assert.ok(Math.abs(manufacture.getValue() - 90000) < 0.0001);
+          assert.ok(manufacture.getUnits() === "kg");
+        },
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 2, 0, "test", "test");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 450) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+      ],
+    );
+
+    buildTest(
+      "interprets a retire command",
+      "/test/qta/recharge.qta", [
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 1, 0, "test", "test");
+          const equipment = record.getPopulation();
+          assert.ok(Math.abs(equipment.getValue() - 100000) < 0.0001);
+          assert.ok(equipment.getUnits() === "units");
+        },
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 2, 0, "test", "test");
+          const equipment = record.getPopulation();
+          assert.ok(Math.abs(equipment.getValue() - 190000) < 0.0001);
+          assert.ok(equipment.getUnits() === "units");
+        },
+      ],
+    );
+
+    buildTest(
+      "handles multiple emissions",
+      "/test/qta/multiple.qta", [
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 1, 0, "test", "a");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 500) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 1, 0, "test", "b");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 1000) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+      ],
+    );
   });
 }
 
