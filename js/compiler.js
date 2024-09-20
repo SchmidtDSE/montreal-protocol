@@ -59,6 +59,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  visitSimpleExpression(ctx) {
+    const self = this;
+    return ctx.getChild(0).accept(self);
+  }
+
   visitConditionExpression(ctx) {
     const self = this;
 
@@ -359,6 +364,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     }
 
     const appCommands = appChildren.map((x) => x.accept(self));
+    console.log(appCommands);
     const execute = (engine) => {
       scopeSetter(engine, name)
       appCommands.forEach((command) => command(engine));
@@ -613,8 +619,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   buildSimulate(ctx, stanzas, futureNumTrials) {
     const self = this;
     const name = ctx.name.getText();
-    const startFuture = ctx.start.accept(self)[0];
-    const endFuture = ctx.end.accept(self)[0];
+    const startFuture = ctx.start.accept(self);
+    const endFuture = ctx.end.accept(self);
 
     return (engine) => {
       const start = startFuture(engine);
@@ -676,12 +682,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     }
 
     const simulationsStanza = stanzasByName.get("simulations");
-    const simulationExecutables = simulationsStanza["execute"]
+    const simulationExecutables = simulationsStanza["executable"]
     const simulationFutures = simulationsStanza["simulations"];
     
     const execute = () => {
+      const bootstrapEngine = new Engine(1, 1);
+      simulationExecutables.forEach((x) => x(bootstrapEngine));
       const simulations = simulationFutures.map((simulationFuture) => {
-        const bootstrapEngine = new Engine(1, 1);
         return simulationFuture(bootstrapEngine);
       });
       const results = simulations.map((simulation) => {
@@ -707,6 +714,16 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
 
     return execute;
+  }
+
+  visitGlobalStatement(ctx) {
+    const self = this;
+    return ctx.getChild(0).accept(self);
+  }
+  
+  visitSubstanceStatement(ctx) {
+    const self = this;
+    return ctx.getChild(0).accept(self);
   }
 
   _getStringWithoutQuotes(target) {
