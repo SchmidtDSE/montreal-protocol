@@ -4,9 +4,8 @@
  * @license BSD, see LICENSE.md.
  */
 
-import {
-  EngineNumber,
-} from "engine_number"; 
+import {  EngineNumber } from "engine_number"; 
+import { Engine } from "./engine";
 
 const toolkit = QubecTalk.getToolkit();
 
@@ -308,6 +307,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     if (ctx.getChildCount() > 0) {
       throw "About stanza should be empty except for comments.";
     }
+    return {name: "about"}
   }
 
   visitDefaultStanza(ctx) {
@@ -353,12 +353,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
       appChildren.push(ctx.getChild(i + 2));
     }
 
-    const appCommands = appChildren.map((x) => x.accept(self));
-    const execute = (engine) => {
-      engine.setStanza("simulations");
-      appCommands.forEach((command) => command(engine));
-    };
-    return {name: "simulations", executable: execute};
+    const simulations = appChildren.map((x) => x.accept(self));
+    return {name: "simulations", "simulations": simulations};
   }
 
   buildDef(ctx, scopeSetter) {
@@ -623,7 +619,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
-  buildSimulate(ctx, stanzas, numTrials) {
+  buildSimulate(ctx, stanzas, futureNumTrials) {
     const self = this;
     const name = ctx.name.text;
     const startFuture = ctx.start.accept(self);
@@ -632,31 +628,93 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return (engine) => {
       const start = startFuture(engine);
       const end = endFuture(engine);
-      return {name: name, };
+      const numTrials = futureNumTrials(engine);
+      return {name: name, stanzas: stanzas, trials: numTrials, start: start, end: end};
     };
   }
 
   visitBaseSimulation(ctx) {
     const self = this;
-    return self.buildSimulate(ctx, ["default"], 1);
+    return self.buildSimulate(ctx, ["default"], (x) => 1);
   }
   
   visitPolicySim(ctx) {
     const self = this;
     const numPolicies = Math.ceil((ctx.getChildCount() - 8) / 2);
-    return self.buildSimulate(ctx, ["default"], 1);
+    
+    const policies = [];
+    for (let i = 0; i < numPolicies; i++) {
+      policies.push(ctx.getChild(i * 2 + 3).accept(self));
+    }
+    
+    return self.buildSimulate(ctx, policies, (x) => 1);
   }
   
   visitBaseSimulationTrials(ctx) {
     const self = this;
+    const futureNumTrials = ctx.trials.accept(self);
+    return self.buildSimulate(ctx, ["default"], futureNumTrials);
   }
   
   visitPolicySimTrials(ctx) {
     const self = this;
+    const numPolicies = Math.ceil((ctx.getChildCount() - 11) / 2);
+    const futureNumTrials = ctx.trials.accept(self);
+
+    const policies = [];
+    for (let i = 0; i < numPolicies; i++) {
+      policies.push(ctx.getChild(i * 2 + 3).accept(self));
+    }
+
+    return self.buildSimulate(ctx, policies, futureNumTrials);
   }
   
   visitProgram(ctx) {
     const self = this;
+
+    const stanzasByName = new Map();
+    const numStanzas = ctx.getChildCount();
+
+    for(let i = 0; i < numStanzas; i++) {
+      const newStanza = ctx.getChild(i).accept(self);
+      stanzasByName.set(newStanza.name, newStanza);
+    }
+
+    if(!stanzasByName.has("simulations")) {
+      return;
+    }
+
+    const simulationsStanza = stanzasByName.get("simulations");
+    const simulationFutures = simulationsStanza["simulations"];
+    
+    const execute = () => {
+      const simulations = simulationFutures.map((simulationFuture) => {
+        const bootstrapEngine = new Engine(1, 1);
+        return simulationFuture(bootstrapEngine);
+      });
+      const results = simulations.map((simulation) => {
+        const runSimulation = () => {
+          const engine = new Engine(simulation.start, simulation.end);
+          const stanzas = simulation.stanzas;
+          stanzas.forEach((stanzaName) => {
+            const stanzaDetails = stanzasByName.get(stanzaName);
+            const stanzaExecutable = stanzaDetails.executable;
+            stanzaExecutable(engine);
+          });
+          return engine.getResults();
+        };
+
+        const trialResults = [];
+        for (let i = 0; i < simulation.trials; i++) {
+          trialResults.push(runSimulation());
+        }
+
+        return new SimulationResult(simulation.name, trialResults);
+      });
+      return results;
+    };
+
+    return execute;
   }
 
   _getStringWithoutQuotes(target) {
@@ -664,7 +722,28 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return target.substring(1, target.length - 1);
   }
 
-}visitSetAllYears
+}
+
+
+class SimulationResult {
+
+  constructor(name, trialResults) {
+    const self = this;
+    self._name = name;
+    self._trialResults = trialResults;
+  }
+
+  getName() {
+    const self = this;
+    return self._name;
+  }
+
+  getTrialResults() {
+    const self = this;
+    return self._trialResults;
+  }
+
+}
 
 
 /**

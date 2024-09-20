@@ -11,6 +11,58 @@ import {
 } from "engine_state";
 
 
+class EngineResult {
+
+  constructor(application, substance, year, manufactureValue, importValue, emissionsValue,
+    populationValue) {
+    const self = this;
+    self._application = application;
+    self._substance = substance;
+    self._year = year;
+    self._manufactureValue = manufactureValue;
+    self._importValue = importValue;
+    self._emissionsValue = emissionsValue;
+    self._populationValue = populationValue;
+  }
+
+  getApplication() {
+    const self = this;
+    return self._application;
+  }
+
+  getSubstance() {
+    const self = this;
+    return self._substance;
+  }
+  
+  getYear() {
+    const self = this;
+    return self._year
+  }
+  
+  getManufacture() {
+    const self = this;
+    return self._manufactureValue
+  }
+  
+  getImport() {
+    const self = this;
+    return self._importValue
+  }
+  
+  getEmissions() {
+    const self = this;
+    return self._emissionsValue
+  }
+  
+  getPopulation() {
+    const self = this;
+    return self._populationValue
+  }
+
+}
+
+
 /**
  * Facade which runs engine mechanics.
  */
@@ -163,7 +215,7 @@ class Engine {
 
   getStream(name, scope, conversion) {
     const self = this;
-    const scopeEffective = scope === undefined ? self._scope : scope;
+    const scopeEffective = scope === undefined || scope === null ? self._scope : scope;
     const application = scopeEffective.getApplication();
     const substance = scopeEffective.getSubstance();
     const value = self._streamKeeper.getStream(application, substance, name);
@@ -389,6 +441,32 @@ class Engine {
 
     const destinationScope = self._scope.getWithSubstance(destinationSubstance);
     self.changeStream(stream, amount, null, destinationScope);
+  }
+
+  getResults() {
+    const self = this;
+    
+    const substances = self._streamKeeper.getRegisteredSubstances();
+    
+    return substances.map((substanceId) => {
+      const application = substanceId.getApplication();
+      const substance = substanceId.getSubstance();
+      const year = self._currentYear;
+      const manufactureValue = self._streamKeeper.getStream(application, substance, "manufacture");
+      const importValue = self._streamKeeper.getStream(application, substance, "import");
+      const emissionsValue = self._streamKeeper.getStream(application, substance, "emissions");
+      const populationValue = self._streamKeeper.getStream(application, substance, "equipment");
+      
+      return new EngineResult(
+        application,
+        substance,
+        year,
+        manufactureValue,
+        importValue,
+        emissionsValue,
+        populationValue,
+      );
+    });
   }
 
   _createUnitConverterWithTotal(stream) {

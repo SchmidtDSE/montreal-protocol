@@ -504,12 +504,44 @@ class StreamParameterization {
   }
 }
 
+
+class SubstanceInApplicationId {
+
+  constructor(application, substance) {
+    const self = this;
+    self._application = application;
+    self._substance = substance;
+  }
+
+  getApplication() {
+    const self = this;
+    return self._application;
+  }
+
+  getSubstance() {
+    const self = this;
+    return self._substance;
+  }
+
+}
+
+
 class StreamKeeper {
   constructor(unitConverter) {
     const self = this;
     self._substances = new Map();
     self._streams = new Map();
     self._unitConverter = unitConverter;
+  }
+
+  getRegisteredSubstances() {
+    const self = this;
+    const keys = Array.of(self._substances.keys());
+    const keyComponents = keys.map((x) => x.split("\t"));
+    const substanceIds = keyComponents.map((x) => {
+      return new SubstanceInApplicationId(x[0], x[1]);
+    });
+    return substanceIds;
   }
 
   hasSubstance(application, substance) {
