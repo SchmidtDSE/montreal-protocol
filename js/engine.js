@@ -90,7 +90,7 @@ class Engine {
 
   getEndYear() {
     const self = this;
-    return self._startYear;
+    return self._endYear;
   }
 
   /**

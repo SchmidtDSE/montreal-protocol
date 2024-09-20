@@ -490,8 +490,7 @@ class ConverterStateGetter {
 
   getYearsElapsed() {
     const self = this;
-    const numYears = self._engine.getVariable("yearsElapsed") > 0 ? 1 : 0;
-    return new EngineNumber(numYears, "year");
+    return new EngineNumber(1, "year");
   }
 
   getEmissions() {

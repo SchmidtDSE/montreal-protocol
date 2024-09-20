@@ -176,7 +176,7 @@ function buildEngineTests() {
       engine.changeStream(
         "manufacture",
         new EngineNumber(10, "% / year"),
-        new YearMatcher(null, null),
+        new YearMatcher(2, null),
       );
 
       const count1 = engine.getStream("manufacture");
