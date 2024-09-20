@@ -84,7 +84,7 @@ function buildCompilerTests() {
       "interprets a change command",
       "/test/qta/change.qta", [
         (result, assert) => {
-          const record = getResult(result, BAU_NAME, 1, 0, "test", "test");
+          const record = getResult(result, BAU_NAME, 2, 0, "test", "test");
           const manufacture = record.getManufacture();
           assert.ok(Math.abs(manufacture.getValue() - 110000) < 0.0001);
           assert.ok(manufacture.getUnits() === "kg");
@@ -92,7 +92,6 @@ function buildCompilerTests() {
         (result, assert) => {
           const record = getResult(result, BAU_NAME, 2, 0, "test", "test");
           const emissions = record.getEmissions();
-          console.log(emissions);
           assert.ok(Math.abs(emissions.getValue() - 550) < 0.0001);
           assert.ok(emissions.getUnits() === "tCO2e");
         },

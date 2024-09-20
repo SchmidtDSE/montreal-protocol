@@ -6,7 +6,7 @@
 
 import {  EngineNumber } from "engine_number"; 
 import { Engine } from "engine";
-import { YearMatcher } from "./engine_state";
+import { YearMatcher } from "engine_state";
 
 const toolkit = QubecTalk.getToolkit();
 
@@ -403,7 +403,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return (engine) => {
       const value = valueFuture(engine);
       const duration = durationFuture(engine);
-      engine.cap(streamName, value, duration);
+      callback(engine, streamName, value, duration);
     };
   }
 
@@ -430,7 +430,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   buildChange(ctx, durationFuture) {
     const self = this;
     return self.buildStreamMod(
-      (engine, stream, value, duration) => engine.change(stream, value, duration),
+      (engine, stream, value, duration) => engine.changeStream(stream, value, duration),
       ctx,
       durationFuture,
     );

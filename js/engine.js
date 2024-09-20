@@ -406,7 +406,6 @@ class Engine {
 
     const convertedDelta = unitConverter.convert(amount, currentValue.getUnits());
     const newAmount = currentValue.getValue() + convertedDelta.getValue();
-    console.log(currentValue, convertedDelta, amount);
     const outputWithUnits = new EngineNumber(newAmount, currentValue.getUnits());
     self.setStream(stream, outputWithUnits, null, scope);
   }
