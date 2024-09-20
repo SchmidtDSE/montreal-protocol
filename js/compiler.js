@@ -6,6 +6,7 @@
 
 import {  EngineNumber } from "engine_number"; 
 import { Engine } from "engine";
+import { YearMatcher } from "./engine_state";
 
 const toolkit = QubecTalk.getToolkit();
 
@@ -251,6 +252,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   buildDuring(minYearMaybe, maxYearMaybe) {
     const self = this;
+    return (engine) => {
+      const minYear = minYearMaybe === null ? null : minYearMaybe(engine);
+      const maxYear = maxYearMaybe === null ? null : maxYearMaybe(engine);
+      return new YearMatcher(minYear, maxYear);
+    };
   }
   
   visitDuringSingleYear(ctx) {
@@ -410,15 +416,6 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     );
   }
 
-  buildChange(ctx, durationFuture) {
-    const self = this;
-    return self.buildStreamMod(
-      (engine, stream, value, duration) => engine.change(stream, value, duration),
-      ctx,
-      durationFuture,
-    );
-  }
-
   visitCapAllYears(ctx) {
     const self = this;
     return self.buildCap(ctx, (engine) => null);
@@ -428,6 +425,15 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     const self = this;
     const durationFuture = ctx.duration.accept(self);
     return self.buildCap(ctx, durationFuture);
+  }
+
+  buildChange(ctx, durationFuture) {
+    const self = this;
+    return self.buildStreamMod(
+      (engine, stream, value, duration) => engine.change(stream, value, duration),
+      ctx,
+      durationFuture,
+    );
   }
 
   visitChangeAllYears(ctx) {
