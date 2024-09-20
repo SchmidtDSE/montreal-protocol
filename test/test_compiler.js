@@ -22,7 +22,7 @@ function buildCompilerTests() {
       assert.ok(compiler !== undefined);
     });
 
-    const buildTest = (name, filepath) => {
+    const buildTest = (name, filepath, checks) => {
       QUnit.test(name, (assert) => {
         const done = assert.async();
         loadRemote(filepath).then((content) => {
@@ -34,13 +34,51 @@ function buildCompilerTests() {
 
           const program = compilerResult.getProgram();
           const programResult = program();
+
+          checks.forEach((check) => {
+            check(programResult, assert);
+          });
           
           done();
         });
       });
     };
 
-    buildTest("compiles basic script", "/test/qta/basic.qta");
+    const getResult = (results, scenario, year, trialIndex, application, substance) => {
+      const result = results.filter((x) => x.getName() === scenario)[0];
+      const trials = result.getTrialResults();
+      const trial = trials[trialIndex];
+      const trialFlat = trial.flat();
+      return trialFlat.filter((x) => x.getYear() == year)
+        .filter((x) => x.getApplication() === application)
+        .filter((x) => x.getSubstance() === substance)[0];
+    };
+
+    const BAU_NAME = "businessasusual";
+
+    buildTest(
+      "runs a basic script",
+      "/test/qta/basic.qta", [
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 1, 0, "test", "test");
+          const equipment = record.getPopulation();
+          assert.ok(Math.abs(equipment.getValue() - 20000) < 0.0001);
+          assert.ok(equipment.getUnits() === "units");
+        },
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 1, 0, "test", "test");
+          const equipment = record.getEmissions();
+          assert.ok(Math.abs(equipment.getValue() - 500) < 0.0001);
+          assert.ok(equipment.getUnits() === "tCO2e");
+        },
+        (result, assert) => {
+          const record = getResult(result, BAU_NAME, 1, 0, "test", "test");
+          const equipment = record.getManufacture();
+          assert.ok(Math.abs(equipment.getValue() - 100000) < 0.0001);
+          assert.ok(equipment.getUnits() === "kg");
+        },
+      ],
+    );
   });
 }
 

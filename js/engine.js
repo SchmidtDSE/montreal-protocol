@@ -143,12 +143,12 @@ class Engine {
   incrementYear() {
     const self = this;
 
+    if (self.getIsDone()) {
+      throw "Already completed.";
+    }
+
     self._currentYear += 1;
     self._streamKeeper.incrementYear();
-
-    if (self._currentYear > self._endYear) {
-      throw "Incremented past end year.";
-    }
   }
 
   /**
@@ -168,7 +168,7 @@ class Engine {
    */
   getIsDone() {
     const self = this;
-    return self._currentYear == self._endYear;
+    return self._currentYear > self._endYear;
   }
 
   setStream(name, value, yearMatcher, scope, propagateChanges) {
@@ -279,8 +279,8 @@ class Engine {
       const importKg = emptyStreams ? 1 : importValue.getValue();
       const manufactureKgUnit = manufactureInitialCharge.getValue();
       const importKgUnit = importInitialCharge.getValue();
-      const manufactureUnits = manufactureKg / manufactureKgUnit;
-      const importUnits = importKg / importKgUnit;
+      const manufactureUnits = manufactureKgUnit == 0 ? 0 : manufactureKg / manufactureKgUnit;
+      const importUnits = importKgUnit == 0 ? 0 : importKg / importKgUnit;
       const newSumWeighted = (manufactureKgUnit * manufactureUnits + importKgUnit * importUnits);
       const newSumWeight = manufactureUnits + importUnits;
       const pooledKgUnit = newSumWeighted / newSumWeight;
@@ -380,7 +380,7 @@ class Engine {
     self._recalcEmissions();
   }
 
-  emit(conversion, yearMatcher) {
+  emit(amount, yearMatcher) {
     const self = this;
     
     if (!self._getIsInRange(yearMatcher)) {
@@ -389,7 +389,7 @@ class Engine {
 
     const application = self._scope.getApplication();
     const substance = self._scope.getSubstance();
-    self._streamKeeper.setGhgIntensity(application, substance, conversion);
+    self._streamKeeper.setGhgIntensity(application, substance, amount);
 
     self._recalcEmissions();
   }

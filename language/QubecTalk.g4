@@ -266,7 +266,7 @@ relativeUnit: (PERCENT_);
 
 temporalUnit: (YEAR_ | YEARS_| MONTH_ | MONTHS_ | DAY_ | DAYS_);
 
-unit: (volumeUnit | relativeUnit | temporalUnit | emissionsUnit);
+unit: (volumeUnit | relativeUnit | temporalUnit);
 
 unitValue: expression unitOrRatio;
 

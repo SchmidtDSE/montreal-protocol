@@ -536,7 +536,7 @@ class StreamKeeper {
 
   getRegisteredSubstances() {
     const self = this;
-    const keys = Array.of(self._substances.keys());
+    const keys = Array.of(...self._substances.keys());
     const keyComponents = keys.map((x) => x.split("\t"));
     const substanceIds = keyComponents.map((x) => {
       return new SubstanceInApplicationId(x[0], x[1]);

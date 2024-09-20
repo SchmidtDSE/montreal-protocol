@@ -33,7 +33,7 @@ function buildEngineTests() {
     });
 
     QUnit.test("increments year", function (assert) {
-      const engine = new Engine(1, 3);
+      const engine = new Engine(1, 2);
       assert.ok(engine.getYear() == 1);
       assert.ok(!engine.getIsDone());
 

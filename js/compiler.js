@@ -364,7 +364,6 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     }
 
     const appCommands = appChildren.map((x) => x.accept(self));
-    console.log(appCommands);
     const execute = (engine) => {
       scopeSetter(engine, name)
       appCommands.forEach((command) => command(engine));
@@ -616,9 +615,31 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  visitEmitAllYears(ctx) {
+    const self = this;
+    const valueFuture = ctx.value.accept(self);
+    
+    return (engine) => {
+      const value = valueFuture(engine);
+      engine.emit(value);
+    };
+  }
+
+  visitEmitDuration(ctx) {
+    const self = this;
+    const valueFuture = ctx.value.accept(self);
+    const durationFuture = ctx.duration.accept(self);
+    
+    return (engine) => {
+      const value = valueFuture(engine);
+      const duration = durationFuture(engine);
+      engine.emit(value, duration);
+    };
+  }
+
   buildSimulate(ctx, stanzas, futureNumTrials) {
     const self = this;
-    const name = ctx.name.getText();
+    const name = self._getStringWithoutQuotes(ctx.name.getText());
     const startFuture = ctx.start.accept(self);
     const endFuture = ctx.end.accept(self);
 
@@ -694,13 +715,24 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
       const results = simulations.map((simulation) => {
         const runSimulation = () => {
           const engine = new Engine(simulation.start, simulation.end);
-          const stanzas = simulation.stanzas;
-          stanzas.forEach((stanzaName) => {
-            const stanzaDetails = stanzasByName.get(stanzaName);
-            const stanzaExecutable = stanzaDetails.executable;
-            stanzaExecutable(engine);
-          });
-          return engine.getResults();
+
+          const runYear = () => {
+            const stanzas = simulation.stanzas;
+            stanzas.forEach((stanzaName) => {
+              const stanzaDetails = stanzasByName.get(stanzaName);
+              const stanzaExecutable = stanzaDetails.executable;
+              stanzaExecutable(engine);
+            });
+            return engine.getResults();
+          };
+          
+          const yearResults = [];
+          while (!engine.getIsDone()) {
+            yearResults.push(runYear());
+            engine.incrementYear();
+          }
+
+          return yearResults;
         };
 
         const trialResults = [];
