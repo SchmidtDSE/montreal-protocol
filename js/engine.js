@@ -6,10 +6,7 @@ import {
 } from "engine_number";
 
 import {
-  YearMatcher,
-  VariableManager,
   Scope,
-  StreamParameterization,
   StreamKeeper,
 } from "engine_state";
 
@@ -32,6 +29,16 @@ class Engine {
     self._unitConverter = new UnitConverter(self._stateGetter);
     self._streamKeeper = new StreamKeeper(self._unitConverter);
     self._scope = new Scope(null, null, null);
+  }
+
+  getStartYear() {
+    const self = this;
+    return self._startYear;
+  }
+
+  getEndYear() {
+    const self = this;
+    return self._startYear;
   }
 
   /**
@@ -154,12 +161,18 @@ class Engine {
     }
   }
 
-  getStream(name, scope) {
+  getStream(name, scope, conversion) {
     const self = this;
     const scopeEffective = scope === undefined ? self._scope : scope;
     const application = scopeEffective.getApplication();
     const substance = scopeEffective.getSubstance();
-    return self._streamKeeper.getStream(application, substance, name);
+    const value = self._streamKeeper.getStream(application, substance, name);
+
+    if (conversion === undefined || conversion === null) {
+      return value;
+    } else {
+      return self._unitConverter.convert(value, conversion);
+    }
   }
 
   defineVariable(name) {
@@ -305,7 +318,10 @@ class Engine {
     const substance = self._scope.getSubstance();
     self._streamKeeper.setRecoveryRate(application, substance, recoveryWithUnits);
     self._streamKeeper.setYieldRate(application, substance, yieldWithUnits);
-    self._streamKeeper.setDisplacementRate(application, substance, displaceLevel);
+
+    if (displaceLevel !== null && displaceLevel !== undefined) {
+      self._streamKeeper.setDisplacementRate(application, substance, displaceLevel);
+    }
 
     self._recalcSales();
     self._recalcPopulationChange();

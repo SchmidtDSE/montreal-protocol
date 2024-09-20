@@ -266,6 +266,8 @@ unitValue: expression unit  # regularUnitValue
   | expression unit DIV_ unit  # scaledUnitValue
   ;
 
+unitOrRatio: (unit | unit DIV_ unit);
+
 /**
  * -----------------
  * -- Expressions --
@@ -273,18 +275,20 @@ unitValue: expression unit  # regularUnitValue
  **/
 
 expression: number  # simpleExpression
-  | GET_ stream OF_ string  # getStreamIndirectSubstance
-  | GET_ stream OF_ string IN_ string  # getStreamIndirectSubstanceApp
+  | GET_ target=stream  # getStream
+  | GET_ target=stream AS_ conversion=unitOrRatio  # getStreamConversion
+  | GET_ target=stream OF_ rescope=string  # getStreamIndirect
+  | GET_ target=stream OF_ rescope=string AS_ conversion=unitOrRatio  # getStreamIndirectConversion
   | identifier  # simpleIdentifier
   | expression POW_ expression  # powExpression
   | expression op=(MULT_ | DIV_) expression  # multiplyExpression
   | expression op=(ADD_ | SUB_) expression  # additionExpression
-  | SAMPLE_ NORMALLY_ FROM_  MEAN_ OF_ expression STD_ OF_ expression  # drawNormalExpression
-  | SAMPLE_ UNIFORMLY_ FROM_  expression TO_ expression  # drawUniformExpression
+  | SAMPLE_ NORMALLY_ FROM_  MEAN_ OF_ mean=expression STD_ OF_ std=expression  # drawNormalExpression
+  | SAMPLE_ UNIFORMLY_ FROM_  low=expression TO_ high=expression  # drawUniformExpression
   | LPAREN_ expression RPAREN_ # parenExpression
-  | LIMIT_ operand=identifier TO_ LBRAC_ limit=expression COMMA_ RBRAC_ # limitMaxExpression
-  | LIMIT_ operand=identifier TO_ LBRAC_ COMMA_ limit=expression RBRAC_ # limitMinExpression
-  | LIMIT_ operand=identifier TO_ LBRAC_ lower=expression COMMA_ upper=expression RBRAC_ # limitBoundExpression
+  | LIMIT_ operand=expression TO_ LBRAC_ limit=expression COMMA_ RBRAC_ # limitMaxExpression
+  | LIMIT_ operand=expression TO_ LBRAC_ COMMA_ limit=expression RBRAC_ # limitMinExpression
+  | LIMIT_ operand=expression TO_ LBRAC_ lower=expression COMMA_ upper=expression RBRAC_ # limitBoundExpression
   | pos=expression op=(NEQ_ | GT_ | LT_ | EQEQ_ | LTEQ_ | GTEQ_) neg=expression  # conditionExpression
   | pos=expression IF_ cond=expression ELSE_ neg=expression  ENDIF_  # conditionalExpression
   ;
@@ -297,9 +301,7 @@ expression: number  # simpleExpression
 
 stream: (EQUIPMENT_ | EXPORT_ | IMPORT_ | MANUFACTURE_ | SALES_);
 
-identifier: stream  # identifierAsStream
-  | IDENTIFIER_  # identifierAsVar
-  ;
+identifier: IDENTIFIER_  # identifierAsVar;
 
 /**
  * ---------------
@@ -307,7 +309,7 @@ identifier: stream  # identifierAsStream
  * ---------------
  **/
 
-during: DURING_ YEAR_ expression  # duringSingleYear
+during: DURING_ YEAR_ target=expression  # duringSingleYear
   | DURING_ granularity=temporalUnit BEGINNING_  # duringStart
   | DURING_ granularity=temporalUnit lower=expression TO_ upper=expression  # duringRange
   | DURING_ granularity=temporalUnit lower=expression TO_ ONWARDS_  # duringWithMin
@@ -341,12 +343,12 @@ substanceMod: MODIFY_ SUBSTANCE_ name=string (substanceStatement | globalStateme
  * ----------------
  **/
 
-capStatement: CAP_ target=identifier TO_ value=unitValue  # capAllYears
-  | CAP_ target=identifier TO_ value=unitValue duration=during  # capDuration
+capStatement: CAP_ target=stream TO_ value=unitValue  # capAllYears
+  | CAP_ target=stream TO_ value=unitValue duration=during  # capDuration
   ;
 
-changeStatement: CHANGE_ target=identifier BY_ value=unitValue  # changeAllYears
-  | CHANGE_ target=identifier BY_ value=unitValue duration=during  # changeDuration
+changeStatement: CHANGE_ target=stream BY_ value=unitValue  # changeAllYears
+  | CHANGE_ target=stream BY_ value=unitValue duration=during  # changeDuration
   ;
 
 defineVarStatement: DEFINE_ target=identifier AS_ value=expression;
@@ -355,8 +357,8 @@ emitStatement: EMIT_ value=unitValue  # emitAllYears
   | EMIT_ value=unitValue duration=during  # emitDuration
   ;
 
-initialChageStatement: INITIAL_ CHARGE_ WITH_ value=expression  # initialChargeAllYears
-  | INITIAL_ CHARGE_ WITH_ value=expression duration=during  # initialChargeDuration
+initialChageStatement: INITIAL_ CHARGE_ WITH_ value=unitValue FOR_ target=stream # initialChargeAllYears
+  | INITIAL_ CHARGE_ WITH_ value=unitValue FOR_ target=stream duration=during  # initialChargeDuration
   ;
 
 rechargeStatement: RECHARGE_ population=unitValue WITH_ volume=unitValue  # rechargeAllYears
@@ -365,27 +367,26 @@ rechargeStatement: RECHARGE_ population=unitValue WITH_ volume=unitValue  # rech
 
 recycleStatement: RECOVER_ volume=unitValue WITH_ yield=unitValue REUSE_  # recoverAllYears
   | RECOVER_ valume=unitValue WITH_ yield=unitValue REUSE_ duration=during  # recoverDuration
-  | RECOVER_ valume=unitValue WITH_ yield=unitValue REUSE_ DISPLACING_ expression  # recoverTarget
-  | RECOVER_ valume=unitValue WITH_ yield=unitValue REUSE_ DISPLACING_ expression duration=during  # recoverTargetDuration
+  | RECOVER_ volume=unitValue WITH_ yield=unitValue REUSE_ DISPLACING_ displacement=unitValue  # recoverDisplacementAllYears
+  | RECOVER_ valume=unitValue WITH_ yield=unitValue REUSE_ DISPLACING_ displacement=unitValue duration=during  # recoverDisplacementDuration
   ;
 
-replaceStatement: REPLACE_ volume=unitValue OF_ target=identifier WITH_ destination=string  # replaceAllYears
-  | REPLACE_ volume=unitValue OF_ target=identifier WITH_ destination=string duration=during  # replaceDuration
+replaceStatement: REPLACE_ volume=unitValue OF_ target=stream WITH_ destination=string  # replaceAllYears
+  | REPLACE_ volume=unitValue OF_ target=stream WITH_ destination=string duration=during  # replaceDuration
   ;
 
 retireStatement: RETIRE_ volume=unitValue  # retireAllYears
   | RETIRE_ volume=unitValue duration=during  # retireDuration
   ;
 
-setStatement: SET_ target=identifier TO_ value=expression  # setAllYears
-  | SET_ target=identifier TO_ value=expression duration=during  # setDuration
-  | SET_ target=identifier TO_ value=expression  # setIdentifierAllYears
-  | SET_ target=identifier TO_ value=expression duration=during  # setIdentifierDuration
+setStatement: SET_ target=stream TO_ value=unitValue  # setAllYears
+  | SET_ target=stream TO_ value=unitValue duration=during  # setDuration
   ;
 
 simulate: SIMULATE_ name=string FROM_ YEARS_ start=expression TO_ end=expression  # baseSimulation
-  | SIMULATE_ name=string USING_ policy=string FROM_ YEARS_ start=expression TO_ end=expression  # singlePolicySim
-  | SIMULATE_ name=string USING_ string (THEN_ string)+ FROM_ YEARS_ start=expression TO_ end=expression  # multiPolicySim
+  | SIMULATE_ name=string USING_ string (THEN_ string)* FROM_ YEARS_ start=expression TO_ end=expression  # policySim
+  | SIMULATE_ name=string FROM_ YEARS_ start=expression TO_ end=expression ACROSS_ trials=expression TRIALS_  # baseSimulationTrials
+  | SIMULATE_ name=string USING_ string (THEN_ string)* FROM_ YEARS_ start=expression TO_ end=expression ACROSS_ trials=expression TRIALS_  # policySimTrials
   ;
 
 /**
@@ -397,3 +398,12 @@ simulate: SIMULATE_ name=string FROM_ YEARS_ start=expression TO_ end=expression
 globalStatement: (defineVarStatement | setStatement);
 
 substanceStatement: (capStatement | changeStatement | emitStatement | initialChageStatement | rechargeStatement | recycleStatement | replaceStatement | retireStatement);
+
+/**
+ * -------------
+ * -- Program --
+ * -------------
+ **/
+
+program: stanza*;
+

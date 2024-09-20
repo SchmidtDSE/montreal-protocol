@@ -1,3 +1,6 @@
+import { Compiler } from "compiler";
+
+
 function loadRemote(path) {
   return fetch(path).then((response) => response.text());
 }
@@ -21,6 +24,11 @@ function buildCompilerTests() {
         assert.ok(content.length > 0);
         done();
       });
+    });
+
+    QUnit.test("initalizes a compiler", (assert) => {
+      const compiler = new Compiler();
+      assert.ok(compiler !== undefined);
     });
   });
 }
