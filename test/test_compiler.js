@@ -54,7 +54,7 @@ function buildCompilerTests() {
         .filter((x) => x.getSubstance() === substance)[0];
     };
 
-    const BAU_NAME = "businessasusual";
+    const BAU_NAME = "business as usual";
 
     buildTest(
       "runs a basic script",

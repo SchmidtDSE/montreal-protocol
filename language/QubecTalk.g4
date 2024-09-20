@@ -12,6 +12,8 @@ grammar QubecTalk;
  * ------------
  **/
 
+STR_: '"' ~'"'* '"';
+
 WHITE_SPACE: [ \u000B\t\r\n] -> channel(HIDDEN);
 
 COMMENT: '#' ~[\r\n]* -> channel(HIDDEN);
@@ -19,8 +21,6 @@ COMMENT: '#' ~[\r\n]* -> channel(HIDDEN);
 FLOAT_: [0-9]+ '.' [0-9]+;
 
 INTEGER_: [0-9]+;
-
-QUOTE_: '"';
 
 /**
  * ----------------------------------
@@ -258,7 +258,7 @@ IDENTIFIER_: [A-Za-z][A-Za-z0-9]*;
 
 number: (SUB_|ADD_)? (FLOAT_ | INTEGER_);
 
-string: QUOTE_ (~QUOTE_)* QUOTE_;
+string: STR_;
 
 volumeUnit: (KG_ | MT_ | TCO2E_ | UNIT_ | UNITS_);
 

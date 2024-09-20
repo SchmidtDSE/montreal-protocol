@@ -31,9 +31,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitString(ctx) {
     const self = this;
-
-    const innerString = ctx.getChild(1);
-    return (engine) => innerString;
+    return (engine) => self._getStringWithoutQuotes(ctx.getText());
   }
 
   visitUnitOrRatio(ctx) {
