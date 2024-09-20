@@ -232,7 +232,7 @@ ONWARDS_: 'onwards';
 
 PERCENT_: '%';
 
-TCO2_: 'tCO2';
+TCO2E_: 'tCO2e';
 
 UNIT_: 'unit';
 
@@ -260,17 +260,15 @@ number: (SUB_|ADD_)? (FLOAT_ | INTEGER_);
 
 string: QUOTE_ (~QUOTE_)* QUOTE_;
 
-volumeUnit: (KG_ | MT_ | TCO2_ | UNIT_ | UNITS_);
+volumeUnit: (KG_ | MT_ | TCO2E_ | UNIT_ | UNITS_);
 
 relativeUnit: (PERCENT_);
 
 temporalUnit: (YEAR_ | YEARS_| MONTH_ | MONTHS_ | DAY_ | DAYS_);
 
-unit: (volumeUnit | relativeUnit | temporalUnit);
+unit: (volumeUnit | relativeUnit | temporalUnit | emissionsUnit);
 
-unitValue: expression unit  # regularUnitValue
-  | expression unit DIV_ unit  # scaledUnitValue
-  ;
+unitValue: expression unitOrRatio;
 
 unitOrRatio: (unit | unit DIV_ unit);
 

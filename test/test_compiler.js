@@ -29,11 +29,11 @@ function buildCompilerTests() {
           assert.ok(content.length > 0);
           
           const compiler = new Compiler();
-          const result = compiler.compile(content);
-          console.log(result.getErrors());
-          assert.ok(result.getErrors().length == 0);
+          const compilerResult = compiler.compile(content);
+          assert.ok(compilerResult.getErrors().length == 0);
 
-          const program = result.getProgram();
+          const program = compilerResult.getProgram();
+          const programResult = program();
           
           done();
         });

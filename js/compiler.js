@@ -47,24 +47,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     }
   }
 
-  visitRegularUnitValue(ctx) {
+  visitUnitValue(ctx) {
     const self = this;
 
-    const unitString = ctx.getChild(1).getText();
-    const expressionFuture = ctx.getChild(0).accept(self);
-
-    return (engine) => {
-      const value = expressionFuture(engine);
-      return new EngineNumber(value, unitString);
-    };
-  }
-
-  visitScaledUnitValue(ctx) {
-    const self = this;
-
-    const numeratorString = ctx.getChild(1).getText();
-    const denominatorString = ctx.getChild(3).getText();
-    const unitString = numeratorString + " / " + denominatorString;
+    const unitString = ctx.getChild(1).accept(self);
     const expressionFuture = ctx.getChild(0).accept(self);
 
     return (engine) => {
@@ -84,7 +70,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
       ">": (a, b) => a > b,
       ">=": (a, b) => a >= b,
       "<=": (a, b) => a <= b,
-    }[ctx.op.text]
+    }[ctx.op.getText()]
     const negExpression = ctx.neg.accept(self);
 
     return (engine) => {
@@ -129,12 +115,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitAdditionExpression(ctx) {
     const self = this;
-    return self.buildAirthmeticExpression(ctx, ctx.op.text);
+    return self.buildAirthmeticExpression(ctx, ctx.op.getText());
   }
 
   visitMultiplyExpression(ctx) {
     const self = this;
-    return self.buildAirthmeticExpression(ctx, ctx.op.text);
+    return self.buildAirthmeticExpression(ctx, ctx.op.getText());
   }
 
   visitPowExpression(ctx) {
@@ -153,23 +139,23 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitGetStream(ctx) {
     const self = this;
-    return self.buildStreamGetExpression(ctx.target.text, null, null);
+    return self.buildStreamGetExpression(ctx.target.getText(), null, null);
   }
   
   visitGetStreamIndirect(ctx) {
     const self = this;
-    return self.buildStreamGetExpression(ctx.target.text, ctx.rescope.accept(self), null);
+    return self.buildStreamGetExpression(ctx.target.getText(), ctx.rescope.accept(self), null);
   }
   
   visitGetStreamConversion(ctx) {
     const self = this;
-    return self.buildStreamGetExpression(ctx.target.text, null, ctx.conversion.accept(self));
+    return self.buildStreamGetExpression(ctx.target.getText(), null, ctx.conversion.accept(self));
   }
   
   visitGetStreamIndirectSubstanceAppUnits(ctx) {
     const self = this;
     return self.buildStreamGetExpression(
-      ctx.target.text,
+      ctx.target.getText(),
       ctx.rescope.accept(self),
       ctx.conversion.accept(self),
     );
@@ -321,6 +307,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
     const appCommands = appChildren.map((x) => x.accept(self));
     const execute = (engine) => {
+      engine.setStanza("default");
       appCommands.forEach((command) => command(engine));
     };
     return {name: "default", executable: execute};
@@ -328,7 +315,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitPolicyStanza(ctx) {
     const self = this;
-    const policyName = self._getStringWithoutQuotes(ctx.name.text);
+    const policyName = self._getStringWithoutQuotes(ctx.name.getText());
     const numApplications = ctx.getChildCount() - 5;
 
     const appChildren = [];
@@ -354,12 +341,16 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     }
 
     const simulations = appChildren.map((x) => x.accept(self));
-    return {name: "simulations", "simulations": simulations};
+    return {
+      name: "simulations",
+      "executable": [(engine) => engine.setStanza("simulations")],
+      "simulations": simulations,
+    };
   }
 
   buildDef(ctx, scopeSetter) {
     const self = this;
-    const name = self._getStringWithoutQuotes(ctx.name.text);
+    const name = self._getStringWithoutQuotes(ctx.name.getText());
     const numApplications = ctx.getChildCount() - 5;
 
     const appChildren = [];
@@ -397,7 +388,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   buildStreamMod(callback, ctx, durationFuture) {
     const self = this;
-    const streamName = ctx.target.text;
+    const streamName = ctx.target.getText();
     const valueFuture = ctx.value.accept(self);
 
     return (engine) => {
@@ -449,7 +440,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitDefineVarStatement(ctx) {
     const self = this;
-    const identifier = ctx.target.text;
+    const identifier = ctx.target.getText();
     const valueFuture = ctx.value.accept(self);
 
     return (engine) => {
@@ -461,7 +452,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitInitialChargeAllYears(ctx) {
     const self = this;
-    const stream = ctx.target.text;
+    const stream = ctx.target.getText();
     const valueFuture = ctx.value.accept(self);
 
     return (engine) => {
@@ -472,7 +463,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   
   visitInitialChargeDuration(ctx) {
     const self = this;
-    const stream = ctx.target.text;
+    const stream = ctx.target.getText();
     const valueFuture = ctx.value.accept(self);
     const durationFuture = ctx.duration.accept(self);
 
@@ -550,8 +541,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   visitReplaceAllYears(ctx) {
     const self = this;
     const volumeFuture = ctx.volume.accept(self);
-    const stream = ctx.target.text;
-    const destination = self._getStringWithoutQuotes(ctx.destination.text);
+    const stream = ctx.target.getText();
+    const destination = self._getStringWithoutQuotes(ctx.destination.getText());
 
     return (engine) => {
       const volume = volumeFuture(engine);
@@ -563,8 +554,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     const self = this;
     const volumeFuture = ctx.volume.accept(self);
     const durationFuture = ctx.duration.accept(self);
-    const stream = ctx.target.text;
-    const destination = self._getStringWithoutQuotes(ctx.destination.text);
+    const stream = ctx.target.getText();
+    const destination = self._getStringWithoutQuotes(ctx.destination.getText());
 
     return (engine) => {
       const volume = volumeFuture(engine);
@@ -597,7 +588,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitSetAllYears(ctx) {
     const self = this;
-    const target = ctx.target.text;
+    const target = ctx.target.getText();
     const valueFuture = ctx.value.accept(self);
 
     return (engine) => {
@@ -608,7 +599,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   
   visitSetDuration(ctx) {
     const self = this;
-    const target = ctx.target.text;
+    const target = ctx.target.getText();
     const valueFuture = ctx.value.accept(self);
     const durationFuture = ctx.duration.accept(self);
 
@@ -621,9 +612,9 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   buildSimulate(ctx, stanzas, futureNumTrials) {
     const self = this;
-    const name = ctx.name.text;
-    const startFuture = ctx.start.accept(self);
-    const endFuture = ctx.end.accept(self);
+    const name = ctx.name.getText();
+    const startFuture = ctx.start.accept(self)[0];
+    const endFuture = ctx.end.accept(self)[0];
 
     return (engine) => {
       const start = startFuture(engine);
@@ -685,6 +676,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     }
 
     const simulationsStanza = stanzasByName.get("simulations");
+    const simulationExecutables = simulationsStanza["execute"]
     const simulationFutures = simulationsStanza["simulations"];
     
     const execute = () => {
