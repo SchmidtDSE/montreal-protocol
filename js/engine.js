@@ -229,8 +229,8 @@ class Engine {
 
   defineVariable(name) {
     const self = this;
-    if (name === "yearsElapsed") {
-      throw "Cannot override yearsElapsed.";
+    if (name === "yearsElapsed" || name === "yearAbsolute") {
+      throw "Cannot override yearsElapsed or yearAbsolute.";
     }
     self._scope.defineVariable(name);
   }
@@ -239,14 +239,17 @@ class Engine {
     const self = this;
     if (name === "yearsElapsed") {
       return self._currentYear - self._startYear;
+    } else if (name === "yearAbsolute") {
+      return self._currentYear;
+    } else {
+      return self._scope.getVariable(name);
     }
-    return self._scope.getVariable(name);
   }
 
   setVariable(name, value) {
     const self = this;
-    if (name === "yearsElapsed") {
-      throw "Cannot set yearsElapsed.";
+    if (name === "yearsElapsed" || name === "yearAbsolute") {
+      throw "Cannot set yearsElapsed or yearAbsolute.";
     }
     self._scope.setVariable(name, value);
   }

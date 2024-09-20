@@ -119,12 +119,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitAdditionExpression(ctx) {
     const self = this;
-    return self.buildAirthmeticExpression(ctx, ctx.op.getText());
+    return self.buildAirthmeticExpression(ctx, ctx.op.text);
   }
 
   visitMultiplyExpression(ctx) {
     const self = this;
-    return self.buildAirthmeticExpression(ctx, ctx.op.getText());
+    return self.buildAirthmeticExpression(ctx, ctx.op.text);
   }
 
   visitPowExpression(ctx) {
@@ -301,9 +301,6 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitAboutStanza(ctx) {
     const self = this;
-    if (ctx.getChildCount() > 0) {
-      throw "About stanza should be empty except for comments.";
-    }
     return {name: "about"}
   }
 

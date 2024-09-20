@@ -235,7 +235,6 @@ function buildCompilerTests() {
         (result, assert) => {
           const record = getResult(result, "business as usual", 1, 0, "test", "test");
           const emissions = record.getEmissions();
-          console.log(emissions);
           assert.ok(emissions.getValue() >= 300);
           assert.ok(emissions.getValue() <= 700);
           assert.ok(emissions.getUnits() === "tCO2e");
@@ -248,6 +247,12 @@ function buildCompilerTests() {
           assert.ok(emissions.getUnits() === "tCO2e");
         },
       ],
+    );
+
+    buildTest(
+      "runs reference",
+      "/test/qta/reference.qta",
+      [],
     );
   });
 }
