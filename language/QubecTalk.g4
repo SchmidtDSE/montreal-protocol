@@ -18,8 +18,6 @@ COMMENT: '#' ~[\r\n]* -> channel(HIDDEN);
 
 FLOAT_: [0-9]+ '.' [0-9]+;
 
-IDENTIFIER_: [A-Za-z][A-Za-z0-9]*;
-
 INTEGER_: [0-9]+;
 
 QUOTE_: '"';
@@ -162,7 +160,7 @@ GET_: 'get';
 
 IN_: 'in';
 
-INITIAL_: 'inital';
+INITIAL_: 'initial';
 
 MODIFY_: 'modify';
 
@@ -243,6 +241,14 @@ UNITS_: 'units';
 YEAR_: 'year';
 
 YEARS_: 'years';
+
+/**
+ * -----------
+ * -- Other --
+ * -----------
+ **/
+
+IDENTIFIER_: [A-Za-z][A-Za-z0-9]*;
 
 /**
  * ============
@@ -331,7 +337,7 @@ stanza: START_ ABOUT_ END_ ABOUT_  # aboutStanza
 
 applicationDef: DEFINE_ APPLICATION_ name=string (substanceDef | globalStatement)* END_ APPLICATION_;
 
-substanceDef: USES_ SUBSTANCE_ name=string (substanceStatement | globalStatement) * END_ SUBSTANCE_;
+substanceDef: USES_ SUBSTANCE_ name=string (substanceStatement | globalStatement)* END_ SUBSTANCE_;
 
 applicationMod: MODIFY_ APPLICATION_ name=string (substanceMod | globalStatement)* END_ APPLICATION_;
 
@@ -405,5 +411,5 @@ substanceStatement: (capStatement | changeStatement | emitStatement | initialCha
  * -------------
  **/
 
-program: stanza*;
+program: stanza+;
 

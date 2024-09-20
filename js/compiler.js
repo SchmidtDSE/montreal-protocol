@@ -5,7 +5,7 @@
  */
 
 import {  EngineNumber } from "engine_number"; 
-import { Engine } from "./engine";
+import { Engine } from "engine";
 
 const toolkit = QubecTalk.getToolkit();
 
@@ -516,10 +516,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
     return (engine) => {
       const volume = volumeFuture(engine);
-      const yield = yieldFuture(engine);
+      const yieldValue = yieldFuture(engine);
       const displacement = displacementFuture(engine);
       const duration = durationFuture(engine);
-      engine.recycle(volume, yield, displacement, duration);
+      engine.recycle(volume, yieldValue, displacement, duration);
     };
   }
 
@@ -758,9 +758,9 @@ class CompileResult {
    * @param errors Any errors enountered or empty list if no errors.
    */
   constructor(program, errors) {
-      const self = this;
-      self._program = program;
-      self._errors = errors;
+    const self = this;
+    self._program = program;
+    self._errors = errors;
   }
 
   /**
@@ -769,8 +769,8 @@ class CompileResult {
    * @returns The compiled program as a lambda or null if compilation failed.
    */
   getProgram() {
-      const self = this;
-      return self._program;
+    const self = this;
+    return self._program;
   }
 
   /**
@@ -779,8 +779,8 @@ class CompileResult {
    * @returns Errors or empty list if no errors.
    */
   getErrors() {
-      const self = this;
-      return self._errors;
+    const self = this;
+    return self._errors;
   }
 
 }

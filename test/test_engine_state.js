@@ -36,7 +36,7 @@ function buildEngineStateTests() {
   });
 
   QUnit.module("Scope", function () {
-    QUnit.test("initalizes", function (assert) {
+    QUnit.test("initializes", function (assert) {
       const scope = new Scope("default", "test app", "test substance");
       assert.ok(scope !== undefined);
     });

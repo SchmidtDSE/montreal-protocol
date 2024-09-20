@@ -17,19 +17,30 @@ function buildCompilerTests() {
       assert.ok(toolkit["QubecTalkVisitor"] !== undefined);
     });
 
-    QUnit.test("loads remote files", (assert) => {
-      const done = assert.async();
-
-      loadRemote("/test/qta/basic.qta").then((content) => {
-        assert.ok(content.length > 0);
-        done();
-      });
-    });
-
-    QUnit.test("initalizes a compiler", (assert) => {
+    QUnit.test("initializes a compiler", (assert) => {
       const compiler = new Compiler();
       assert.ok(compiler !== undefined);
     });
+
+    const buildTest = (name, filepath) => {
+      QUnit.test(name, (assert) => {
+        const done = assert.async();
+        loadRemote(filepath).then((content) => {
+          assert.ok(content.length > 0);
+          
+          const compiler = new Compiler();
+          const result = compiler.compile(content);
+          console.log(result.getErrors());
+          assert.ok(result.getErrors().length == 0);
+
+          const program = result.getProgram();
+          
+          done();
+        });
+      });
+    };
+
+    buildTest("compiles basic script", "/test/qta/basic.qta");
   });
 }
 
