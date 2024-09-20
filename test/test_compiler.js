@@ -33,11 +33,16 @@ function buildCompilerTests() {
           assert.ok(compilerResult.getErrors().length == 0);
 
           const program = compilerResult.getProgram();
-          const programResult = program();
+          assert.ok(compilerResult.getErrors().length == 0);
 
-          checks.forEach((check) => {
-            check(programResult, assert);
-          });
+          if (compilerResult.getErrors().length > 0) {
+            console.log(compilerResult.getErrors());
+          } else {
+            const programResult = program();
+            checks.forEach((check) => {
+              check(programResult, assert);
+            });
+          }
           
           done();
         });
@@ -147,6 +152,99 @@ function buildCompilerTests() {
           const record = getResult(result, BAU_NAME, 1, 0, "test", "b");
           const emissions = record.getEmissions();
           assert.ok(Math.abs(emissions.getValue() - 1000) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+      ],
+    );
+
+    buildTest(
+      "handles policies",
+      "/test/qta/policies.qta", [
+        (result, assert) => {
+          const record = getResult(result, "result", 1, 0, "test", "test");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 250) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+      ],
+    );
+
+    buildTest(
+      "handles recycling",
+      "/test/qta/recycling.qta", [
+        (result, assert) => {
+          const record = getResult(result, "result", 1, 0, "test", "test");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 500) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+        (result, assert) => {
+          const record = getResult(result, "result", 2, 0, "test", "test");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 437.5) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+      ],
+    );
+
+    buildTest(
+      "handles replace",
+      "/test/qta/replace.qta", [
+        (result, assert) => {
+          const record = getResult(result, "result", 1, 0, "test", "a");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 250) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+        (result, assert) => {
+          const record = getResult(result, "result", 1, 0, "test", "b");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 375) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+      ],
+    );
+
+    buildTest(
+      "combines policies",
+      "/test/qta/combination.qta", [
+        (result, assert) => {
+          const record = getResult(result, "result", 1, 0, "test", "test");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 125) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+      ],
+    );
+
+    buildTest(
+      "evaluates conditionals",
+      "/test/qta/conditional.qta", [
+        (result, assert) => {
+          const record = getResult(result, "business as usual", 1, 0, "test", "test");
+          const emissions = record.getEmissions();
+          assert.ok(Math.abs(emissions.getValue() - 250) < 0.0001);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+      ],
+    );
+
+    buildTest(
+      "runs trials",
+      "/test/qta/trials.qta", [
+        (result, assert) => {
+          const record = getResult(result, "business as usual", 1, 0, "test", "test");
+          const emissions = record.getEmissions();
+          console.log(emissions);
+          assert.ok(emissions.getValue() >= 300);
+          assert.ok(emissions.getValue() <= 700);
+          assert.ok(emissions.getUnits() === "tCO2e");
+        },
+        (result, assert) => {
+          const record = getResult(result, "business as usual", 1, 1, "test", "test");
+          const emissions = record.getEmissions();
+          assert.ok(emissions.getValue() >= 300);
+          assert.ok(emissions.getValue() <= 700);
           assert.ok(emissions.getUnits() === "tCO2e");
         },
       ],

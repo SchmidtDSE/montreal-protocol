@@ -67,14 +67,14 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     const self = this;
 
     const posExpression = ctx.pos.accept(self);
-    let opFunc = {
+    const opFunc = {
       "==": (a, b) => a == b,
       "!=": (a, b) => a != b,
       "<": (a, b) => a < b,
       ">": (a, b) => a > b,
       ">=": (a, b) => a >= b,
       "<=": (a, b) => a <= b,
-    }[ctx.op.getText()]
+    }[ctx.op.text];
     const negExpression = ctx.neg.accept(self);
 
     return (engine) => {
@@ -225,7 +225,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return (engine) => {
       const meanValue = meanFuture(engine);
       const stdValue = stdFuture(engine);
-      return d3.randomNormal(meanValue, stdValue);
+      const generator = d3.randomNormal(meanValue, stdValue);
+      return generator();
     };
   }
 
@@ -237,7 +238,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return (engine) => {
       const lowValue = lowFuture(engine);
       const highValue = highFuture(engine);
-      return d3.randomUniform(lowValue, highValue);
+      const generator = d3.randomUniform(lowValue, highValue)
+      return generator();
     };
   }
 
@@ -454,7 +456,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
     return (engine) => {
       const value = valueFuture(engine);
-      engine.defineVar(identifier);
+      engine.defineVariable(identifier);
       engine.setVariable(identifier, value);
     };
   }
@@ -510,9 +512,9 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   buildRecover(ctx, displacementFuture, durationFuture) {
-    const self = this;
+    const self = this
     const volumeFuture = ctx.volume.accept(self);
-    const yieldFuture = ctx.volume.accept(self);
+    const yieldFuture = ctx.yieldVal.accept(self);
 
     return (engine) => {
       const volume = volumeFuture(engine);
@@ -664,9 +666,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     const self = this;
     const numPolicies = Math.ceil((ctx.getChildCount() - 8) / 2);
     
-    const policies = [];
+    const policies = ["default"];
     for (let i = 0; i < numPolicies; i++) {
-      policies.push(ctx.getChild(i * 2 + 3).accept(self));
+      const rawName = ctx.getChild(i * 2 + 3).getText();
+      const nameNoQuotes = self._getStringWithoutQuotes(rawName);
+      const nameComplete = "policy " + nameNoQuotes;
+      policies.push(nameComplete);
     }
     
     return self.buildSimulate(ctx, policies, (x) => 1);
@@ -723,6 +728,9 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
           const runYear = () => {
             const stanzas = simulation.stanzas;
             stanzas.forEach((stanzaName) => {
+              if (!stanzasByName.get(stanzaName)) {
+                throw "Could not find " + stanzaName;
+              }
               const stanzaDetails = stanzasByName.get(stanzaName);
               const stanzaExecutable = stanzaDetails.executable;
               stanzaExecutable(engine);
