@@ -4,26 +4,25 @@
  * @license BSD, see LICENSE.md.
  */
 
-import {EngineNumber} from "engine_number";
-import {YearMatcher} from "engine_state";
+import { EngineNumber } from "engine_number";
+import { YearMatcher } from "engine_state";
 
 const COMMAND_COMPATIBILITIES = {
-  "change": "any",
+  change: "any",
   "define var": "none",
-  "retire": "any",
-  "setVal": "any",
-  "cap": "any",
-  "floor": "any",
-  "limit": "any",
+  retire: "any",
+  setVal: "any",
+  cap: "any",
+  floor: "any",
+  limit: "any",
   "initial charge": "definition",
-  "equals": "definition",
-  "recharge": "definition",
-  "recycle": "policy",
-  "replace": "policy",
+  equals: "definition",
+  recharge: "definition",
+  recycle: "policy",
+  replace: "policy",
 };
 
 const toolkit = QubecTalk.getToolkit();
-
 
 function indentSingle(piece, spaces) {
   if (spaces === undefined) {
@@ -38,11 +37,9 @@ function indentSingle(piece, spaces) {
   return prefix + piece;
 }
 
-
 function indent(pieces, spaces) {
   return pieces.map((piece) => indentSingle(piece, spaces));
 }
-
 
 function buildAddCode(target) {
   return (x, spaces) => {
@@ -50,11 +47,9 @@ function buildAddCode(target) {
   };
 }
 
-
 function finalizeCodePieces(target) {
   return target.join("\n");
 }
-
 
 class Program {
   constructor(applications, policies, scenarios, isCompatible) {
@@ -67,7 +62,10 @@ class Program {
 
   getSubstances() {
     const self = this;
-    return self.getApplications().map((x) => x.getSubstances()).flat();
+    return self
+      .getApplications()
+      .map((x) => x.getSubstances())
+      .flat();
   }
 
   insertSubstance(priorApplication, priorSubstanceName, substance) {
@@ -108,13 +106,17 @@ class Program {
   deleteApplication(name) {
     const self = this;
     self._applications = self._applications.filter((x) => x.getName() !== name);
-    self._policies = self._policies.filter((x) => x.getApplications()[0].getName() !== name);
+    self._policies = self._policies.filter(
+      (x) => x.getApplications()[0].getName() !== name,
+    );
     self._removeUnknownPoliciesFromScenarios();
   }
 
   renameApplication(oldName, newName) {
     const self = this;
-    const priorApplications = self._applications.filter((x) => x.getName() === oldName);
+    const priorApplications = self._applications.filter(
+      (x) => x.getName() === oldName,
+    );
     priorApplications.forEach((x) => x.rename(newName));
   }
 
@@ -184,7 +186,8 @@ class Program {
     const addCode = buildAddCode(baselinePieces);
 
     if (self.getApplications().length > 0) {
-      const applicationsCode = self.getApplications()
+      const applicationsCode = self
+        .getApplications()
         .map((x) => x.toCode(spaces + 2))
         .join("\n\n\n");
 
@@ -198,7 +201,10 @@ class Program {
     }
 
     if (self.getPolicies().length > 0) {
-      const policiesCode = self.getPolicies().map((x) => x.toCode(spaces)).join("\n\n\n\n");
+      const policiesCode = self
+        .getPolicies()
+        .map((x) => x.toCode(spaces))
+        .join("\n\n\n\n");
       addCode(policiesCode, spaces);
       addCode("", spaces);
       addCode("", spaces);
@@ -207,7 +213,8 @@ class Program {
     if (self.getScenarios().length > 0) {
       addCode("start simulations", spaces);
       addCode("", spaces);
-      const scenariosCode = self.getScenarios()
+      const scenariosCode = self
+        .getScenarios()
         .map((x) => x.toCode(2))
         .join("\n\n\n");
       addCode(scenariosCode, spaces);
@@ -231,7 +238,9 @@ class Program {
       const end = scenario.getYearEnd();
 
       const selectedPolicies = scenario.getPolicyNames();
-      const allowedPolicies = selectedPolicies.filter((x) => knownPolicies.has(x));
+      const allowedPolicies = selectedPolicies.filter((x) =>
+        knownPolicies.has(x),
+      );
 
       return new SimulationScenario(name, allowedPolicies, start, end, true);
     });
@@ -247,20 +256,25 @@ class Program {
           if (duration === null) {
             return true;
           }
-          const durationFullSpan = duration.getStart() === null && duration.getEnd() === null;
+          const durationFullSpan =
+            duration.getStart() === null && duration.getEnd() === null;
           return durationFullSpan;
         };
 
         const getInitialChargeProblematic = () => {
           const initialCharges = substance.getInitialCharges();
-          const uniqueTargets = new Set(initialCharges.map((x) => x.getTarget()));
+          const uniqueTargets = new Set(
+            initialCharges.map((x) => x.getTarget()),
+          );
           if (uniqueTargets.size != initialCharges.length) {
             return true;
           }
-          const initialChargesWithDuration = initialCharges.filter((initialCharge) => {
-            const duration = initialCharge.getDuration();
-            return !durationIsFullSpan(duration);
-          });
+          const initialChargesWithDuration = initialCharges.filter(
+            (initialCharge) => {
+              const duration = initialCharge.getDuration();
+              return !durationIsFullSpan(duration);
+            },
+          );
           if (initialChargesWithDuration.length > 0) {
             return true;
           }
@@ -304,7 +318,6 @@ class Program {
   }
 }
 
-
 class AboutStanza {
   getName() {
     const self = this;
@@ -328,7 +341,6 @@ class AboutStanza {
     return false;
   }
 }
-
 
 class DefinitionalStanza {
   constructor(name, applications, isCompatible) {
@@ -360,11 +372,15 @@ class DefinitionalStanza {
     const addCode = buildAddCode(baselinePieces);
     const isDefault = self.getName() === "default";
 
-    addCode("start " + (isDefault ? "default" : ("policy \"" + self.getName() + "\"")), spaces);
+    addCode(
+      "start " + (isDefault ? "default" : 'policy "' + self.getName() + '"'),
+      spaces,
+    );
     addCode("", spaces);
 
     if (self.getApplications().length > 0) {
-      const applicationsCode = self.getApplications()
+      const applicationsCode = self
+        .getApplications()
         .map((x) => x.toCode(spaces + 2))
         .join("\n\n\n");
       addCode(applicationsCode, 0);
@@ -376,7 +392,6 @@ class DefinitionalStanza {
     return finalizeCodePieces(baselinePieces);
   }
 }
-
 
 class SimulationScenario {
   constructor(name, policyNames, yearStart, yearEnd, isCompatible) {
@@ -419,20 +434,22 @@ class SimulationScenario {
     const baselinePieces = [];
     const addCode = buildAddCode(baselinePieces);
 
-    addCode("simulate \"" + self.getName() + "\"", spaces);
+    addCode('simulate "' + self.getName() + '"', spaces);
 
     if (self.getPolicyNames().length > 0) {
       self.getPolicyNames().forEach((x, i) => {
         const prefix = i == 0 ? "using" : "then";
-        addCode(prefix + " \"" + x + "\"", spaces + 2);
+        addCode(prefix + ' "' + x + '"', spaces + 2);
       });
     }
 
-    addCode("from years " + self.getYearStart() + " to " + self.getYearEnd(), spaces);
+    addCode(
+      "from years " + self.getYearStart() + " to " + self.getYearEnd(),
+      spaces,
+    );
     return finalizeCodePieces(baselinePieces);
   }
 }
-
 
 class SimulationStanza {
   constructor(scenarios, isCompatible) {
@@ -466,7 +483,8 @@ class SimulationStanza {
 
     if (self.getScenarios().length > 0) {
       addCode("", spaces);
-      const scenariosCode = self.getScenarios()
+      const scenariosCode = self
+        .getScenarios()
         .map((x) => x.toCode(2))
         .join("\n\n\n");
       addCode(scenariosCode, spaces);
@@ -477,7 +495,6 @@ class SimulationStanza {
     return finalizeCodePieces(baselinePieces);
   }
 }
-
 
 class Application {
   constructor(name, substances, isModification, isCompatible) {
@@ -511,7 +528,9 @@ class Application {
 
   deleteSubstance(substanceName) {
     const self = this;
-    self._substances = self._substances.filter((x) => x.getName() !== substanceName);
+    self._substances = self._substances.filter(
+      (x) => x.getName() !== substanceName,
+    );
   }
 
   getSubstance(name) {
@@ -537,11 +556,12 @@ class Application {
     const addCode = buildAddCode(baselinePieces);
 
     const prefix = self.getIsModification() ? "modify" : "define";
-    addCode(prefix + " application \"" + self.getName() + "\"", spaces);
+    addCode(prefix + ' application "' + self.getName() + '"', spaces);
 
     if (self.getSubstances().length > 0) {
       addCode("", spaces);
-      const substancesCode = self.getSubstances()
+      const substancesCode = self
+        .getSubstances()
         .map((x) => x.toCode(spaces + 2))
         .join("\n\n\n");
       addCode(substancesCode, 0);
@@ -552,7 +572,6 @@ class Application {
     return finalizeCodePieces(baselinePieces);
   }
 }
-
 
 class SubstanceBuilder {
   constructor(name, isModification) {
@@ -578,11 +597,7 @@ class SubstanceBuilder {
       self._limits,
       self._recycles,
       self._replaces,
-      [
-        self._equals,
-        self._recharge,
-        self._retire,
-      ],
+      [self._equals, self._recharge, self._retire],
       self._changes,
       self._setVals,
     ].flat();
@@ -593,9 +608,11 @@ class SubstanceBuilder {
 
     const initialChargeTargets = self._initialCharges.map((x) => x.getTarget());
     const initialChargeTargetsUnique = new Set(initialChargeTargets);
-    const initialChargesNonOverlap = initialChargeTargets.length == initialChargeTargetsUnique.size;
+    const initialChargesNonOverlap =
+      initialChargeTargets.length == initialChargeTargetsUnique.size;
 
-    const isCompatible = isCompatibleRaw && isCompatibleInterpreted && initialChargesNonOverlap;
+    const isCompatible =
+      isCompatibleRaw && isCompatibleInterpreted && initialChargesNonOverlap;
 
     return new Substance(
       self._name,
@@ -628,19 +645,20 @@ class SubstanceBuilder {
 
     const needsToMoveToMod = requiresMod && !self._isModification;
     const needsToMoveToDefinition = requiresDefinition && self._isModification;
-    const incompatiblePlace = needsToMoveToMod || needsToMoveToDefinition || noCompat;
+    const incompatiblePlace =
+      needsToMoveToMod || needsToMoveToDefinition || noCompat;
 
     const strategy = {
-      "change": (x) => self.addChange(x),
-      "retire": (x) => self.setRetire(x),
-      "setVal": (x) => self.addSetVal(x),
+      change: (x) => self.addChange(x),
+      retire: (x) => self.setRetire(x),
+      setVal: (x) => self.addSetVal(x),
       "initial charge": (x) => self.addInitialCharge(x),
-      "recharge": (x) => self.setRecharge(x),
-      "equals": (x) => self.setEquals(x),
-      "recycle": (x) => self.addRecycle(x),
-      "cap": (x) => self.addLimit(x),
-      "floor": (x) => self.addLimit(x),
-      "replace": (x) => self.addReplace(x),
+      recharge: (x) => self.setRecharge(x),
+      equals: (x) => self.setEquals(x),
+      recycle: (x) => self.addRecycle(x),
+      cap: (x) => self.addLimit(x),
+      floor: (x) => self.addLimit(x),
+      replace: (x) => self.addReplace(x),
     }[commandType];
 
     if (incompatiblePlace) {
@@ -714,10 +732,21 @@ class SubstanceBuilder {
   }
 }
 
-
 class Substance {
-  constructor(name, charges, limits, changes, equals, recharge, recycles, replaces, retire,
-    setVals, isMod, compat) {
+  constructor(
+    name,
+    charges,
+    limits,
+    changes,
+    equals,
+    recharge,
+    recycles,
+    replaces,
+    retire,
+    setVals,
+    isMod,
+    compat,
+  ) {
     const self = this;
     self._name = name;
     self._initialCharges = charges;
@@ -745,7 +774,9 @@ class Substance {
 
   getInitialCharge(stream) {
     const self = this;
-    const matching = self._initialCharges.filter((x) => x.getTarget() === stream);
+    const matching = self._initialCharges.filter(
+      (x) => x.getTarget() === stream,
+    );
     return matching.length == 0 ? null : matching[0];
   }
 
@@ -806,7 +837,7 @@ class Substance {
     const addCode = buildAddCode(baselinePieces);
 
     const prefix = self.getIsModification() ? "modify" : "uses";
-    addCode(prefix + " substance \"" + self.getName() + "\"", spaces);
+    addCode(prefix + ' substance "' + self.getName() + '"', spaces);
 
     const addIfGiven = (code) => {
       if (code === null) {
@@ -949,7 +980,7 @@ class Substance {
       const displacing = limit.getDisplacing();
       if (displacing !== null && displacing !== undefined) {
         pieces.push("displacing");
-        pieces.push("\"" + displacing + "\"");
+        pieces.push('"' + displacing + '"');
       }
 
       self._addDuration(pieces, limit);
@@ -1016,7 +1047,7 @@ class Substance {
         "of",
         replace.getSource(),
         "with",
-        "\"" + replace.getDestination() + "\"",
+        '"' + replace.getDestination() + '"',
       ];
       self._addDuration(pieces, replace);
 
@@ -1062,7 +1093,6 @@ class Substance {
   }
 }
 
-
 class Command {
   constructor(typeName, target, value, duration) {
     const self = this;
@@ -1097,7 +1127,6 @@ class Command {
     return true;
   }
 }
-
 
 class LimitCommand {
   constructor(typeName, target, value, duration, displacing) {
@@ -1140,7 +1169,6 @@ class LimitCommand {
   }
 }
 
-
 class ReplaceCommand {
   constructor(volume, source, destination, duration) {
     const self = this;
@@ -1181,7 +1209,6 @@ class ReplaceCommand {
   }
 }
 
-
 class IncompatibleCommand {
   constructor(typeName) {
     const self = this;
@@ -1198,7 +1225,6 @@ class IncompatibleCommand {
     return false;
   }
 }
-
 
 /**
  * Visitor which compiles a QubecTalk program to JS objects describing the analysis.
@@ -1466,7 +1492,9 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
 
   visitLimitCommandDisplacingAllYears(ctx) {
     const self = this;
-    const displaceTarget = self._getStringWithoutQuotes(ctx.getChild(5).getText());
+    const displaceTarget = self._getStringWithoutQuotes(
+      ctx.getChild(5).getText(),
+    );
     return self._buildLimit(ctx, null, displaceTarget);
   }
 
@@ -1479,7 +1507,9 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   visitLimitCommandDisplacingDuration(ctx) {
     const self = this;
     const duration = ctx.duration.accept(self);
-    const displaceTarget = self._getStringWithoutQuotes(ctx.getChild(5).getText());
+    const displaceTarget = self._getStringWithoutQuotes(
+      ctx.getChild(5).getText(),
+    );
     return self._buildLimit(ctx, duration, displaceTarget);
   }
 
@@ -1514,7 +1544,13 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     const self = this;
     const populationFuture = (ctx) => ctx.population.accept(self);
     const volumeFuture = (ctx) => ctx.volume.accept(self);
-    return self._buildOperation(ctx, "recharge", null, populationFuture, volumeFuture);
+    return self._buildOperation(
+      ctx,
+      "recharge",
+      null,
+      populationFuture,
+      volumeFuture,
+    );
   }
 
   visitRechargeDuration(ctx) {
@@ -1522,14 +1558,26 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     const populationFuture = (ctx) => ctx.population.accept(self);
     const volumeFuture = (ctx) => ctx.volume.accept(self);
     const duration = ctx.duration.accept(self);
-    return self._buildOperation(ctx, "recharge", duration, populationFuture, volumeFuture);
+    return self._buildOperation(
+      ctx,
+      "recharge",
+      duration,
+      populationFuture,
+      volumeFuture,
+    );
   }
 
   visitRecoverAllYears(ctx) {
     const self = this;
     const volumeFuture = (ctx) => ctx.volume.accept(self);
     const yieldFuture = (ctx) => ctx.yieldVal.accept(self);
-    return self._buildOperation(ctx, "recycle", null, volumeFuture, yieldFuture);
+    return self._buildOperation(
+      ctx,
+      "recycle",
+      null,
+      volumeFuture,
+      yieldFuture,
+    );
   }
 
   visitRecoverDuration(ctx) {
@@ -1537,7 +1585,13 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     const volumeFuture = (ctx) => ctx.volume.accept(self);
     const yieldFuture = (ctx) => ctx.yieldVal.accept(self);
     const duration = ctx.duration.accept(self);
-    return self._buildOperation(ctx, "recycle", duration, volumeFuture, yieldFuture);
+    return self._buildOperation(
+      ctx,
+      "recycle",
+      duration,
+      volumeFuture,
+      yieldFuture,
+    );
   }
 
   visitRecoverDisplacementAllYears(ctx) {
@@ -1571,7 +1625,13 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     const self = this;
     const targetFuture = (ctx) => null;
     const volumeFuture = (ctx) => ctx.volume.accept(self);
-    return self._buildOperation(ctx, "retire", null, targetFuture, volumeFuture);
+    return self._buildOperation(
+      ctx,
+      "retire",
+      null,
+      targetFuture,
+      volumeFuture,
+    );
   }
 
   visitRetireDuration(ctx) {
@@ -1579,7 +1639,13 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     const targetFuture = (ctx) => null;
     const volumeFuture = (ctx) => ctx.volume.accept(self);
     const duration = ctx.duration.accept(self);
-    return self._buildOperation(ctx, "retire", duration, targetFuture, volumeFuture);
+    return self._buildOperation(
+      ctx,
+      "retire",
+      duration,
+      targetFuture,
+      volumeFuture,
+    );
   }
 
   visitSetAllYears(ctx) {
@@ -1695,7 +1761,9 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
 
   _getChildrenCompatible(children) {
     const self = this;
-    return children.map((x) => x.getIsCompatible()).reduce((a, b) => a && b, true);
+    return children
+      .map((x) => x.getIsCompatible())
+      .reduce((a, b) => a && b, true);
   }
 
   _parseApplication(ctx, isModification) {
@@ -1734,7 +1802,9 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
       builder.addCommand(x);
     });
 
-    const isCompatibleRaw = commands.map((x) => x.getIsCompatible()).reduce((a, b) => a && b, true);
+    const isCompatibleRaw = commands
+      .map((x) => x.getIsCompatible())
+      .reduce((a, b) => a && b, true);
 
     return builder.build(isCompatibleRaw);
   }
@@ -1772,7 +1842,6 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 }
 
-
 /**
  * Structure contianing the result of attempting to translate from QubecTalk script.
  */
@@ -1809,7 +1878,6 @@ class TranslationResult {
     return self._errors;
   }
 }
-
 
 class UiTranslatorCompiler {
   compile(input) {
@@ -1857,7 +1925,6 @@ class UiTranslatorCompiler {
     return new TranslationResult(program, errors);
   }
 }
-
 
 export {
   AboutStanza,

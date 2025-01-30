@@ -1,6 +1,6 @@
-import {EngineNumber} from "engine_number";
+import { EngineNumber } from "engine_number";
 
-import {YearMatcher} from "engine_state";
+import { YearMatcher } from "engine_state";
 
 import {
   Application,
@@ -12,7 +12,6 @@ import {
   SimulationScenario,
   SubstanceBuilder,
 } from "ui_translator";
-
 
 function updateDurationSelector(dateSelector) {
   const makeVisibilityCallback = (showStart, showEnd) => {
@@ -38,7 +37,9 @@ function updateDurationSelector(dateSelector) {
   };
 
   const refreshVisibility = (dateSelector) => {
-    const currentValue = dateSelector.querySelector(".duration-type-input").value;
+    const currentValue = dateSelector.querySelector(
+      ".duration-type-input",
+    ).value;
     const strategy = strategies[currentValue];
     strategy();
   };
@@ -46,9 +47,10 @@ function updateDurationSelector(dateSelector) {
   refreshVisibility(dateSelector);
 }
 
-
 function setupDurationSelector(newDiv) {
-  const dateSelectors = Array.of(...newDiv.querySelectorAll(".duration-subcomponent"));
+  const dateSelectors = Array.of(
+    ...newDiv.querySelectorAll(".duration-subcomponent"),
+  );
   dateSelectors.forEach((dateSelector) => {
     dateSelector.addEventListener("change", (event) => {
       updateDurationSelector(dateSelector);
@@ -56,7 +58,6 @@ function setupDurationSelector(newDiv) {
     updateDurationSelector(dateSelector);
   });
 }
-
 
 function setupListButton(button, targetList, templateId, initUiCallback) {
   button.addEventListener("click", (event) => {
@@ -79,24 +80,20 @@ function setupListButton(button, targetList, templateId, initUiCallback) {
   });
 }
 
-
 function setFieldValue(selection, source, defaultValue, strategy) {
   const newValue = source === null ? null : strategy(source);
   const valueOrDefault = newValue === null ? defaultValue : newValue;
   selection.value = valueOrDefault;
 }
 
-
 function getFieldValue(selection) {
   return selection.value;
 }
 
-
 function getSanitizedFieldValue(selection) {
   const valueRaw = getFieldValue(selection);
-  return valueRaw.replaceAll("\"", "").replaceAll(",", "");
+  return valueRaw.replaceAll('"', "").replaceAll(",", "");
 }
-
 
 function setListInput(listSelection, itemTemplate, items, uiInit) {
   listSelection.innerHTML = "";
@@ -116,27 +113,31 @@ function setListInput(listSelection, itemTemplate, items, uiInit) {
   items.forEach(addItem);
 }
 
-
 function getListInput(selection, itemReadStrategy) {
-  const dialogListItems = Array.of(...selection.querySelectorAll(".dialog-list-item"));
+  const dialogListItems = Array.of(
+    ...selection.querySelectorAll(".dialog-list-item"),
+  );
   return dialogListItems.map(itemReadStrategy);
 }
 
-
-function setEngineNumberValue(valSelection, unitsSelection, source, defaultValue, strategy) {
+function setEngineNumberValue(
+  valSelection,
+  unitsSelection,
+  source,
+  defaultValue,
+  strategy,
+) {
   const newValue = source === null ? null : strategy(source);
   const valueOrDefault = newValue === null ? defaultValue : newValue;
   valSelection.value = valueOrDefault.getValue();
   unitsSelection.value = valueOrDefault.getUnits();
 }
 
-
 function getEngineNumberValue(valSelection, unitsSelection) {
   const value = valSelection.value;
   const units = unitsSelection.value;
   return new EngineNumber(value, units);
 }
-
 
 function setDuring(selection, command, defaultVal) {
   const effectiveVal = command === null ? defaultVal : command.getDuration();
@@ -174,7 +175,6 @@ function setDuring(selection, command, defaultVal) {
   updateDurationSelector(selection);
 }
 
-
 class ApplicationsListPresenter {
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
@@ -198,21 +198,23 @@ class ApplicationsListPresenter {
     const itemList = d3.select(self._root).select(".item-list");
 
     itemList.html("");
-    const newItems = itemList.selectAll("li")
+    const newItems = itemList
+      .selectAll("li")
       .data(appNames)
       .enter()
       .append("li");
 
     newItems.attr("aria-label", (x) => x);
 
-    const buttonsPane = newItems.append("div")
-      .classed("list-buttons", true);
+    const buttonsPane = newItems.append("div").classed("list-buttons", true);
 
-    newItems.append("div")
+    newItems
+      .append("div")
       .classed("list-label", true)
       .text((x) => x);
 
-    buttonsPane.append("a")
+    buttonsPane
+      .append("a")
       .attr("href", "#")
       .on("click", (event, x) => {
         event.preventDefault();
@@ -223,7 +225,8 @@ class ApplicationsListPresenter {
 
     buttonsPane.append("span").text(" | ");
 
-    buttonsPane.append("a")
+    buttonsPane
+      .append("a")
       .attr("href", "#")
       .on("click", (event, x) => {
         event.preventDefault();
@@ -258,8 +261,10 @@ class ApplicationsListPresenter {
       self._dialog.close();
       event.preventDefault();
 
-      const nameInput = self._dialog.querySelector(".edit-application-name-input");
-      const newName = nameInput.value.replaceAll("\"", "").replaceAll(",", "");
+      const nameInput = self._dialog.querySelector(
+        ".edit-application-name-input",
+      );
+      const newName = nameInput.value.replaceAll('"', "").replaceAll(",", "");
 
       const priorNames = new Set(self._getAppNames());
       const nameIsDuplicate = priorNames.has(newName);
@@ -305,7 +310,6 @@ class ApplicationsListPresenter {
   }
 }
 
-
 class ConsumptionListPresenter {
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
@@ -339,21 +343,23 @@ class ConsumptionListPresenter {
     const itemList = d3.select(self._root).select(".item-list");
 
     itemList.html("");
-    const newItems = itemList.selectAll("li")
+    const newItems = itemList
+      .selectAll("li")
       .data(consumptionNames)
       .enter()
       .append("li");
 
     newItems.attr("aria-label", (x) => x);
 
-    const buttonsPane = newItems.append("div")
-      .classed("list-buttons", true);
+    const buttonsPane = newItems.append("div").classed("list-buttons", true);
 
-    newItems.append("div")
+    newItems
+      .append("div")
       .classed("list-label", true)
       .text((x) => x);
 
-    buttonsPane.append("a")
+    buttonsPane
+      .append("a")
       .attr("href", "#")
       .on("click", (event, x) => {
         event.preventDefault();
@@ -364,7 +370,8 @@ class ConsumptionListPresenter {
 
     buttonsPane.append("span").text(" | ");
 
-    buttonsPane.append("a")
+    buttonsPane
+      .append("a")
       .attr("href", "#")
       .on("click", (event, x) => {
         event.preventDefault();
@@ -410,11 +417,21 @@ class ConsumptionListPresenter {
 
     const addLevelButton = self._root.querySelector(".add-start-button");
     const levelList = self._root.querySelector(".level-list");
-    setupListButton(addLevelButton, levelList, "set-command-template", initSetCommandUi);
+    setupListButton(
+      addLevelButton,
+      levelList,
+      "set-command-template",
+      initSetCommandUi,
+    );
 
     const addChangeButton = self._root.querySelector(".add-change-button");
     const changeList = self._root.querySelector(".change-list");
-    setupListButton(addChangeButton, changeList, "change-command-template", initChangeCommandUi);
+    setupListButton(
+      addChangeButton,
+      changeList,
+      "change-command-template",
+      initChangeCommandUi,
+    );
 
     const addLimitButton = self._root.querySelector(".add-limit-button");
     const limitList = self._root.querySelector(".limit-list");
@@ -442,21 +459,26 @@ class ConsumptionListPresenter {
 
     const getObjToShow = () => {
       if (name === null) {
-        return {"obj": null, "application": ""};
+        return { obj: null, application: "" };
       }
       const objIdentifierRegex = /\"([^\"]+)\" for \"([^\"]+)\"/;
       const match = name.match(objIdentifierRegex);
       const substance = match[1];
       const application = match[2];
-      const substanceObj = codeObj.getApplication(application).getSubstance(substance);
-      return {"obj": substanceObj, "application": application};
+      const substanceObj = codeObj
+        .getApplication(application)
+        .getSubstance(substance);
+      return { obj: substanceObj, application: application };
     };
 
     const objToShowInfo = getObjToShow();
     const objToShow = objToShowInfo["obj"];
     const applicationName = objToShowInfo["application"];
 
-    const applicationNames = self._getCodeObj().getApplications().map((x) => x.getName());
+    const applicationNames = self
+      ._getCodeObj()
+      .getApplications()
+      .map((x) => x.getName());
     const applicationSelect = self._dialog.querySelector(".application-select");
     d3.select(applicationSelect)
       .html("")
@@ -490,7 +512,9 @@ class ConsumptionListPresenter {
     );
 
     setEngineNumberValue(
-      self._dialog.querySelector(".edit-consumption-initial-charge-domestic-input"),
+      self._dialog.querySelector(
+        ".edit-consumption-initial-charge-domestic-input",
+      ),
       self._dialog.querySelector(".initial-charge-domestic-units-input"),
       objToShow,
       new EngineNumber(1, "kg / unit"),
@@ -498,7 +522,9 @@ class ConsumptionListPresenter {
     );
 
     setEngineNumberValue(
-      self._dialog.querySelector(".edit-consumption-initial-charge-import-input"),
+      self._dialog.querySelector(
+        ".edit-consumption-initial-charge-import-input",
+      ),
       self._dialog.querySelector(".initial-charge-import-units-input"),
       objToShow,
       new EngineNumber(2, "kg / unit"),
@@ -562,7 +588,7 @@ class ConsumptionListPresenter {
       const substances = x.getSubstances();
       return substances.map((substance) => {
         const substanceName = substance.getName();
-        return "\"" + substanceName + "\" for \"" + appName + "\"";
+        return '"' + substanceName + '" for "' + appName + '"';
       });
     });
     const consumptions = consumptionsNested.flat();
@@ -604,10 +630,14 @@ class ConsumptionListPresenter {
       self._dialog.querySelector(".edit-consumption-consumption-input"),
       self._dialog.querySelector(".edit-consumption-consumption-units-input"),
     );
-    substanceBuilder.addCommand(new Command("equals", null, consumptionValue, null));
+    substanceBuilder.addCommand(
+      new Command("equals", null, consumptionValue, null),
+    );
 
     const initialChargeDomestic = getEngineNumberValue(
-      self._dialog.querySelector(".edit-consumption-initial-charge-domestic-input"),
+      self._dialog.querySelector(
+        ".edit-consumption-initial-charge-domestic-input",
+      ),
       self._dialog.querySelector(".initial-charge-domestic-units-input"),
     );
     const initialChargeDomesticCommand = new Command(
@@ -619,7 +649,9 @@ class ConsumptionListPresenter {
     substanceBuilder.addCommand(initialChargeDomesticCommand);
 
     const initialChargeImport = getEngineNumberValue(
-      self._dialog.querySelector(".edit-consumption-initial-charge-import-input"),
+      self._dialog.querySelector(
+        ".edit-consumption-initial-charge-import-input",
+      ),
       self._dialog.querySelector(".initial-charge-import-units-input"),
     );
     const initialChargeImportCommand = new Command(
@@ -634,12 +666,7 @@ class ConsumptionListPresenter {
       self._dialog.querySelector(".edit-consumption-retirement-input"),
       self._dialog.querySelector(".retirement-units-input"),
     );
-    const retireCommand = new Command(
-      "retire",
-      null,
-      retirement,
-      null,
-    );
+    const retireCommand = new Command("retire", null, retirement, null);
     substanceBuilder.addCommand(retireCommand);
 
     const rechargePopulation = getEngineNumberValue(
@@ -682,7 +709,6 @@ class ConsumptionListPresenter {
   }
 }
 
-
 class PolicyListPresenter {
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
@@ -716,21 +742,23 @@ class PolicyListPresenter {
     const itemList = d3.select(self._root).select(".item-list");
 
     itemList.html("");
-    const newItems = itemList.selectAll("li")
+    const newItems = itemList
+      .selectAll("li")
       .data(policyNames)
       .enter()
       .append("li");
 
     newItems.attr("aria-label", (x) => x);
 
-    const buttonsPane = newItems.append("div")
-      .classed("list-buttons", true);
+    const buttonsPane = newItems.append("div").classed("list-buttons", true);
 
-    newItems.append("div")
+    newItems
+      .append("div")
       .classed("list-label", true)
       .text((x) => x);
 
-    buttonsPane.append("a")
+    buttonsPane
+      .append("a")
       .attr("href", "#")
       .on("click", (event, x) => {
         event.preventDefault();
@@ -741,7 +769,8 @@ class PolicyListPresenter {
 
     buttonsPane.append("span").text(" | ");
 
-    buttonsPane.append("a")
+    buttonsPane
+      .append("a")
       .attr("href", "#")
       .on("click", (event, x) => {
         event.preventDefault();
@@ -781,7 +810,9 @@ class PolicyListPresenter {
       event.preventDefault();
     });
 
-    const addRecyclingButton = self._root.querySelector(".add-recycling-button");
+    const addRecyclingButton = self._root.querySelector(
+      ".add-recycling-button",
+    );
     const recyclingList = self._root.querySelector(".recycling-list");
     setupListButton(
       addRecyclingButton,
@@ -837,10 +868,16 @@ class PolicyListPresenter {
     const isArrayEmpty = (x) => x === null || x.length == 0;
 
     const targetPolicy = name === null ? null : codeObj.getPolicy(name);
-    const targetApplications = targetPolicy === null ? null : targetPolicy.getApplications();
-    const targetApplication = isArrayEmpty(targetApplications) ? null : targetApplications[0];
-    const targetSubstances = targetApplication === null ? null : targetApplication.getSubstances();
-    const targetSubstance = isArrayEmpty(targetSubstances) ? null : targetSubstances[0];
+    const targetApplications =
+      targetPolicy === null ? null : targetPolicy.getApplications();
+    const targetApplication = isArrayEmpty(targetApplications)
+      ? null
+      : targetApplications[0];
+    const targetSubstances =
+      targetApplication === null ? null : targetApplication.getSubstances();
+    const targetSubstance = isArrayEmpty(targetSubstances)
+      ? null
+      : targetSubstances[0];
 
     if (name === null) {
       self._dialog.querySelector(".action-title").innerHTML = "Add";
@@ -857,7 +894,8 @@ class PolicyListPresenter {
 
     const applicationNames = codeObj.getApplications().map((x) => x.getName());
     const applicationSelect = self._dialog.querySelector(".application-select");
-    const targetAppName = targetApplication === null ? "" : targetApplication.getName();
+    const targetAppName =
+      targetApplication === null ? "" : targetApplication.getName();
     d3.select(applicationSelect)
       .html("")
       .selectAll("option")
@@ -870,10 +908,14 @@ class PolicyListPresenter {
 
     const substances = codeObj.getSubstances();
     const substanceNames = substances.map((x) => x.getName());
-    const substanceSelect = d3.select(self._dialog.querySelector(".substances-select"));
-    const substanceName = targetSubstance === null ? "" : targetSubstance.getName();
+    const substanceSelect = d3.select(
+      self._dialog.querySelector(".substances-select"),
+    );
+    const substanceName =
+      targetSubstance === null ? "" : targetSubstance.getName();
     substanceSelect.html("");
-    substanceSelect.selectAll("option")
+    substanceSelect
+      .selectAll("option")
       .data(substanceNames)
       .enter()
       .append("option")
@@ -936,7 +978,9 @@ class PolicyListPresenter {
       self._dialog.querySelector(".edit-policy-application-input"),
     );
 
-    const substanceName = getFieldValue(self._dialog.querySelector(".edit-policy-substance-input"));
+    const substanceName = getFieldValue(
+      self._dialog.querySelector(".edit-policy-substance-input"),
+    );
     const builder = new SubstanceBuilder(substanceName, true);
 
     const recycles = getListInput(
@@ -970,8 +1014,18 @@ class PolicyListPresenter {
     limits.forEach((command) => builder.addCommand(command));
 
     const substance = builder.build(true);
-    const application = new Application(applicationName, [substance], true, true);
-    const policy = new DefinitionalStanza(policyName, [application], true, true);
+    const application = new Application(
+      applicationName,
+      [substance],
+      true,
+      true,
+    );
+    const policy = new DefinitionalStanza(
+      policyName,
+      [application],
+      true,
+      true,
+    );
 
     return policy;
   }
@@ -984,7 +1038,6 @@ class PolicyListPresenter {
     self._onCodeObjUpdate(codeObj);
   }
 }
-
 
 class SimulationListPresenter {
   constructor(root, getCodeObj, onCodeObjUpdate) {
@@ -1019,21 +1072,23 @@ class SimulationListPresenter {
     const itemList = d3.select(self._root).select(".item-list");
 
     itemList.html("");
-    const newItems = itemList.selectAll("li")
+    const newItems = itemList
+      .selectAll("li")
       .data(simulationNames)
       .enter()
       .append("li");
 
     newItems.attr("aria-label", (x) => x);
 
-    const buttonsPane = newItems.append("div")
-      .classed("list-buttons", true);
+    const buttonsPane = newItems.append("div").classed("list-buttons", true);
 
-    newItems.append("div")
+    newItems
+      .append("div")
       .classed("list-label", true)
       .text((x) => x);
 
-    buttonsPane.append("a")
+    buttonsPane
+      .append("a")
       .attr("href", "#")
       .on("click", (event, x) => {
         event.preventDefault();
@@ -1044,7 +1099,8 @@ class SimulationListPresenter {
 
     buttonsPane.append("span").text(" | ");
 
-    buttonsPane.append("a")
+    buttonsPane
+      .append("a")
       .attr("href", "#")
       .on("click", (event, x) => {
         event.preventDefault();
@@ -1093,9 +1149,11 @@ class SimulationListPresenter {
       self._dialog.querySelector(".action-title").innerHTML = "Edit";
     }
 
-    const scenario = name === null ? null : self._getCodeObj().getScenario(name);
+    const scenario =
+      name === null ? null : self._getCodeObj().getScenario(name);
 
-    const policiesSelectedRaw = scenario === null ? [] : scenario.getPolicyNames();
+    const policiesSelectedRaw =
+      scenario === null ? [] : scenario.getPolicyNames();
     const policiesSelected = new Set(policiesSelectedRaw);
 
     setFieldValue(
@@ -1119,8 +1177,12 @@ class SimulationListPresenter {
       (x) => x.getYearEnd(),
     );
 
-    const policyNames = self._getCodeObj().getPolicies().map((x) => x.getName());
-    const newLabels = d3.select(self._dialog.querySelector(".policy-sim-list"))
+    const policyNames = self
+      ._getCodeObj()
+      .getPolicies()
+      .map((x) => x.getName());
+    const newLabels = d3
+      .select(self._dialog.querySelector(".policy-sim-list"))
       .html("")
       .selectAll(".policy-check-label")
       .data(policyNames)
@@ -1129,14 +1191,14 @@ class SimulationListPresenter {
       .classed("policy-check-label", true)
       .append("label");
 
-    newLabels.append("input")
+    newLabels
+      .append("input")
       .attr("type", "checkbox")
       .classed("policy-check", true)
       .attr("value", (x) => x)
       .property("checked", (x) => policiesSelected.has(x));
 
-    newLabels.append("span")
-      .text((x) => x);
+    newLabels.append("span").text((x) => x);
 
     self._dialog.showModal();
   }
@@ -1162,10 +1224,16 @@ class SimulationListPresenter {
     const scenarioName = getSanitizedFieldValue(
       self._dialog.querySelector(".edit-simulation-name-input"),
     );
-    const start = getFieldValue(self._dialog.querySelector(".edit-simulation-start-input"));
-    const end = getFieldValue(self._dialog.querySelector(".edit-simulation-end-input"));
+    const start = getFieldValue(
+      self._dialog.querySelector(".edit-simulation-start-input"),
+    );
+    const end = getFieldValue(
+      self._dialog.querySelector(".edit-simulation-end-input"),
+    );
 
-    const policyChecks = Array.of(...self._dialog.querySelectorAll(".policy-check"));
+    const policyChecks = Array.of(
+      ...self._dialog.querySelectorAll(".policy-check"),
+    );
     const policiesChecked = policyChecks.filter((x) => x.checked);
     const policyNamesSelected = policiesChecked.map((x) => x.value);
 
@@ -1179,9 +1247,15 @@ class SimulationListPresenter {
   }
 }
 
-
 class UiEditorPresenter {
-  constructor(startOnCode, tabRoot, contentsRoot, getCodeAsObj, onCodeObjUpdate, onTabChange) {
+  constructor(
+    startOnCode,
+    tabRoot,
+    contentsRoot,
+    getCodeAsObj,
+    onCodeObjUpdate,
+    onTabChange,
+  ) {
     const self = this;
 
     self._contentsSelection = contentsRoot;
@@ -1200,7 +1274,8 @@ class UiEditorPresenter {
       (codeObj) => self._onCodeObjUpdate(codeObj),
     );
 
-    const consumptionEditor = self._contentsSelection.querySelector(".consumption");
+    const consumptionEditor =
+      self._contentsSelection.querySelector(".consumption");
     self._consumptionList = new ConsumptionListPresenter(
       consumptionEditor,
       () => self._getCodeAsObj(),
@@ -1214,7 +1289,8 @@ class UiEditorPresenter {
       (codeObj) => self._onCodeObjUpdate(codeObj),
     );
 
-    const simulationEditor = self._contentsSelection.querySelector(".simulations");
+    const simulationEditor =
+      self._contentsSelection.querySelector(".simulations");
     self._simulationList = new SimulationListPresenter(
       simulationEditor,
       () => self._getCodeAsObj(),
@@ -1260,11 +1336,15 @@ class UiEditorPresenter {
 
   _setupAdvancedLinks() {
     const self = this;
-    const links = Array.of(...self._contentsSelection.querySelectorAll(".advanced-editor-link"));
-    links.forEach((link) => link.addEventListener("click", (event) => {
-      self._tabs.toggle("#code-editor-pane");
-      event.preventDefault();
-    }));
+    const links = Array.of(
+      ...self._contentsSelection.querySelectorAll(".advanced-editor-link"),
+    );
+    links.forEach((link) =>
+      link.addEventListener("click", (event) => {
+        self._tabs.toggle("#code-editor-pane");
+        event.preventDefault();
+      }),
+    );
   }
 
   _getCodeAsObj() {
@@ -1292,14 +1372,20 @@ class UiEditorPresenter {
 
   _enableBasicPanel() {
     const self = this;
-    self._contentsSelection.querySelector(".available-contents").style.display = "block";
-    self._contentsSelection.querySelector(".not-available-contents").style.display = "none";
+    self._contentsSelection.querySelector(".available-contents").style.display =
+      "block";
+    self._contentsSelection.querySelector(
+      ".not-available-contents",
+    ).style.display = "none";
   }
 
   _disableBasicPanel() {
     const self = this;
-    self._contentsSelection.querySelector(".available-contents").style.display = "none";
-    self._contentsSelection.querySelector(".not-available-contents").style.display = "block";
+    self._contentsSelection.querySelector(".available-contents").style.display =
+      "none";
+    self._contentsSelection.querySelector(
+      ".not-available-contents",
+    ).style.display = "block";
   }
 
   _onCodeObjUpdate(codeObj) {
@@ -1324,7 +1410,6 @@ class UiEditorPresenter {
   }
 }
 
-
 function initSetCommandUi(itemObj, root) {
   setFieldValue(
     root.querySelector(".set-target-input"),
@@ -1346,7 +1431,6 @@ function initSetCommandUi(itemObj, root) {
   );
 }
 
-
 function readSetCommandUi(root) {
   const target = getFieldValue(root.querySelector(".set-target-input"));
   const amount = getEngineNumberValue(
@@ -1357,7 +1441,6 @@ function readSetCommandUi(root) {
   return new Command("setVal", target, amount, duration);
 }
 
-
 function initChangeCommandUi(itemObj, root) {
   setFieldValue(
     root.querySelector(".change-target-input"),
@@ -1365,25 +1448,17 @@ function initChangeCommandUi(itemObj, root) {
     "manufacture",
     (x) => x.getTarget(),
   );
-  setFieldValue(
-    root.querySelector(".change-sign-input"),
-    itemObj,
-    "+",
-    (x) => x.getValue() < 0 ? "-" : "+",
+  setFieldValue(root.querySelector(".change-sign-input"), itemObj, "+", (x) =>
+    x.getValue() < 0 ? "-" : "+",
   );
-  setFieldValue(
-    root.querySelector(".change-amount-input"),
-    itemObj,
-    5,
-    (x) => {
-      if (x.getValue() === null || x.getValue().getValue() === null) {
-        return 5; // Default
-      }
-      const valueSigned = x.getValue().getValue();
-      const valueUnsigned = Math.abs(valueSigned);
-      return valueUnsigned;
-    },
-  );
+  setFieldValue(root.querySelector(".change-amount-input"), itemObj, 5, (x) => {
+    if (x.getValue() === null || x.getValue().getValue() === null) {
+      return 5; // Default
+    }
+    const valueSigned = x.getValue().getValue();
+    const valueUnsigned = Math.abs(valueSigned);
+    return valueUnsigned;
+  });
   setFieldValue(
     root.querySelector(".change-units-input"),
     itemObj,
@@ -1402,11 +1477,13 @@ function initChangeCommandUi(itemObj, root) {
   );
 }
 
-
 function readChangeCommandUi(root) {
   const target = getFieldValue(root.querySelector(".change-target-input"));
-  const invert = getFieldValue(root.querySelector(".change-sign-input")) === "-";
-  const amountRaw = parseFloat(getFieldValue(root.querySelector(".change-amount-input")));
+  const invert =
+    getFieldValue(root.querySelector(".change-sign-input")) === "-";
+  const amountRaw = parseFloat(
+    getFieldValue(root.querySelector(".change-amount-input")),
+  );
   const amount = amountRaw * (invert ? -1 : 1);
   const units = getFieldValue(root.querySelector(".change-units-input"));
   const amountWithUnits = new EngineNumber(amount, units);
@@ -1414,24 +1491,21 @@ function readChangeCommandUi(root) {
   return new Command("change", target, amountWithUnits, duration);
 }
 
-
 function initLimitCommandUi(itemObj, root, codeObj) {
   const substances = codeObj.getSubstances();
   const substanceNames = substances.map((x) => x.getName());
   const substanceSelect = d3.select(root.querySelector(".substances-select"));
   substanceSelect.html("");
-  substanceSelect.selectAll("option")
+  substanceSelect
+    .selectAll("option")
     .data(substanceNames)
     .enter()
     .append("option")
     .attr("value", (x) => x)
     .text((x) => x);
 
-  setFieldValue(
-    root.querySelector(".limit-type-input"),
-    itemObj,
-    "cap",
-    (x) => x.getTypeName(),
+  setFieldValue(root.querySelector(".limit-type-input"), itemObj, "cap", (x) =>
+    x.getTypeName(),
   );
   setFieldValue(
     root.querySelector(".limit-target-input"),
@@ -1446,11 +1520,8 @@ function initLimitCommandUi(itemObj, root, codeObj) {
     new EngineNumber(1, "mt"),
     (x) => x.getValue(),
   );
-  setFieldValue(
-    root.querySelector(".displacing-input"),
-    itemObj,
-    "",
-    (x) => x.getDisplacing() === null ? "" : x.getDisplacing(),
+  setFieldValue(root.querySelector(".displacing-input"), itemObj, "", (x) =>
+    x.getDisplacing() === null ? "" : x.getDisplacing(),
   );
   setDuring(
     root.querySelector(".duration-subcomponent"),
@@ -1458,7 +1529,6 @@ function initLimitCommandUi(itemObj, root, codeObj) {
     new YearMatcher(2, 10),
   );
 }
-
 
 function readLimitCommandUi(root) {
   const limitType = getFieldValue(root.querySelector(".limit-type-input"));
@@ -1472,7 +1542,6 @@ function readLimitCommandUi(root) {
   const duration = readDurationUi(root.querySelector(".duration-subcomponent"));
   return new LimitCommand(limitType, target, amount, duration, displacing);
 }
-
 
 function initRecycleCommandUi(itemObj, root) {
   setEngineNumberValue(
@@ -1496,7 +1565,6 @@ function initRecycleCommandUi(itemObj, root) {
   );
 }
 
-
 function readRecycleCommandUi(root) {
   const collection = getEngineNumberValue(
     root.querySelector(".recycle-amount-input"),
@@ -1510,13 +1578,13 @@ function readRecycleCommandUi(root) {
   return new Command("recycle", collection, reuse, duration);
 }
 
-
 function initReplaceCommandUi(itemObj, root, codeObj) {
   const substances = codeObj.getSubstances();
   const substanceNames = substances.map((x) => x.getName());
   const substanceSelect = d3.select(root.querySelector(".substances-select"));
   substanceSelect.html("");
-  substanceSelect.selectAll("option")
+  substanceSelect
+    .selectAll("option")
     .data(substanceNames)
     .enter()
     .append("option")
@@ -1552,34 +1620,36 @@ function initReplaceCommandUi(itemObj, root, codeObj) {
   );
 }
 
-
 function readReplaceCommandUi(root) {
   const target = getFieldValue(root.querySelector(".replace-target-input"));
   const amount = getEngineNumberValue(
     root.querySelector(".replace-amount-input"),
     root.querySelector(".replace-units-input"),
   );
-  const replacement = getFieldValue(root.querySelector(".replace-replacement-input"));
+  const replacement = getFieldValue(
+    root.querySelector(".replace-replacement-input"),
+  );
   const duration = readDurationUi(root.querySelector(".duration-subcomponent"));
 
   return new ReplaceCommand(amount, target, replacement, duration);
 }
 
-
 function readDurationUi(root) {
-  const durationType = getFieldValue(root.querySelector(".duration-type-input"));
+  const durationType = getFieldValue(
+    root.querySelector(".duration-type-input"),
+  );
   const targets = {
-    "in year": {"min": "duration-start", "max": "duration-start"},
-    "during all years": {"min": null, "max": null},
-    "starting in year": {"min": "duration-start", "max": null},
-    "ending in year": {"min": null, "max": "duration-end"},
-    "during years": {"min": "duration-start", "max": "duration-end"},
+    "in year": { min: "duration-start", max: "duration-start" },
+    "during all years": { min: null, max: null },
+    "starting in year": { min: "duration-start", max: null },
+    "ending in year": { min: null, max: "duration-end" },
+    "during years": { min: "duration-start", max: "duration-end" },
   }[durationType];
-  const getYearValue = (x) => x === null ? null : root.querySelector("." + x).value;
+  const getYearValue = (x) =>
+    x === null ? null : root.querySelector("." + x).value;
   const minYear = getYearValue(targets["min"]);
   const maxYear = getYearValue(targets["max"]);
   return new YearMatcher(minYear, maxYear);
 }
 
-
-export {UiEditorPresenter};
+export { UiEditorPresenter };

@@ -1,4 +1,4 @@
-import {FilterSet} from "report_data";
+import { FilterSet } from "report_data";
 
 const COLORS = [
   "#a6cee3",
@@ -13,7 +13,6 @@ const COLORS = [
 
 const ALLOW_REDUNDANT_ALL = true;
 
-
 function getColor(i) {
   if (i >= COLORS.length) {
     return "#333";
@@ -22,24 +21,41 @@ function getColor(i) {
   }
 }
 
-
 class ResultsPresenter {
   constructor(root) {
     const self = this;
     self._root = root;
     self._results = null;
-    self._filterSet = new FilterSet(null, null, null, null, "consumption", "simulations");
+    self._filterSet = new FilterSet(
+      null,
+      null,
+      null,
+      null,
+      "consumption",
+      "simulations",
+    );
 
     const scorecardContainer = self._root.querySelector("#scorecards");
     const dimensionsContainer = self._root.querySelector("#dimensions");
     const centerChartContainer = self._root.querySelector("#center-chart");
-    const centerChartHolderContainer = self._root.querySelector("#center-chart-holder");
+    const centerChartHolderContainer = self._root.querySelector(
+      "#center-chart-holder",
+    );
 
     const onUpdateFilterSet = (x) => self._onUpdateFilterSet(x);
-    self._scorecardPresenter = new ScorecardPresenter(scorecardContainer, onUpdateFilterSet);
-    self._dimensionPresenter = new DimensionCardPresenter(dimensionsContainer, onUpdateFilterSet);
+    self._scorecardPresenter = new ScorecardPresenter(
+      scorecardContainer,
+      onUpdateFilterSet,
+    );
+    self._dimensionPresenter = new DimensionCardPresenter(
+      dimensionsContainer,
+      onUpdateFilterSet,
+    );
     self._centerChartPresenter = new CenterChartPresenter(centerChartContainer);
-    self._titlePreseter = new SelectorTitlePresenter(centerChartHolderContainer, onUpdateFilterSet);
+    self._titlePreseter = new SelectorTitlePresenter(
+      centerChartHolderContainer,
+      onUpdateFilterSet,
+    );
     self._exportPresenter = new ExportPresenter(self._root);
 
     self.hide();
@@ -77,7 +93,6 @@ class ResultsPresenter {
   }
 }
 
-
 class ExportPresenter {
   constructor(root) {
     const self = this;
@@ -90,29 +105,32 @@ class ExportPresenter {
     const nested = rawData.map((trial) => {
       const scenarioName = trial.getName();
       const results = trial.getTrialResults();
-      return results.flat().flat().map((result) => {
-        const application = result.getApplication();
-        const substance = result.getSubstance();
-        const year = result.getYear();
-        const manufactureValue = result.getManufacture();
-        const importValue = result.getImport();
-        const consumptionValue = result.getConsumption();
-        const populationValue = result.getPopulation();
-        return {
-          "scenario": scenarioName,
-          "application": application,
-          "substance": substance,
-          "year": year,
-          "manufactureValue": manufactureValue.getValue(),
-          "manufactureUnits": manufactureValue.getUnits(),
-          "importValue": importValue.getValue(),
-          "importUnits": importValue.getUnits(),
-          "consumptionValue": consumptionValue.getValue(),
-          "consumptionUnits": consumptionValue.getUnits(),
-          "equipmentPopulation": populationValue.getValue(),
-          "equipmentUnits": populationValue.getUnits(),
-        };
-      });
+      return results
+        .flat()
+        .flat()
+        .map((result) => {
+          const application = result.getApplication();
+          const substance = result.getSubstance();
+          const year = result.getYear();
+          const manufactureValue = result.getManufacture();
+          const importValue = result.getImport();
+          const consumptionValue = result.getConsumption();
+          const populationValue = result.getPopulation();
+          return {
+            scenario: scenarioName,
+            application: application,
+            substance: substance,
+            year: year,
+            manufactureValue: manufactureValue.getValue(),
+            manufactureUnits: manufactureValue.getUnits(),
+            importValue: importValue.getValue(),
+            importUnits: importValue.getUnits(),
+            consumptionValue: consumptionValue.getValue(),
+            consumptionUnits: consumptionValue.getUnits(),
+            equipmentPopulation: populationValue.getValue(),
+            equipmentUnits: populationValue.getUnits(),
+          };
+        });
     });
     const flat = nested.flat();
     const contentRows = flat.map((record) => {
@@ -159,7 +177,6 @@ class ExportPresenter {
   }
 }
 
-
 class ScorecardPresenter {
   constructor(root, onUpdateFilterSet) {
     const self = this;
@@ -174,7 +191,9 @@ class ScorecardPresenter {
     self._filterSet = filterSet;
     const currentYear = self._filterSet.getYear();
 
-    const consumptionScorecard = self._root.querySelector("#consumption-scorecard");
+    const consumptionScorecard = self._root.querySelector(
+      "#consumption-scorecard",
+    );
     const salesScorecard = self._root.querySelector("#sales-scorecard");
     const equipmentScorecard = self._root.querySelector("#equipment-scorecard");
 
@@ -183,16 +202,21 @@ class ScorecardPresenter {
     const equipmentValue = results.getPopulation(filterSet);
 
     const roundToTenths = (x) => Math.round(x * 10) / 10;
-    const emissionRounded = roundToTenths(consumptionValue.getValue() / 1000000);
+    const emissionRounded = roundToTenths(
+      consumptionValue.getValue() / 1000000,
+    );
     const salesMt = roundToTenths(salesValue.getValue() / 1000000) + " k";
-    const millionEqipment = roundToTenths(equipmentValue.getValue() / 1000000) + " M";
+    const millionEqipment =
+      roundToTenths(equipmentValue.getValue() / 1000000) + " M";
 
     const metricSelected = filterSet.getMetric();
     const consumptionSelected = metricSelected === "consumption";
     const salesSelected = metricSelected === "sales";
     const equipmentSelected = metricSelected === "population";
 
-    const scenarios = results.getScenarios(self._filterSet.getWithScenario(null));
+    const scenarios = results.getScenarios(
+      self._filterSet.getWithScenario(null),
+    );
     const hideVal = !self._filterSet.hasSingleScenario(scenarios);
 
     self._updateCard(
@@ -202,8 +226,20 @@ class ScorecardPresenter {
       consumptionSelected,
       hideVal,
     );
-    self._updateCard(salesScorecard, salesMt, currentYear, salesSelected, hideVal);
-    self._updateCard(equipmentScorecard, millionEqipment, currentYear, equipmentSelected, hideVal);
+    self._updateCard(
+      salesScorecard,
+      salesMt,
+      currentYear,
+      salesSelected,
+      hideVal,
+    );
+    self._updateCard(
+      equipmentScorecard,
+      millionEqipment,
+      currentYear,
+      equipmentSelected,
+      hideVal,
+    );
   }
 
   _updateCard(scorecard, value, currentYear, selected, hideVal) {
@@ -213,7 +249,10 @@ class ScorecardPresenter {
     if (hideVal) {
       self._setText(scorecard.querySelector(".current-year"), "");
     } else {
-      self._setText(scorecard.querySelector(".current-year"), "in year " + currentYear);
+      self._setText(
+        scorecard.querySelector(".current-year"),
+        "in year " + currentYear,
+      );
     }
 
     if (hideVal) {
@@ -241,7 +280,9 @@ class ScorecardPresenter {
   _registerEventListeners() {
     const self = this;
 
-    const consumptionScorecard = self._root.querySelector("#consumption-scorecard");
+    const consumptionScorecard = self._root.querySelector(
+      "#consumption-scorecard",
+    );
     const salesScorecard = self._root.querySelector("#sales-scorecard");
     const equipmentScorecard = self._root.querySelector("#equipment-scorecard");
 
@@ -259,7 +300,6 @@ class ScorecardPresenter {
   }
 }
 
-
 class DimensionCardPresenter {
   constructor(root, onUpdateFilterSet) {
     const self = this;
@@ -275,26 +315,34 @@ class DimensionCardPresenter {
 
     const metricSelected = self._filterSet.getMetric();
     const metricUnits = {
-      "consumption": "MtCO2e / yr",
-      "sales": "mt / yr",
-      "population": "units",
+      consumption: "MtCO2e / yr",
+      sales: "mt / yr",
+      population: "units",
     }[metricSelected];
 
     const currentYear = self._filterSet.getYear();
-    const scenarios = results.getScenarios(self._filterSet.getWithScenario(null));
+    const scenarios = results.getScenarios(
+      self._filterSet.getWithScenario(null),
+    );
 
-    const allTickUnits = Array.of(...self._root.querySelectorAll(".units-tick"));
-    allTickUnits.forEach((x) => x.innerHTML = metricUnits);
+    const allTickUnits = Array.of(
+      ...self._root.querySelectorAll(".units-tick"),
+    );
+    allTickUnits.forEach((x) => (x.innerHTML = metricUnits));
 
-    const allTickYears = Array.of(...self._root.querySelectorAll(".years-tick"));
+    const allTickYears = Array.of(
+      ...self._root.querySelectorAll(".years-tick"),
+    );
     if (self._filterSet.hasSingleScenario(scenarios)) {
-      allTickYears.forEach((x) => x.innerHTML = "in year " + currentYear);
+      allTickYears.forEach((x) => (x.innerHTML = "in year " + currentYear));
     } else {
-      allTickYears.forEach((x) => x.innerHTML = "");
+      allTickYears.forEach((x) => (x.innerHTML = ""));
     }
 
     const simulationsCard = self._root.querySelector("#simulations-dimension");
-    const applicationsCard = self._root.querySelector("#applications-dimension");
+    const applicationsCard = self._root.querySelector(
+      "#applications-dimension",
+    );
     const substancesCard = self._root.querySelector("#substances-dimension");
 
     const dimensionSelected = self._filterSet.getDimension();
@@ -303,9 +351,9 @@ class DimensionCardPresenter {
     const substancesSelected = dimensionSelected === "substances";
 
     const conversionInfo = {
-      "consumption": {"divider": 1000000, "suffix": "M"},
-      "sales": {"divider": 1000, "suffix": ""},
-      "population": {"divider": 1000000, "suffix": "M"},
+      consumption: { divider: 1000000, suffix: "M" },
+      sales: { divider: 1000, suffix: "" },
+      population: { divider: 1000000, suffix: "M" },
     }[self._filterSet.getMetric()];
     const divider = conversionInfo["divider"];
     const suffix = conversionInfo["suffix"];
@@ -319,7 +367,8 @@ class DimensionCardPresenter {
       self._filterSet.getScenario(),
       (x) => self._filterSet.getWithScenario(x),
       true,
-      (value) => interpret(results.getMetric(self._filterSet.getWithScenario(value))),
+      (value) =>
+        interpret(results.getMetric(self._filterSet.getWithScenario(value))),
       suffix,
       scenarios,
     );
@@ -332,7 +381,8 @@ class DimensionCardPresenter {
       self._filterSet.getApplication(),
       (x) => self._filterSet.getWithApplication(x),
       true,
-      (value) => interpret(results.getMetric(self._filterSet.getWithApplication(value))),
+      (value) =>
+        interpret(results.getMetric(self._filterSet.getWithApplication(value))),
       suffix,
       scenarios,
     );
@@ -345,14 +395,26 @@ class DimensionCardPresenter {
       self._filterSet.getSubstance(),
       (x) => self._filterSet.getWithSubstance(x),
       true,
-      (value) => interpret(results.getMetric(self._filterSet.getWithSubstance(value))),
+      (value) =>
+        interpret(results.getMetric(self._filterSet.getWithSubstance(value))),
       suffix,
       scenarios,
     );
   }
 
-  _updateCard(label, card, identifiers, selected, subSelection, subFilterSetBuilder, addAll,
-    valueGetter, suffix, scenarios, selectedYear) {
+  _updateCard(
+    label,
+    card,
+    identifiers,
+    selected,
+    subSelection,
+    subFilterSetBuilder,
+    addAll,
+    valueGetter,
+    suffix,
+    scenarios,
+    selectedYear,
+  ) {
     const self = this;
 
     if (selected) {
@@ -368,7 +430,9 @@ class DimensionCardPresenter {
 
     const values = identifiersArray.map(valueGetter);
     const maxValue = Math.max(...values);
-    d3.select(card.querySelector(".right-tick")).text(Math.round(maxValue) + suffix);
+    d3.select(card.querySelector(".right-tick")).text(
+      Math.round(maxValue) + suffix,
+    );
 
     const hasSingleScenario = self._filterSet.hasSingleScenario(scenarios);
     const isOnlyValue = identifiersArray.length == 1;
@@ -381,7 +445,8 @@ class DimensionCardPresenter {
     const listSelection = d3.select(card).select(".list");
     listSelection.html("");
 
-    const itemDivs = listSelection.selectAll(".item")
+    const itemDivs = listSelection
+      .selectAll(".item")
       .data(identifiersArray)
       .enter()
       .append("div")
@@ -389,7 +454,8 @@ class DimensionCardPresenter {
 
     const itemLabels = itemDivs.append("label");
 
-    itemLabels.append("input")
+    itemLabels
+      .append("input")
       .attr("type", "radio")
       .classed(label + "-radio", true)
       .attr("name", label + "-viz")
@@ -410,16 +476,22 @@ class DimensionCardPresenter {
 
     if (hasSingleScenario || label === "sim") {
       const offset = allNeeded ? 1 : 0;
-      const lines = itemDivs.append("div")
+      const lines = itemDivs
+        .append("div")
         .classed("list-line", true)
         .style("width", "100%")
-        .style("height", (x, i) => x === "All" ? "0px" : "1px")
-        .style("background-color", (x, i) => selected ? getColor(i - offset) : "#C0C0C0");
+        .style("height", (x, i) => (x === "All" ? "0px" : "1px"))
+        .style("background-color", (x, i) =>
+          selected ? getColor(i - offset) : "#C0C0C0",
+        );
 
-      lines.append("div")
+      lines
+        .append("div")
         .classed("list-bar", true)
-        .style("height", (x, i) => x === "All" ? "0px" : "5px")
-        .style("background-color", (x, i) => selected ? getColor(i - offset) : "#C0C0C0")
+        .style("height", (x, i) => (x === "All" ? "0px" : "5px"))
+        .style("background-color", (x, i) =>
+          selected ? getColor(i - offset) : "#C0C0C0",
+        )
         .style("width", (x) => {
           if (x === "All") {
             return "0%";
@@ -436,7 +508,9 @@ class DimensionCardPresenter {
     const self = this;
 
     const simulationsCard = self._root.querySelector("#simulations-dimension");
-    const applicationsCard = self._root.querySelector("#applications-dimension");
+    const applicationsCard = self._root.querySelector(
+      "#applications-dimension",
+    );
     const substancesCard = self._root.querySelector("#substances-dimension");
 
     const registerListener = (scorecard, value) => {
@@ -452,7 +526,6 @@ class DimensionCardPresenter {
     registerListener(substancesCard, "substances");
   }
 }
-
 
 class CenterChartPresenter {
   constructor(root) {
@@ -472,9 +545,9 @@ class CenterChartPresenter {
     years.sort((a, b) => a - b);
 
     const divider = {
-      "consumption": 1000000,
-      "sales": 1000,
-      "population": 1000000,
+      consumption: 1000000,
+      sales: 1000,
+      population: 1000000,
     }[filterSet.getMetric()];
 
     const dimensionValues = Array.of(...results.getDimensionValues(filterSet));
@@ -482,65 +555,67 @@ class CenterChartPresenter {
 
     const getForDimValue = (dimValue) => {
       const valsWithUnits = years.map((year) => {
-        const subFilterSet = filterSet.getWithYear(year).getWithDimensionValue(dimValue);
+        const subFilterSet = filterSet
+          .getWithYear(year)
+          .getWithDimensionValue(dimValue);
         return results.getMetric(subFilterSet);
       });
       const vals = valsWithUnits.map((x) => x.getValue());
       const valsScaled = vals.map((x) => x / divider);
-      return {"name": dimValue, "vals": valsScaled};
+      return { name: dimValue, vals: valsScaled };
     };
     const dimensionSeries = dimensionValues.map(getForDimValue);
 
-    const unconstrainedDimValues = Array.of(...results.getDimensionValues(
-      filterSet.getWithDimensionValue(null),
-    ));
+    const unconstrainedDimValues = Array.of(
+      ...results.getDimensionValues(filterSet.getWithDimensionValue(null)),
+    );
     unconstrainedDimValues.sort();
 
     const chartJsDatasets = dimensionSeries.map((x) => {
       const index = unconstrainedDimValues.indexOf(x["name"]);
       const color = getColor(index);
       return {
-        "label": x["name"],
-        "data": x["vals"],
-        "fill": false,
-        "borderColor": color,
-        "backgroundColor": color,
+        label: x["name"],
+        data: x["vals"],
+        fill: false,
+        borderColor: color,
+        backgroundColor: color,
       };
     });
 
     const chartJsData = {
-      "labels": years,
-      "datasets": chartJsDatasets,
+      labels: years,
+      datasets: chartJsDatasets,
     };
 
     const metricSelected = filterSet.getMetric();
     const metricUnits = {
-      "consumption": "MtCO2e / yr",
-      "sales": "mt / yr",
-      "population": "units",
+      consumption: "MtCO2e / yr",
+      sales: "mt / yr",
+      population: "units",
     }[metricSelected];
 
     const chartJsConfig = {
-      "type": "line",
-      "data": chartJsData,
-      "options": {
-        "scales": {
-          "y": {
-            "min": 0,
-            "title": {"text": metricUnits, "display": true},
+      type: "line",
+      data: chartJsData,
+      options: {
+        scales: {
+          y: {
+            min: 0,
+            title: { text: metricUnits, display: true },
           },
-          "x": {
-            "title": {"text": "Year", "display": true},
+          x: {
+            title: { text: "Year", display: true },
           },
         },
-        "plugins": {
-          "tooltip": {
-            "callbacks": {
-              "title": (x) => "Year " + x[0]["label"],
+        plugins: {
+          tooltip: {
+            callbacks: {
+              title: (x) => "Year " + x[0]["label"],
             },
           },
-          "legend": {
-            "display": false,
+          legend: {
+            display: false,
           },
         },
       },
@@ -549,7 +624,6 @@ class CenterChartPresenter {
     self._chart = new Chart(self._root, chartJsConfig);
   }
 }
-
 
 class SelectorTitlePresenter {
   constructor(root, changeCallback) {
@@ -568,7 +642,8 @@ class SelectorTitlePresenter {
     const metricSelected = self._filterSet.getMetric();
     self._updateSimpleDropdown(metricDropdown, metricSelected);
 
-    const dimensionDropdown = self._selection.querySelector(".dimension-select");
+    const dimensionDropdown =
+      self._selection.querySelector(".dimension-select");
     const dimensionSelected = self._filterSet.getDimension();
     self._updateSimpleDropdown(dimensionDropdown, dimensionSelected);
 
@@ -582,9 +657,13 @@ class SelectorTitlePresenter {
       "All Simulations",
     );
 
-    const applicationDropdown = self._selection.querySelector(".application-select");
+    const applicationDropdown = self._selection.querySelector(
+      ".application-select",
+    );
     const applicationSelected = self._filterSet.getApplication();
-    const applications = results.getApplications(self._filterSet.getWithApplication(null));
+    const applications = results.getApplications(
+      self._filterSet.getWithApplication(null),
+    );
     self._updateDynamicDropdown(
       applicationDropdown,
       applications,
@@ -592,9 +671,12 @@ class SelectorTitlePresenter {
       "All Applications",
     );
 
-    const substanceDropdown = self._selection.querySelector(".substance-select");
+    const substanceDropdown =
+      self._selection.querySelector(".substance-select");
     const substanceSelected = self._filterSet.getSubstance();
-    const substances = results.getSubstances(self._filterSet.getWithSubstance(null));
+    const substances = results.getSubstances(
+      self._filterSet.getWithSubstance(null),
+    );
     self._updateDynamicDropdown(
       substanceDropdown,
       substances,
@@ -617,11 +699,12 @@ class SelectorTitlePresenter {
 
     const d3Selection = d3.select(selection);
     d3Selection.html("");
-    d3Selection.selectAll("option")
+    d3Selection
+      .selectAll("option")
       .data(allValuesArray)
       .enter()
       .append("option")
-      .attr("value", (x) => allText === x ? "" : x)
+      .attr("value", (x) => (allText === x ? "" : x))
       .text((x) => x)
       .property("selected", (x) => {
         const nativelySelected = x === selectedValue;
@@ -642,21 +725,34 @@ class SelectorTitlePresenter {
     };
 
     const metricDropdown = self._selection.querySelector(".metric-select");
-    addListener(metricDropdown, (filterSet, val) => filterSet.getWithMetric(val));
+    addListener(metricDropdown, (filterSet, val) =>
+      filterSet.getWithMetric(val),
+    );
 
-    const dimensionDropdown = self._selection.querySelector(".dimension-select");
-    addListener(dimensionDropdown, (filterSet, val) => filterSet.getWithDimension(val));
+    const dimensionDropdown =
+      self._selection.querySelector(".dimension-select");
+    addListener(dimensionDropdown, (filterSet, val) =>
+      filterSet.getWithDimension(val),
+    );
 
     const scenarioDropdown = self._selection.querySelector(".scenario-select");
-    addListener(scenarioDropdown, (filterSet, val) => filterSet.getWithScenario(val));
+    addListener(scenarioDropdown, (filterSet, val) =>
+      filterSet.getWithScenario(val),
+    );
 
-    const applicationDropdown = self._selection.querySelector(".application-select");
-    addListener(applicationDropdown, (filterSet, val) => filterSet.getWithApplication(val));
+    const applicationDropdown = self._selection.querySelector(
+      ".application-select",
+    );
+    addListener(applicationDropdown, (filterSet, val) =>
+      filterSet.getWithApplication(val),
+    );
 
-    const substanceDropdown = self._selection.querySelector(".substance-select");
-    addListener(substanceDropdown, (filterSet, val) => filterSet.getWithSubstance(val));
+    const substanceDropdown =
+      self._selection.querySelector(".substance-select");
+    addListener(substanceDropdown, (filterSet, val) =>
+      filterSet.getWithSubstance(val),
+    );
   }
 }
 
-
-export {ResultsPresenter};
+export { ResultsPresenter };

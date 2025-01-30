@@ -1,9 +1,8 @@
-import {UiTranslatorCompiler} from "ui_translator";
-
+import { UiTranslatorCompiler } from "ui_translator";
 
 function buildUiTranslatorTests() {
-  QUnit.module("UiTranslatorCompiler", function() {
-    QUnit.test("initializes", function(assert) {
+  QUnit.module("UiTranslatorCompiler", function () {
+    QUnit.test("initializes", function (assert) {
       const compiler = new UiTranslatorCompiler();
       assert.ok(compiler !== undefined);
     });
@@ -52,7 +51,8 @@ function buildUiTranslatorTests() {
 
     buildTest(
       "converts BAU single app substance",
-      "/test/qta/ui/bau_single.qta", [
+      "/test/qta/ui/bau_single.qta",
+      [
         (result, assert) => {
           assert.ok(result.getIsCompatible());
         },
@@ -86,7 +86,8 @@ function buildUiTranslatorTests() {
 
     buildTest(
       "converts BAU multiple app substance",
-      "/test/qta/ui/bau_multiple.qta", [
+      "/test/qta/ui/bau_multiple.qta",
+      [
         (result, assert) => {
           assert.ok(result.getIsCompatible());
         },
@@ -109,37 +110,35 @@ function buildUiTranslatorTests() {
       ],
     );
 
-    buildTest(
-      "converts single policy",
-      "/test/qta/ui/policy_single.qta", [
-        (result, assert) => {
-          assert.ok(result.getIsCompatible());
-        },
-        (result, assert) => {
-          const policies = result.getPolicies();
-          assert.equal(policies.length, 1);
+    buildTest("converts single policy", "/test/qta/ui/policy_single.qta", [
+      (result, assert) => {
+        assert.ok(result.getIsCompatible());
+      },
+      (result, assert) => {
+        const policies = result.getPolicies();
+        assert.equal(policies.length, 1);
 
-          const policy = policies[0];
-          assert.deepEqual(policy.getName(), "policy1");
+        const policy = policies[0];
+        assert.deepEqual(policy.getName(), "policy1");
 
-          const applications = policy.getApplications();
-          assert.equal(applications.length, 1);
+        const applications = policy.getApplications();
+        assert.equal(applications.length, 1);
 
-          const application = applications[0];
-          assert.deepEqual(application.getName(), "app1");
+        const application = applications[0];
+        assert.deepEqual(application.getName(), "app1");
 
-          const substances = application.getSubstances();
-          assert.equal(substances.length, 1);
+        const substances = application.getSubstances();
+        assert.equal(substances.length, 1);
 
-          const substance = substances[0];
-          assert.equal(substance.getName(), "sub1");
-        },
-      ],
-    );
+        const substance = substances[0];
+        assert.equal(substance.getName(), "sub1");
+      },
+    ]);
 
     buildTest(
       "converts multiple policies",
-      "/test/qta/ui/policy_multiple.qta", [
+      "/test/qta/ui/policy_multiple.qta",
+      [
         (result, assert) => {
           assert.ok(result.getIsCompatible());
         },
@@ -170,7 +169,8 @@ function buildUiTranslatorTests() {
 
     buildTest(
       "includes only business as usual",
-      "/test/qta/ui/bau_single.qta", [
+      "/test/qta/ui/bau_single.qta",
+      [
         (result, assert) => {
           assert.ok(result.getIsCompatible());
         },
@@ -184,28 +184,26 @@ function buildUiTranslatorTests() {
       ],
     );
 
-    buildTest(
-      "includes additional sim",
-      "/test/qta/ui/sim.qta", [
-        (result, assert) => {
-          assert.ok(result.getIsCompatible());
-        },
-        (result, assert) => {
-          const scenarios = result.getScenarios();
-          assert.equal(scenarios.length, 2);
+    buildTest("includes additional sim", "/test/qta/ui/sim.qta", [
+      (result, assert) => {
+        assert.ok(result.getIsCompatible());
+      },
+      (result, assert) => {
+        const scenarios = result.getScenarios();
+        assert.equal(scenarios.length, 2);
 
-          const scenario = scenarios[0];
-          assert.deepEqual(scenario.getName(), "business as usual");
+        const scenario = scenarios[0];
+        assert.deepEqual(scenario.getName(), "business as usual");
 
-          const scenarioOther = scenarios[1];
-          assert.deepEqual(scenarioOther.getName(), "policy scenario");
-        },
-      ],
-    );
+        const scenarioOther = scenarios[1];
+        assert.deepEqual(scenarioOther.getName(), "policy scenario");
+      },
+    ]);
 
     buildTest(
       "converts policy incompatible feature",
-      "/test/qta/ui/incompatible_feature.qta", [
+      "/test/qta/ui/incompatible_feature.qta",
+      [
         (result, assert) => {
           assert.ok(!result.getIsCompatible());
         },
@@ -214,7 +212,8 @@ function buildUiTranslatorTests() {
 
     buildTest(
       "converts policy incompatible structure",
-      "/test/qta/ui/incompatible_structure.qta", [
+      "/test/qta/ui/incompatible_structure.qta",
+      [
         (result, assert) => {
           assert.ok(!result.getIsCompatible());
         },
@@ -223,5 +222,4 @@ function buildUiTranslatorTests() {
   });
 }
 
-
-export {buildUiTranslatorTests};
+export { buildUiTranslatorTests };

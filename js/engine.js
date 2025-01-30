@@ -5,10 +5,7 @@ import {
   OverridingConverterStateGetter,
 } from "engine_number";
 
-import {
-  Scope,
-  StreamKeeper,
-} from "engine_state";
+import { Scope, StreamKeeper } from "engine_state";
 
 const STREAM_NAMES = new Set([
   "priorEquipment",
@@ -19,10 +16,16 @@ const STREAM_NAMES = new Set([
   "sales",
 ]);
 
-
 class EngineResult {
-  constructor(application, substance, year, manufactureValue, importValue, consumptionValue,
-    populationValue) {
+  constructor(
+    application,
+    substance,
+    year,
+    manufactureValue,
+    importValue,
+    consumptionValue,
+    populationValue,
+  ) {
     const self = this;
     self._application = application;
     self._substance = substance;
@@ -68,7 +71,6 @@ class EngineResult {
     return self._populationValue;
   }
 }
-
 
 /**
  * Facade which runs engine mechanics.
@@ -137,9 +139,17 @@ class Engine {
     const application = self._scope.getApplication();
 
     if (checkValid) {
-      const knownSubstance = self._streamKeeper.hasSubstance(application, newSubstance);
+      const knownSubstance = self._streamKeeper.hasSubstance(
+        application,
+        newSubstance,
+      );
       if (!knownSubstance) {
-        throw "Tried accessing unknown app / substance pair: " + application + ", " + newSubstance;
+        throw (
+          "Tried accessing unknown app / substance pair: " +
+          application +
+          ", " +
+          newSubstance
+        );
       }
     } else {
       self._streamKeeper.ensureSubstance(application, newSubstance);
@@ -234,7 +244,8 @@ class Engine {
 
   getStream(name, scope, conversion) {
     const self = this;
-    const scopeEffective = scope === undefined || scope === null ? self._scope : scope;
+    const scopeEffective =
+      scope === undefined || scope === null ? self._scope : scope;
     const application = scopeEffective.getApplication();
     const substance = scopeEffective.getSubstance();
     const value = self._streamKeeper.getStream(application, substance, name);
@@ -278,7 +289,10 @@ class Engine {
 
     if (stream === "sales") {
       const manufactureRaw = self.getStream("manufacture");
-      const manufactureValue = self._unitConverter.convert(manufactureRaw, "kg");
+      const manufactureValue = self._unitConverter.convert(
+        manufactureRaw,
+        "kg",
+      );
 
       const importRaw = self.getStream("import");
       const importValue = self._unitConverter.convert(importRaw, "kg");
@@ -301,16 +315,22 @@ class Engine {
       const importKg = emptyStreams ? 1 : importValue.getValue();
       const manufactureKgUnit = manufactureInitialCharge.getValue();
       const importKgUnit = importInitialCharge.getValue();
-      const manufactureUnits = manufactureKgUnit == 0 ? 0 : manufactureKg / manufactureKgUnit;
+      const manufactureUnits =
+        manufactureKgUnit == 0 ? 0 : manufactureKg / manufactureKgUnit;
       const importUnits = importKgUnit == 0 ? 0 : importKg / importKgUnit;
-      const newSumWeighted = (manufactureKgUnit * manufactureUnits + importKgUnit * importUnits);
+      const newSumWeighted =
+        manufactureKgUnit * manufactureUnits + importKgUnit * importUnits;
       const newSumWeight = manufactureUnits + importUnits;
       const pooledKgUnit = newSumWeighted / newSumWeight;
       return new EngineNumber(pooledKgUnit, "kg / unit");
     } else {
       const application = self._scope.getApplication();
       const substance = self._scope.getSubstance();
-      return self._streamKeeper.getInitialCharge(application, substance, stream);
+      return self._streamKeeper.getInitialCharge(
+        application,
+        substance,
+        stream,
+      );
     }
   }
 
@@ -327,7 +347,12 @@ class Engine {
     } else {
       const application = self._scope.getApplication();
       const substance = self._scope.getSubstance();
-      self._streamKeeper.setInitialCharge(application, substance, stream, value);
+      self._streamKeeper.setInitialCharge(
+        application,
+        substance,
+        stream,
+        value,
+      );
     }
 
     self._recalcPopulationChange();
@@ -390,10 +415,7 @@ class Engine {
     const self = this;
     const application = self._scope.getApplication();
     const substance = self._scope.getSubstance();
-    return self._streamKeeper.getRetirementRate(
-      application,
-      substance,
-    );
+    return self._streamKeeper.getRetirementRate(application, substance);
   }
 
   recycle(recoveryWithUnits, yieldWithUnits, displaceLevel, yearMatcher) {
@@ -405,11 +427,19 @@ class Engine {
 
     const application = self._scope.getApplication();
     const substance = self._scope.getSubstance();
-    self._streamKeeper.setRecoveryRate(application, substance, recoveryWithUnits);
+    self._streamKeeper.setRecoveryRate(
+      application,
+      substance,
+      recoveryWithUnits,
+    );
     self._streamKeeper.setYieldRate(application, substance, yieldWithUnits);
 
     if (displaceLevel !== null && displaceLevel !== undefined) {
-      self._streamKeeper.setDisplacementRate(application, substance, displaceLevel);
+      self._streamKeeper.setDisplacementRate(
+        application,
+        substance,
+        displaceLevel,
+      );
     }
 
     self._recalcSales();
@@ -441,9 +471,15 @@ class Engine {
     const currentValue = self.getStream(stream, scope);
     const unitConverter = self._createUnitConverterWithTotal(stream);
 
-    const convertedDelta = unitConverter.convert(amount, currentValue.getUnits());
+    const convertedDelta = unitConverter.convert(
+      amount,
+      currentValue.getUnits(),
+    );
     const newAmount = currentValue.getValue() + convertedDelta.getValue();
-    const outputWithUnits = new EngineNumber(newAmount, currentValue.getUnits());
+    const outputWithUnits = new EngineNumber(
+      newAmount,
+      currentValue.getUnits(),
+    );
     self.setStream(stream, outputWithUnits, null, scope);
   }
 
@@ -521,7 +557,10 @@ class Engine {
     const unitConverter = self._createUnitConverterWithTotal(stream);
     const amount = unitConverter.convert(amountRaw, "kg");
 
-    const amountNegative = new EngineNumber(-1 * amount.getValue(), amount.getUnits());
+    const amountNegative = new EngineNumber(
+      -1 * amount.getValue(),
+      amount.getUnits(),
+    );
     self.changeStream(stream, amountNegative);
 
     const destinationScope = self._scope.getWithSubstance(destinationSubstance);
@@ -537,10 +576,26 @@ class Engine {
       const application = substanceId.getApplication();
       const substance = substanceId.getSubstance();
       const year = self._currentYear;
-      const manufactureValue = self._streamKeeper.getStream(application, substance, "manufacture");
-      const importValue = self._streamKeeper.getStream(application, substance, "import");
-      const consumptionValue = self._streamKeeper.getStream(application, substance, "consumption");
-      const populationValue = self._streamKeeper.getStream(application, substance, "equipment");
+      const manufactureValue = self._streamKeeper.getStream(
+        application,
+        substance,
+        "manufacture",
+      );
+      const importValue = self._streamKeeper.getStream(
+        application,
+        substance,
+        "import",
+      );
+      const consumptionValue = self._streamKeeper.getStream(
+        application,
+        substance,
+        "consumption",
+      );
+      const populationValue = self._streamKeeper.getStream(
+        application,
+        substance,
+        "equipment",
+      );
 
       return new EngineResult(
         application,
@@ -583,7 +638,8 @@ class Engine {
 
     const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
     const unitConverter = new UnitConverter(stateGetter);
-    const scopeEffective = scope === null || scope === undefined ? self._scope : scope;
+    const scopeEffective =
+      scope === null || scope === undefined ? self._scope : scope;
     const application = scopeEffective.getApplication();
     const substance = scopeEffective.getSubstance();
 
@@ -673,7 +729,8 @@ class Engine {
   _recalcConsumption(scope) {
     const self = this;
 
-    const scopeEffective = scope === null || scope === undefined ? self._scope : scope;
+    const scopeEffective =
+      scope === null || scope === undefined ? self._scope : scope;
 
     const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
     const unitConverter = new UnitConverter(stateGetter);
@@ -699,16 +756,25 @@ class Engine {
 
     // Ensure in range
     const isNegative = consumption.getValue() < 0;
-    const consumptionAllowed = isNegative ? new EngineNumber(0, "tCO2e") : consumption;
+    const consumptionAllowed = isNegative
+      ? new EngineNumber(0, "tCO2e")
+      : consumption;
 
     // Save
-    self.setStream("consumption", consumptionAllowed, null, scopeEffective, false);
+    self.setStream(
+      "consumption",
+      consumptionAllowed,
+      null,
+      scopeEffective,
+      false,
+    );
   }
 
   _recalcSales(scope) {
     const self = this;
 
-    const scopeEffective = scope === null || scope === undefined ? self._scope : scope;
+    const scopeEffective =
+      scope === null || scope === undefined ? self._scope : scope;
 
     const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
     const unitConverter = new UnitConverter(stateGetter);
@@ -777,8 +843,13 @@ class Engine {
 
     // Determine needs for new equipment deployment.
     stateGetter.setAmortizedUnitVolume(initialCharge);
-    const populationChangeRaw = stateGetter.getPopulationChange(self._unitConverter);
-    const populationChange = unitConverter.convert(populationChangeRaw, "units");
+    const populationChangeRaw = stateGetter.getPopulationChange(
+      self._unitConverter,
+    );
+    const populationChange = unitConverter.convert(
+      populationChangeRaw,
+      "units",
+    );
     const volumeForNew = unitConverter.convert(populationChange, "kg");
 
     // Get prior popoulation
@@ -817,7 +888,8 @@ class Engine {
     // Setup
     const stateGetter = new OverridingConverterStateGetter(self._stateGetter);
     const unitConverter = new UnitConverter(stateGetter);
-    const scopeEffective = scope === null || scope === undefined ? self._scope : scope;
+    const scopeEffective =
+      scope === null || scope === undefined ? self._scope : scope;
     const application = scopeEffective.getApplication();
     const substance = scopeEffective.getSubstance();
 
@@ -827,23 +899,53 @@ class Engine {
     }
 
     // Calcuate change
-    const currentPriorRaw = self._streamKeeper.getStream(application, substance, "priorEquipment");
+    const currentPriorRaw = self._streamKeeper.getStream(
+      application,
+      substance,
+      "priorEquipment",
+    );
     const currentPrior = unitConverter.convert(currentPriorRaw, "units");
 
-    const currentEquipmentRaw = self._streamKeeper.getStream(application, substance, "equipment");
-    const currentEquipment = unitConverter.convert(currentEquipmentRaw, "units");
+    const currentEquipmentRaw = self._streamKeeper.getStream(
+      application,
+      substance,
+      "equipment",
+    );
+    const currentEquipment = unitConverter.convert(
+      currentEquipmentRaw,
+      "units",
+    );
 
     stateGetter.setPopulation(currentPrior);
-    const amountRaw = self._streamKeeper.getRetirementRate(application, substance);
+    const amountRaw = self._streamKeeper.getRetirementRate(
+      application,
+      substance,
+    );
     const amount = unitConverter.convert(amountRaw, "units");
     stateGetter.setPopulation(null);
 
-    const newPrior = new EngineNumber(currentPrior.getValue() - amount.getValue(), "units");
-    const newEquipment = new EngineNumber(currentEquipment.getValue() - amount.getValue(), "units");
+    const newPrior = new EngineNumber(
+      currentPrior.getValue() - amount.getValue(),
+      "units",
+    );
+    const newEquipment = new EngineNumber(
+      currentEquipment.getValue() - amount.getValue(),
+      "units",
+    );
 
     // Update streams
-    self._streamKeeper.setStream(application, substance, "priorEquipment", newPrior);
-    self._streamKeeper.setStream(application, substance, "equipment", newEquipment);
+    self._streamKeeper.setStream(
+      application,
+      substance,
+      "priorEquipment",
+      newPrior,
+    );
+    self._streamKeeper.setStream(
+      application,
+      substance,
+      "equipment",
+      newEquipment,
+    );
 
     // Propogate
     self._recalcPopulationChange();
@@ -852,4 +954,4 @@ class Engine {
   }
 }
 
-export {Engine};
+export { Engine };

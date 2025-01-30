@@ -1,18 +1,17 @@
-import {EngineNumber} from "engine_number";
+import { EngineNumber } from "engine_number";
 
-import {Scope, YearMatcher} from "engine_state";
+import { Scope, YearMatcher } from "engine_state";
 
-import {Engine} from "engine";
-
+import { Engine } from "engine";
 
 function buildEngineTests() {
-  QUnit.module("Engine", function() {
-    QUnit.test("initializes", function(assert) {
+  QUnit.module("Engine", function () {
+    QUnit.test("initializes", function (assert) {
       const engine = new Engine(1, 30);
       assert.notDeepEqual(engine, undefined);
     });
 
-    QUnit.test("changes scope", function(assert) {
+    QUnit.test("changes scope", function (assert) {
       const engine = new Engine(1, 30);
 
       engine.setStanza("default");
@@ -32,7 +31,7 @@ function buildEngineTests() {
       assert.deepEqual(scopeNewRet.getSubstance(), "test substance 2");
     });
 
-    QUnit.test("increments year", function(assert) {
+    QUnit.test("increments year", function (assert) {
       const engine = new Engine(1, 2);
       assert.equal(engine.getYear(), 1);
       assert.ok(!engine.getIsDone());
@@ -46,7 +45,7 @@ function buildEngineTests() {
       assert.ok(engine.getIsDone());
     });
 
-    QUnit.test("set stream", function(assert) {
+    QUnit.test("set stream", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -80,7 +79,7 @@ function buildEngineTests() {
       assert.deepEqual(importVal.getUnits(), "kg");
     });
 
-    QUnit.test("checks year", function(assert) {
+    QUnit.test("checks year", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -110,7 +109,7 @@ function buildEngineTests() {
       assert.deepEqual(manufactureVal.getUnits(), "kg");
     });
 
-    QUnit.test("determines populations", function(assert) {
+    QUnit.test("determines populations", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -134,7 +133,7 @@ function buildEngineTests() {
       assert.deepEqual(manufactureVal1.getUnits(), "units");
     });
 
-    QUnit.test("determines basic consumption", function(assert) {
+    QUnit.test("determines basic consumption", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -147,7 +146,10 @@ function buildEngineTests() {
         new YearMatcher(null, null),
       );
 
-      engine.equals(new EngineNumber(1, "tCO2e / kg"), new YearMatcher(null, null));
+      engine.equals(
+        new EngineNumber(1, "tCO2e / kg"),
+        new YearMatcher(null, null),
+      );
 
       engine.setStream(
         "manufacture",
@@ -160,7 +162,7 @@ function buildEngineTests() {
       assert.deepEqual(consumption.getUnits(), "tCO2e");
     });
 
-    QUnit.test("change stream", function(assert) {
+    QUnit.test("change stream", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -208,7 +210,7 @@ function buildEngineTests() {
       assert.deepEqual(count3.getUnits(), "kg");
     });
 
-    QUnit.test("manages parallel stream", function(assert) {
+    QUnit.test("manages parallel stream", function (assert) {
       const engine = new Engine(1, 3);
 
       const scope1 = new Scope("default", "test app", "sub 1");
@@ -252,7 +254,7 @@ function buildEngineTests() {
       assert.deepEqual(manufactureValParallel.getUnits(), "kg");
     });
 
-    QUnit.test("manages variables", function(assert) {
+    QUnit.test("manages variables", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -275,7 +277,7 @@ function buildEngineTests() {
       assert.equal(engine.getVariable("testVar"), 124);
     });
 
-    QUnit.test("applies caps", function(assert) {
+    QUnit.test("applies caps", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -309,7 +311,7 @@ function buildEngineTests() {
       assert.deepEqual(secondCapVal.getUnits(), "kg");
     });
 
-    QUnit.test("applies cap displace stream", function(assert) {
+    QUnit.test("applies cap displace stream", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -344,7 +346,7 @@ function buildEngineTests() {
       assert.deepEqual(displaceVal.getUnits(), "kg");
     });
 
-    QUnit.test("applies cap displace substance", function(assert) {
+    QUnit.test("applies cap displace substance", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -384,7 +386,7 @@ function buildEngineTests() {
       assert.deepEqual(displaceVal.getUnits(), "kg");
     });
 
-    QUnit.test("applies floor", function(assert) {
+    QUnit.test("applies floor", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -408,7 +410,7 @@ function buildEngineTests() {
       assert.deepEqual(floorVal.getUnits(), "kg");
     });
 
-    QUnit.test("applies floor displace stream", function(assert) {
+    QUnit.test("applies floor displace stream", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -443,7 +445,7 @@ function buildEngineTests() {
       assert.deepEqual(displaceVal.getUnits(), "kg");
     });
 
-    QUnit.test("applies floor displace substance", function(assert) {
+    QUnit.test("applies floor displace substance", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -483,7 +485,7 @@ function buildEngineTests() {
       assert.deepEqual(displaceVal.getUnits(), "kg");
     });
 
-    QUnit.test("replaces substances", function(assert) {
+    QUnit.test("replaces substances", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -524,7 +526,7 @@ function buildEngineTests() {
       assert.deepEqual(sub2Manufacture.getUnits(), "kg");
     });
 
-    QUnit.test("different initial charges", function(assert) {
+    QUnit.test("different initial charges", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -560,49 +562,52 @@ function buildEngineTests() {
       assert.deepEqual(population.getUnits(), "units");
     });
 
-    QUnit.test("different initial charges with intervention", function(assert) {
-      const engine = new Engine(1, 3);
+    QUnit.test(
+      "different initial charges with intervention",
+      function (assert) {
+        const engine = new Engine(1, 3);
 
-      engine.setStanza("default");
-      engine.setApplication("test app");
-      engine.setSubstance("test substance");
+        engine.setStanza("default");
+        engine.setApplication("test app");
+        engine.setSubstance("test substance");
 
-      engine.setInitialCharge(
-        new EngineNumber(5, "kg / unit"),
-        "manufacture",
-        new YearMatcher(null, null),
-      );
+        engine.setInitialCharge(
+          new EngineNumber(5, "kg / unit"),
+          "manufacture",
+          new YearMatcher(null, null),
+        );
 
-      engine.setInitialCharge(
-        new EngineNumber(10, "kg / unit"),
-        "import",
-        new YearMatcher(null, null),
-      );
+        engine.setInitialCharge(
+          new EngineNumber(10, "kg / unit"),
+          "import",
+          new YearMatcher(null, null),
+        );
 
-      engine.setStream(
-        "manufacture",
-        new EngineNumber(25, "kg"),
-        new YearMatcher(null, null),
-      );
+        engine.setStream(
+          "manufacture",
+          new EngineNumber(25, "kg"),
+          new YearMatcher(null, null),
+        );
 
-      engine.setStream(
-        "import",
-        new EngineNumber(20, "kg"),
-        new YearMatcher(null, null),
-      );
+        engine.setStream(
+          "import",
+          new EngineNumber(20, "kg"),
+          new YearMatcher(null, null),
+        );
 
-      engine.cap(
-        "import",
-        new EngineNumber(50, "%"),
-        new YearMatcher(null, null),
-      );
+        engine.cap(
+          "import",
+          new EngineNumber(50, "%"),
+          new YearMatcher(null, null),
+        );
 
-      const population = engine.getStream("equipment");
-      assert.closeTo(population.getValue(), 6, 0.0001);
-      assert.deepEqual(population.getUnits(), "units");
-    });
+        const population = engine.getStream("equipment");
+        assert.closeTo(population.getValue(), 6, 0.0001);
+        assert.deepEqual(population.getUnits(), "units");
+      },
+    );
 
-    QUnit.test("retires equipment in first year", function(assert) {
+    QUnit.test("retires equipment in first year", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -637,7 +642,7 @@ function buildEngineTests() {
       assert.deepEqual(manufactureVal2.getUnits(), "units");
     });
 
-    QUnit.test("retires equipment in multiple years", function(assert) {
+    QUnit.test("retires equipment in multiple years", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -677,7 +682,7 @@ function buildEngineTests() {
       assert.deepEqual(manufactureVal2.getUnits(), "units");
     });
 
-    QUnit.test("recharges in first year", function(assert) {
+    QUnit.test("recharges in first year", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -729,7 +734,7 @@ function buildEngineTests() {
       assert.deepEqual(equipmentVal2.getUnits(), "units");
     });
 
-    QUnit.test("recharges in multiple years", function(assert) {
+    QUnit.test("recharges in multiple years", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -791,7 +796,7 @@ function buildEngineTests() {
       assert.deepEqual(salesVal2.getUnits(), "kg");
     });
 
-    QUnit.test("recycles with no displacement", function(assert) {
+    QUnit.test("recycles with no displacement", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -867,7 +872,7 @@ function buildEngineTests() {
       assert.deepEqual(equipmentVal2.getUnits(), "units");
     });
 
-    QUnit.test("recycles with full displacement", function(assert) {
+    QUnit.test("recycles with full displacement", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -943,7 +948,7 @@ function buildEngineTests() {
       assert.deepEqual(equipmentVal2.getUnits(), "units");
     });
 
-    QUnit.test("recycles with half displacement", function(assert) {
+    QUnit.test("recycles with half displacement", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -1019,7 +1024,7 @@ function buildEngineTests() {
       assert.deepEqual(equipmentVal2.getUnits(), "units");
     });
 
-    QUnit.test("combine retire and recharge", function(assert) {
+    QUnit.test("combine retire and recharge", function (assert) {
       const engine = new Engine(1, 3);
 
       engine.setStanza("default");
@@ -1074,4 +1079,4 @@ function buildEngineTests() {
   });
 }
 
-export {buildEngineTests};
+export { buildEngineTests };

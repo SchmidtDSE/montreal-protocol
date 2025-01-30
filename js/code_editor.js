@@ -78,4 +78,4 @@ class CodeEditorPresenter {
   }
 }
 
-export {CodeEditorPresenter};
+export { CodeEditorPresenter };

@@ -1,12 +1,11 @@
-import {CodeEditorPresenter} from "code_editor";
-import {Compiler} from "compiler";
-import {ReportDataWrapper} from "report_data";
-import {ResultsPresenter} from "results";
-import {UiEditorPresenter} from "ui_editor";
-import {UiTranslatorCompiler} from "ui_translator";
+import { CodeEditorPresenter } from "code_editor";
+import { Compiler } from "compiler";
+import { ReportDataWrapper } from "report_data";
+import { ResultsPresenter } from "results";
+import { UiEditorPresenter } from "ui_editor";
+import { UiTranslatorCompiler } from "ui_translator";
 
 const WHITESPACE_REGEX = new RegExp("^\\s*$");
-
 
 class ButtonPanelPresenter {
   constructor(root, onBuild) {
@@ -48,7 +47,6 @@ class ButtonPanelPresenter {
   }
 }
 
-
 class MainPresenter {
   constructor() {
     const self = this;
@@ -61,7 +59,9 @@ class MainPresenter {
       document.getElementById("code-buttons-panel"),
       () => self._onBuild(true),
     );
-    self._resultsPresenter = new ResultsPresenter(document.getElementById("results"));
+    self._resultsPresenter = new ResultsPresenter(
+      document.getElementById("results"),
+    );
 
     self._uiEditorPresenter = new UiEditorPresenter(
       false,
@@ -76,7 +76,10 @@ class MainPresenter {
     if (source) {
       self._codeEditorPresenter.setCode(source);
       const results = self._getCodeAsObj();
-      if (results.getErrors().length > 0 || !results.getProgram().getIsCompatible()) {
+      if (
+        results.getErrors().length > 0 ||
+        !results.getProgram().getIsCompatible()
+      ) {
         self._uiEditorPresenter.showCode();
       } else {
         self._uiEditorPresenter.forceCodeObj(results.getProgram());
@@ -176,7 +179,10 @@ class MainPresenter {
 
   _getCodeAsObj(overrideCode) {
     const self = this;
-    const code = overrideCode === undefined ? self._codeEditorPresenter.getCode() : overrideCode;
+    const code =
+      overrideCode === undefined
+        ? self._codeEditorPresenter.getCode()
+        : overrideCode;
     const compiler = new UiTranslatorCompiler();
     const result = compiler.compile(code);
     return result;
@@ -222,7 +228,7 @@ class MainPresenter {
       if (file) {
         const reader = new FileReader();
         reader.readAsText(file, "UTF-8");
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           self._codeEditorPresenter.setCode(event.target.result);
           self._onCodeChange();
           loadFileDialog.close();
@@ -236,7 +242,11 @@ class MainPresenter {
     const self = this;
     const button = document.getElementById("workshop-sample-button");
     button.addEventListener("click", () => {
-      if (confirm("This will clear you current analysis. Do you want to continue?")) {
+      if (
+        confirm(
+          "This will clear you current analysis. Do you want to continue?",
+        )
+      ) {
         const code = document.getElementById("workshop-sample").innerHTML;
         self._codeEditorPresenter.setCode(code);
         self._onCodeChange();
@@ -246,10 +256,8 @@ class MainPresenter {
   }
 }
 
-
 function main() {
   const mainPresenter = new MainPresenter();
 }
 
-
-export {main};
+export { main };

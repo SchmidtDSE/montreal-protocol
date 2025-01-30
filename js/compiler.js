@@ -4,12 +4,11 @@
  * @license BSD, see LICENSE.md.
  */
 
-import {EngineNumber} from "engine_number";
-import {Engine} from "engine";
-import {YearMatcher} from "engine_state";
+import { EngineNumber } from "engine_number";
+import { Engine } from "engine";
+import { YearMatcher } from "engine_state";
 
 const toolkit = QubecTalk.getToolkit();
-
 
 /**
  * Visitor which compiles a QubecTalk program to JS lambdas.
@@ -147,12 +146,20 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitGetStreamIndirect(ctx) {
     const self = this;
-    return self.buildStreamGetExpression(ctx.target.getText(), ctx.rescope.accept(self), null);
+    return self.buildStreamGetExpression(
+      ctx.target.getText(),
+      ctx.rescope.accept(self),
+      null,
+    );
   }
 
   visitGetStreamConversion(ctx) {
     const self = this;
-    return self.buildStreamGetExpression(ctx.target.getText(), null, ctx.conversion.accept(self));
+    return self.buildStreamGetExpression(
+      ctx.target.getText(),
+      null,
+      ctx.conversion.accept(self),
+    );
   }
 
   visitGetStreamIndirectSubstanceAppUnits(ctx) {
@@ -300,7 +307,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitAboutStanza(ctx) {
     const self = this;
-    return {name: "about"};
+    return { name: "about" };
   }
 
   visitDefaultStanza(ctx) {
@@ -317,7 +324,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
       engine.setStanza("default");
       appCommands.forEach((command) => command(engine));
     };
-    return {name: "default", executable: execute};
+    return { name: "default", executable: execute };
   }
 
   visitPolicyStanza(ctx) {
@@ -335,7 +342,7 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
       engine.setStanza("policy " + policyName);
       appCommands.forEach((command) => command(engine));
     };
-    return {name: "policy " + policyName, executable: execute};
+    return { name: "policy " + policyName, executable: execute };
   }
 
   visitSimulationsStanza(ctx) {
@@ -349,9 +356,9 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
     const simulations = appChildren.map((x) => x.accept(self));
     return {
-      "name": "simulations",
-      "executable": [(engine) => engine.setStanza("simulations")],
-      "simulations": simulations,
+      name: "simulations",
+      executable: [(engine) => engine.setStanza("simulations")],
+      simulations: simulations,
     };
   }
 
@@ -380,7 +387,9 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitSubstanceDef(ctx) {
     const self = this;
-    return self.buildDef(ctx, (engine, name) => engine.setSubstance(name, false));
+    return self.buildDef(ctx, (engine, name) =>
+      engine.setSubstance(name, false),
+    );
   }
 
   visitApplicationMod(ctx) {
@@ -390,7 +399,9 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitSubstanceMod(ctx) {
     const self = this;
-    return self.buildDef(ctx, (engine, name) => engine.setSubstance(name, true));
+    return self.buildDef(ctx, (engine, name) =>
+      engine.setSubstance(name, true),
+    );
   }
 
   buildStreamMod(callback, ctx, durationFuture) {
@@ -409,8 +420,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     const self = this;
     const capType = ctx.getChild(0).getText();
     const strategy = {
-      "cap": (engine, stream, value, duration) => engine.cap(stream, value, duration, displace),
-      "floor": (engine, stream, value, duration) => engine.floor(stream, value, duration, displace),
+      cap: (engine, stream, value, duration) =>
+        engine.cap(stream, value, duration, displace),
+      floor: (engine, stream, value, duration) =>
+        engine.floor(stream, value, duration, displace),
     }[capType];
     return self.buildStreamMod(strategy, ctx, durationFuture);
   }
@@ -422,7 +435,9 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitLimitCommandDisplacingAllYears(ctx) {
     const self = this;
-    const displaceTarget = self._getStringWithoutQuotes(ctx.getChild(5).getText());
+    const displaceTarget = self._getStringWithoutQuotes(
+      ctx.getChild(5).getText(),
+    );
     return self.buildCap(ctx, (engine) => null, displaceTarget);
   }
 
@@ -435,14 +450,17 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   visitLimitCommandDisplacingDuration(ctx) {
     const self = this;
     const durationFuture = ctx.duration.accept(self);
-    const displaceTarget = self._getStringWithoutQuotes(ctx.getChild(5).getText());
+    const displaceTarget = self._getStringWithoutQuotes(
+      ctx.getChild(5).getText(),
+    );
     return self.buildCap(ctx, durationFuture, displaceTarget);
   }
 
   buildChange(ctx, durationFuture) {
     const self = this;
     return self.buildStreamMod(
-      (engine, stream, value, duration) => engine.changeStream(stream, value, duration),
+      (engine, stream, value, duration) =>
+        engine.changeStream(stream, value, duration),
       ctx,
       durationFuture,
     );
@@ -537,7 +555,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   visitRecoverAllYears(ctx) {
     const self = this;
-    return self.buildRecover(ctx, (engine) => null, (engine) => null);
+    return self.buildRecover(
+      ctx,
+      (engine) => null,
+      (engine) => null,
+    );
   }
 
   visitRecoverDuration(ctx) {
@@ -663,7 +685,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
       const start = startFuture(engine);
       const end = endFuture(engine);
       const numTrials = futureNumTrials(engine);
-      return {name: name, stanzas: stanzas, trials: numTrials, start: start, end: end};
+      return {
+        name: name,
+        stanzas: stanzas,
+        trials: numTrials,
+        start: start,
+        end: end,
+      };
     };
   }
 
@@ -782,14 +810,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 
   _getStringWithoutQuotes(target) {
     const self = this;
-    if (target.startsWith("\"") && target.endsWith("\"")) {
+    if (target.startsWith('"') && target.endsWith('"')) {
       return target.substring(1, target.length - 1);
     } else {
       return target;
     }
   }
 }
-
 
 class SimulationResult {
   constructor(name, trialResults) {
@@ -808,7 +835,6 @@ class SimulationResult {
     return self._trialResults;
   }
 }
-
 
 /**
  * Structure contianing the result of attempting to compile a QubecTalk script.
@@ -846,7 +872,6 @@ class CompileResult {
     return self._errors;
   }
 }
-
 
 class Compiler {
   compile(input) {
@@ -895,5 +920,4 @@ class Compiler {
   }
 }
 
-
-export {Compiler};
+export { Compiler };

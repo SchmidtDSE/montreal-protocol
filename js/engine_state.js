@@ -6,10 +6,7 @@ import {
   STREAM_BASE_UNITS,
 } from "engine_const";
 
-import {
-  EngineNumber,
-} from "engine_number";
-
+import { EngineNumber } from "engine_number";
 
 /**
  * Class representing a range of years where inclusion can be tested.
@@ -402,8 +399,8 @@ class StreamParameterization {
     const createZero = (x) => new EngineNumber(0, x);
     self._ghgIntensity = createZero("tCO2e / kg");
     self._initialCharge = {
-      "manufacture": createZero("kg / unit"),
-      "import": createZero("kg / unit"),
+      manufacture: createZero("kg / unit"),
+      import: createZero("kg / unit"),
     };
     self._rechargePopulation = createZero("%");
     self._rechargeIntensity = createZero("kg / unit");
@@ -504,7 +501,6 @@ class StreamParameterization {
   }
 }
 
-
 class SubstanceInApplicationId {
   constructor(application, substance) {
     const self = this;
@@ -522,7 +518,6 @@ class SubstanceInApplicationId {
     return self._substance;
   }
 }
-
 
 class StreamKeeper {
   constructor(unitConverter) {
@@ -803,7 +798,9 @@ class StreamKeeper {
 
     if (!self.hasSubstance(application, substance)) {
       const pairStr = application + ", " + substance;
-      throw "Not a known application substance pair in " + context + ": " + pairStr;
+      throw (
+        "Not a known application substance pair in " + context + ": " + pairStr
+      );
     }
   }
 
