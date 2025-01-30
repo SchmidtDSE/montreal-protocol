@@ -6,6 +6,10 @@ import { UiEditorPresenter } from "ui_editor";
 import { UiTranslatorCompiler } from "ui_translator";
 
 const WHITESPACE_REGEX = new RegExp("^\\s*$");
+const NEW_APP_MESSAGE = [
+  "Starting a new application will clear your work.",
+  "Do you want to continue?",
+].join(" ");
 
 class ButtonPanelPresenter {
   constructor(root, onBuild) {
@@ -87,8 +91,7 @@ class MainPresenter {
     }
 
     self._onCodeChange();
-    self._setupLoadDialog();
-    self._setupWorkshopSample();
+    self._setupFileCallbacks();
   }
 
   _onCodeChange() {
@@ -204,9 +207,24 @@ class MainPresenter {
     self._onBuild(true);
   }
 
-  _setupLoadDialog() {
+  _setupFileCallbacks() {
     const self = this;
     const loadFileDialog = document.getElementById("load-file-dialog");
+
+    const setCode = (code) => {
+      self._codeEditorPresenter.setCode(code);
+      self._onCodeChange();
+      loadFileDialog.close();
+      self._onBuild(true);
+    };
+
+    const newFileButton = document.getElementById("new-file-button");
+    newFileButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (confirm(NEW_APP_MESSAGE)) {
+        setCode("");
+      }
+    });
 
     const loadFileButton = document.getElementById("load-file-button");
     loadFileButton.addEventListener("click", (event) => {
@@ -230,27 +248,9 @@ class MainPresenter {
         reader.readAsText(file, "UTF-8");
         reader.onload = function (event) {
           self._codeEditorPresenter.setCode(event.target.result);
-          self._onCodeChange();
+          setCode(event.target.result);
           loadFileDialog.close();
-          self._onBuild(true);
         };
-      }
-    });
-  }
-
-  _setupWorkshopSample() {
-    const self = this;
-    const button = document.getElementById("workshop-sample-button");
-    button.addEventListener("click", () => {
-      if (
-        confirm(
-          "This will clear you current analysis. Do you want to continue?",
-        )
-      ) {
-        const code = document.getElementById("workshop-sample").innerHTML;
-        self._codeEditorPresenter.setCode(code);
-        self._onCodeChange();
-        self._uiEditorPresenter.showCode();
       }
     });
   }
