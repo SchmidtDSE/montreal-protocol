@@ -404,6 +404,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildDuring(getStartYear, getStartYear);
   }
 
+  /**
+   * Process a date range duration node
+   * @param {Object} ctx - The parser context containing the range
+   * @returns {Function} A function that creates a matcher for the date range
+   */
   visitDuringRange(ctx) {
     const self = this;
     const lowerFuture = ctx.lower.accept(self);
@@ -411,6 +416,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildDuring(lowerFuture, upperFuture);
   }
 
+  /**
+   * Process a duration with minimum year
+   * @param {Object} ctx - The parser context containing the minimum year
+   * @returns {Function} A function that creates a matcher from min year to end
+   */
   visitDuringWithMin(ctx) {
     const self = this;
     const lowerFuture = ctx.lower.accept(self);
@@ -418,6 +428,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildDuring(lowerFuture, upperFuture);
   }
 
+  /**
+   * Process a duration with maximum year
+   * @param {Object} ctx - The parser context containing the maximum year
+   * @returns {Function} A function that creates a matcher from start to max year
+   */
   visitDuringWithMax(ctx) {
     const self = this;
     const lowerFuture = (engine) => engine.getStartYear();
@@ -425,6 +440,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildDuring(lowerFuture, upperFuture);
   }
 
+  /**
+   * Process a duration covering all years
+   * @param {Object} ctx - The parser context
+   * @returns {Function} A function that creates a matcher for all years
+   */
   visitDuringAll(ctx) {
     const self = this;
     return (engine) => null;
@@ -607,23 +627,43 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildStreamMod(strategy, ctx, durationFuture);
   }
 
+  /**
+   * Process a limit command applying to all years
+   * @param {Object} ctx - The parser context for the limit command
+   * @returns {Function} A function that applies the limit for all years
+   */
   visitLimitCommandAllYears(ctx) {
     const self = this;
     return self.buildCap(ctx, (engine) => null, null);
   }
 
+  /**
+   * Process a displacing limit command for all years
+   * @param {Object} ctx - The parser context for the displacing limit
+   * @returns {Function} A function that applies the displacing limit
+   */
   visitLimitCommandDisplacingAllYears(ctx) {
     const self = this;
     const displaceTarget = self._getStringWithoutQuotes(ctx.getChild(5).getText());
     return self.buildCap(ctx, (engine) => null, displaceTarget);
   }
 
+  /**
+   * Process a limit command for a specific duration
+   * @param {Object} ctx - The parser context for the duration limit
+   * @returns {Function} A function that applies the limit for the duration
+   */
   visitLimitCommandDuration(ctx) {
     const self = this;
     const durationFuture = ctx.duration.accept(self);
     return self.buildCap(ctx, durationFuture);
   }
 
+  /**
+   * Process a displacing limit command for a duration
+   * @param {Object} ctx - The parser context for the displacing duration limit
+   * @returns {Function} A function that applies the displacing limit for the duration
+   */
   visitLimitCommandDisplacingDuration(ctx) {
     const self = this;
     const durationFuture = ctx.duration.accept(self);
@@ -631,6 +671,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildCap(ctx, durationFuture, displaceTarget);
   }
 
+  /**
+   * Build a stream change function
+   * @param {Object} ctx - The parser context for the change
+   * @param {Function} durationFuture - Function to determine the duration
+   * @returns {Function} A function that executes the stream change
+   */
   buildChange(ctx, durationFuture) {
     const self = this;
     return self.buildStreamMod(
@@ -640,17 +686,32 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     );
   }
 
+  /**
+   * Process a change command for all years
+   * @param {Object} ctx - The parser context for the change
+   * @returns {Function} A function that applies the change for all years
+   */
   visitChangeAllYears(ctx) {
     const self = this;
     return self.buildChange(ctx, (engine) => null);
   }
 
+  /**
+   * Process a change command for a specific duration
+   * @param {Object} ctx - The parser context for the duration change
+   * @returns {Function} A function that applies the change for the duration
+   */
   visitChangeDuration(ctx) {
     const self = this;
     const durationFuture = ctx.duration.accept(self);
     return self.buildChange(ctx, durationFuture);
   }
 
+  /**
+   * Process a variable definition statement
+   * @param {Object} ctx - The parser context for the variable definition
+   * @returns {Function} A function that defines and initializes the variable
+   */
   visitDefineVarStatement(ctx) {
     const self = this;
     const identifier = ctx.target.getText();
