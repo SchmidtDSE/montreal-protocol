@@ -1,7 +1,7 @@
 /**
  * Presenter class for handling code editor functionality.
  *
- * @
+ * @license BSD
  */
 
 class CodeEditorPresenter {
