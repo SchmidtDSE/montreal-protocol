@@ -11,12 +11,15 @@ import {YearMatcher} from "engine_state";
 const toolkit = QubecTalk.getToolkit();
 
 /**
- * Visitor which compiles a QubecTalk program to JS lambdas.
- *
- * Visitor which compiles a QubecTalk program to QubecTalkProgram which contains JS lambdas and
- * simulation functions.
+ * A visitor class that compiles QubecTalk code into executable functions
+ * @extends {toolkit.QubecTalkVisitor}
  */
 class CompileVisitor extends toolkit.QubecTalkVisitor {
+  /**
+   * Visits a number node in the AST
+   * @param {Object} ctx - The parser context containing the number
+   * @returns {Function} A function that returns the parsed number
+   */
   visitNumber(ctx) {
     const self = this;
 
