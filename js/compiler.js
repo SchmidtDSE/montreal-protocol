@@ -245,6 +245,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     );
   }
 
+  /**
+   * Process a min limit expression that sets a minimum value
+   * @param {Object} ctx - The parser context containing the min expression
+   * @returns {Function} A function that evaluates and returns the limited value
+   */
   visitLimitMinExpression(ctx) {
     const self = this;
 
@@ -258,6 +263,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a max limit expression that sets a maximum value
+   * @param {Object} ctx - The parser context containing the max expression
+   * @returns {Function} A function that evaluates and returns the limited value
+   */
   visitLimitMaxExpression(ctx) {
     const self = this;
 
@@ -271,6 +281,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a bound expression that sets both minimum and maximum values
+   * @param {Object} ctx - The parser context containing the bound expression
+   * @returns {Function} A function that evaluates and returns the bounded value
+   */
   visitLimitBoundExpression(ctx) {
     const self = this;
 
@@ -292,11 +307,21 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a parenthetical expression
+   * @param {Object} ctx - The parser context containing the parenthetical expression
+   * @returns {Function} A function that evaluates the expression inside parentheses
+   */
   visitParenExpression(ctx) {
     const self = this;
     return ctx.getChild(1).accept(self);
   }
 
+  /**
+   * Process an expression for drawing from a normal distribution
+   * @param {Object} ctx - The parser context containing the normal distribution parameters
+   * @returns {Function} A function that generates normally distributed random values
+   */
   visitDrawNormalExpression(ctx) {
     const self = this;
     const meanFuture = ctx.mean.accept(self);
@@ -310,6 +335,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process an expression for drawing from a uniform distribution
+   * @param {Object} ctx - The parser context containing the uniform distribution parameters
+   * @returns {Function} A function that generates uniformly distributed random values
+   */
   visitDrawUniformExpression(ctx) {
     const self = this;
     const lowFuture = ctx.low.accept(self);
