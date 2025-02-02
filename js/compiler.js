@@ -353,6 +353,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a simple identifier node in the AST
+   * @param {Object} ctx - The parser context containing the identifier
+   * @returns {Function} A function that retrieves the variable value from the engine
+   */
   visitSimpleIdentifier(ctx) {
     const self = this;
     const identifier = ctx.getChild(0).getText();
@@ -362,6 +367,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Build a function that creates a year duration matcher
+   * @param {Function|null} minYearMaybe - Function to get minimum year or null
+   * @param {Function|null} maxYearMaybe - Function to get maximum year or null
+   * @returns {Function} A function that returns a YearMatcher object
+   */
   buildDuring(minYearMaybe, maxYearMaybe) {
     const self = this;
     return (engine) => {
@@ -409,11 +420,21 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return (engine) => null;
   }
 
+  /**
+   * Process an about stanza node in the AST
+   * @param {Object} ctx - The parser context for the about stanza
+   * @returns {Object} A stanza descriptor object
+   */
   visitAboutStanza(ctx) {
     const self = this;
     return {name: "about"};
   }
 
+  /**
+   * Process a default stanza node in the AST
+   * @param {Object} ctx - The parser context for the default stanza
+   * @returns {Object} A stanza descriptor object with executable function
+   */
   visitDefaultStanza(ctx) {
     const self = this;
     const numApplications = ctx.getChildCount() - 4;
@@ -431,6 +452,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return {name: "default", executable: execute};
   }
 
+  /**
+   * Process a policy stanza node in the AST
+   * @param {Object} ctx - The parser context for the policy stanza
+   * @returns {Object} A stanza descriptor object with executable function
+   */
   visitPolicyStanza(ctx) {
     const self = this;
     const policyName = self._getStringWithoutQuotes(ctx.name.getText());
@@ -449,6 +475,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return {name: "policy " + policyName, executable: execute};
   }
 
+  /**
+   * Process a simulations stanza node in the AST
+   * @param {Object} ctx - The parser context for the simulations stanza
+   * @returns {Object} A stanza descriptor object with simulations and executable
+   */
   visitSimulationsStanza(ctx) {
     const self = this;
     const numApplications = ctx.getChildCount() - 4;
@@ -466,6 +497,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Build a definition processing function
+   * @param {Object} ctx - The parser context for the definition
+   * @param {Function} scopeSetter - Function to set the scope in the engine
+   * @returns {Function} An executable function that processes the definition
+   */
   buildDef(ctx, scopeSetter) {
     const self = this;
     const name = self._getStringWithoutQuotes(ctx.name.getText());
@@ -484,6 +521,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return execute;
   }
 
+  /**
+   * Process an application definition node in the AST
+   * @param {Object} ctx - The parser context for the application definition
+   * @returns {Function} An executable function that processes the application
+   */
   visitApplicationDef(ctx) {
     const self = this;
     return self.buildDef(ctx, (engine, name) => engine.setApplication(name));
