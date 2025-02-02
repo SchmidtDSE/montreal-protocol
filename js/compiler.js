@@ -1246,7 +1246,16 @@ class CompileResult {
   }
 }
 
+/**
+ * Compiler class for QubecTalk scripts.
+ * Handles parsing and compilation of QubecTalk code into executable functions.
+ */
 class Compiler {
+  /**
+   * Compiles QubecTalk code into an executable function
+   * @param {string} input - The QubecTalk source code to compile
+   * @returns {CompileResult} A result object containing either the compiled program or errors
+   */
   compile(input) {
     const self = this;
 
