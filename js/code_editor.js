@@ -1,12 +1,15 @@
-
 /**
- * Presenter class for handling code editor functionality
+ * Presenter class for handling code editor functionality.
+ *
+ * @
  */
+
 class CodeEditorPresenter {
   /**
    * Creates a new CodeEditorPresenter instance
-   * @param {HTMLElement} root - The root element containing the editor
-   * @param {Function} onChange - Callback function triggered when editor content changes
+   *
+   * @param {HTMLElement} root - The root element containing the editor.
+   * @param {Function} onChange - Callback function triggered when editor content changes.
    */
   constructor(root, onChange) {
     const self = this;
@@ -19,7 +22,9 @@ class CodeEditorPresenter {
   }
 
   /**
-   * Forces an update of the editor layout
+   * Force a redraw of the editor.
+   *
+   * Force a redraw of the editor, pushing the request into the event queue.
    */
   forceUpdate() {
     const self = this;
@@ -29,8 +34,9 @@ class CodeEditorPresenter {
   }
 
   /**
-   * Gets the current code content from the editor
-   * @returns {string} The current code in the editor
+   * Gets the current code in the editor.
+   *
+   * @returns {string} The current editor content.
    */
   getCode() {
     const self = this;
@@ -39,7 +45,8 @@ class CodeEditorPresenter {
 
   /**
    * Sets new code content in the editor
-   * @param {string} code - The code to set in the editor
+   *
+   * @param {string} code - The code to set in the editor.
    */
   setCode(code) {
     const self = this;
@@ -48,8 +55,9 @@ class CodeEditorPresenter {
   }
 
   /**
-   * Displays an error message
-   * @param {string} error - The error message to display
+   * Display an error message.
+   *
+   * @param {string} error - The error message to display.
    */
   showError(error) {
     const self = this;
@@ -70,7 +78,8 @@ class CodeEditorPresenter {
   }
 
   /**
-   * Initializes the Ace editor instance
+   * Initializes the Ace editor.
+   *
    * @private
    */
   _initEditor() {
@@ -102,7 +111,8 @@ class CodeEditorPresenter {
   }
 
   /**
-   * Gets the Ace editor instance
+   * Gets the Ace editor instance.
+   *
    * @private
    * @returns {Object} The Ace editor instance
    */
