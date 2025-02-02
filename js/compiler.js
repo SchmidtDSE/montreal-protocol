@@ -86,6 +86,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return ctx.getChild(0).accept(self);
   }
 
+  /**
+   * Process a conditional comparison expression
+   * @param {Object} ctx - The parser context containing the condition
+   * @returns {Function} A function that evaluates the condition and returns 1 (true) or 0 (false)
+   */
   visitConditionExpression(ctx) {
     const self = this;
 
@@ -106,6 +111,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process an if-then-else conditional expression
+   * @param {Object} ctx - The parser context containing the condition and branches
+   * @returns {Function} A function that evaluates the condition and returns the appropriate branch result
+   */
   visitConditionalExpression(ctx) {
     const self = this;
 
@@ -122,6 +132,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Build an arithmetic expression function
+   * @param {Object} ctx - The parser context containing the expression
+   * @param {string} op - The operator to use (+, -, *, /, ^)
+   * @returns {Function} A function that evaluates the arithmetic expression
+   */
   buildAirthmeticExpression(ctx, op) {
     const self = this;
 
@@ -140,16 +156,31 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process an addition or subtraction expression
+   * @param {Object} ctx - The parser context containing the expression
+   * @returns {Function} A function that evaluates the addition/subtraction
+   */
   visitAdditionExpression(ctx) {
     const self = this;
     return self.buildAirthmeticExpression(ctx, ctx.op.text);
   }
 
+  /**
+   * Process a multiplication or division expression
+   * @param {Object} ctx - The parser context containing the expression
+   * @returns {Function} A function that evaluates the multiplication/division
+   */
   visitMultiplyExpression(ctx) {
     const self = this;
     return self.buildAirthmeticExpression(ctx, ctx.op.text);
   }
 
+  /**
+   * Process an exponentiation expression
+   * @param {Object} ctx - The parser context containing the expression
+   * @returns {Function} A function that evaluates the exponentiation
+   */
   visitPowExpression(ctx) {
     const self = this;
     return self.buildAirthmeticExpression(ctx, "^");
