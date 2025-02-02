@@ -382,12 +382,22 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a single year duration node
+   * @param {Object} ctx - The parser context containing the year
+   * @returns {Function} A function that creates a matcher for the specific year
+   */
   visitDuringSingleYear(ctx) {
     const self = this;
     const yearFuture = ctx.target.accept(self);
     return self.buildDuring(yearFuture, yearFuture);
   }
 
+  /**
+   * Process a start year duration node
+   * @param {Object} ctx - The parser context for the start year
+   * @returns {Function} A function that creates a matcher for the start year
+   */
   visitDuringStart(ctx) {
     const self = this;
     const getStartYear = (engine) => engine.getStartYear();
@@ -531,21 +541,43 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildDef(ctx, (engine, name) => engine.setApplication(name));
   }
 
+  /**
+   * Process a substance definition node
+   * @param {Object} ctx - The parser context for the substance definition
+   * @returns {Function} A function that processes the substance definition
+   */
   visitSubstanceDef(ctx) {
     const self = this;
     return self.buildDef(ctx, (engine, name) => engine.setSubstance(name, false));
   }
 
+  /**
+   * Process an application modification node
+   * @param {Object} ctx - The parser context for the application modification
+   * @returns {Function} A function that processes the application modification
+   */
   visitApplicationMod(ctx) {
     const self = this;
     return self.buildDef(ctx, (engine, name) => engine.setApplication(name));
   }
 
+  /**
+   * Process a substance modification node
+   * @param {Object} ctx - The parser context for the substance modification
+   * @returns {Function} A function that processes the substance modification
+   */
   visitSubstanceMod(ctx) {
     const self = this;
     return self.buildDef(ctx, (engine, name) => engine.setSubstance(name, true));
   }
 
+  /**
+   * Build a stream modification function
+   * @param {Function} callback - The modification callback to execute
+   * @param {Object} ctx - The parser context for the stream modification
+   * @param {Function} durationFuture - Function to determine the duration
+   * @returns {Function} A function that executes the stream modification
+   */
   buildStreamMod(callback, ctx, durationFuture) {
     const self = this;
     const streamName = ctx.target.getText();
@@ -558,6 +590,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Build a cap or floor function for stream values
+   * @param {Object} ctx - The parser context for the cap/floor operation
+   * @param {Function} durationFuture - Function to determine the duration
+   * @param {string|null} displace - The displacement target if any
+   * @returns {Function} A function that applies the cap/floor operation
+   */
   buildCap(ctx, durationFuture, displace) {
     const self = this;
     const capType = ctx.getChild(0).getText();
