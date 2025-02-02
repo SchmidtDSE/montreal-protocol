@@ -33,11 +33,21 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return (engine) => bodyParsed;
   }
 
+  /**
+   * Process a string literal node in the AST
+   * @param {Object} ctx - The parser context containing the string
+   * @returns {Function} A function that returns the string without quotes
+   */
   visitString(ctx) {
     const self = this;
     return (engine) => self._getStringWithoutQuotes(ctx.getText());
   }
 
+  /**
+   * Process a unit or ratio node in the AST
+   * @param {Object} ctx - The parser context containing the unit or ratio
+   * @returns {string} The unit string or ratio expression
+   */
   visitUnitOrRatio(ctx) {
     const self = this;
     if (ctx.getChildCount() == 1) {
@@ -49,6 +59,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     }
   }
 
+  /**
+   * Process a value with units node in the AST
+   * @param {Object} ctx - The parser context containing the value and unit
+   * @returns {Function} A function that returns an EngineNumber with the value and unit
+   */
   visitUnitValue(ctx) {
     const self = this;
 
@@ -61,6 +76,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a simple expression node in the AST
+   * @param {Object} ctx - The parser context containing the expression
+   * @returns {Function} A function that evaluates the expression
+   */
   visitSimpleExpression(ctx) {
     const self = this;
     return ctx.getChild(0).accept(self);
