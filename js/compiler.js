@@ -724,6 +724,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process an initial charge command for all years
+   * @param {Object} ctx - The parser context for the initial charge
+   * @returns {Function} A function that sets the initial charge
+   */
   visitInitialChargeAllYears(ctx) {
     const self = this;
     const stream = ctx.target.getText();
@@ -735,6 +740,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process an initial charge command for a specific duration
+   * @param {Object} ctx - The parser context for the duration-specific charge
+   * @returns {Function} A function that sets the initial charge for the duration
+   */
   visitInitialChargeDuration(ctx) {
     const self = this;
     const stream = ctx.target.getText();
@@ -748,6 +758,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a recharge command for all years
+   * @param {Object} ctx - The parser context for the recharge command
+   * @returns {Function} A function that executes the recharge operation
+   */
   visitRechargeAllYears(ctx) {
     const self = this;
     const populationFuture = ctx.population.accept(self);
@@ -760,6 +775,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a recharge command for a specific duration
+   * @param {Object} ctx - The parser context for the duration-specific recharge
+   * @returns {Function} A function that executes the recharge for the duration
+   */
   visitRechargeDuration(ctx) {
     const self = this;
     const populationFuture = ctx.population.accept(self);
@@ -774,6 +794,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Build a recovery operation function
+   * @param {Object} ctx - The parser context for the recovery
+   * @param {Function} displacementFuture - Function to determine displacement
+   * @param {Function} durationFuture - Function to determine duration
+   * @returns {Function} A function that executes the recovery operation
+   */
   buildRecover(ctx, displacementFuture, durationFuture) {
     const self = this;
     const volumeFuture = ctx.volume.accept(self);
@@ -788,6 +815,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a recovery command for all years
+   * @param {Object} ctx - The parser context for the recovery
+   * @returns {Function} A function that executes the recovery for all years
+   */
   visitRecoverAllYears(ctx) {
     const self = this;
     return self.buildRecover(
@@ -797,18 +829,33 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     );
   }
 
+  /**
+   * Process a recovery command for a specific duration
+   * @param {Object} ctx - The parser context for the duration-specific recovery
+   * @returns {Function} A function that executes the recovery for the duration
+   */
   visitRecoverDuration(ctx) {
     const self = this;
     const durationFuture = ctx.duration.accept(self);
     return self.buildRecover(ctx, (engine) => null, durationFuture);
   }
 
+  /**
+   * Process a recovery command with displacement for all years
+   * @param {Object} ctx - The parser context for the recovery with displacement
+   * @returns {Function} A function that executes the recovery with displacement
+   */
   visitRecoverDisplacementAllYears(ctx) {
     const self = this;
     const displacementFuture = ctx.displacement.accept(self);
     return self.buildRecover(ctx, displacementFuture, (engine) => null);
   }
 
+  /**
+   * Process a recovery command with displacement for a specific duration
+   * @param {Object} ctx - The parser context for the duration-specific recovery with displacement
+   * @returns {Function} A function that executes the recovery with displacement for the duration
+   */
   visitRecoverDisplacementDuration(ctx) {
     const self = this;
     const displacementFuture = ctx.displacement.accept(self);
@@ -816,6 +863,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildRecover(ctx, displacementFuture, durationFuture);
   }
 
+  /**
+   * Process a replace command for all years
+   * @param {Object} ctx - The parser context for the replace command
+   * @returns {Function} A function that executes the replacement
+   */
   visitReplaceAllYears(ctx) {
     const self = this;
     const volumeFuture = ctx.volume.accept(self);
@@ -828,6 +880,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a replace command for a specific duration
+   * @param {Object} ctx - The parser context for the duration-specific replace
+   * @returns {Function} A function that executes the replacement for the duration
+   */
   visitReplaceDuration(ctx) {
     const self = this;
     const volumeFuture = ctx.volume.accept(self);
