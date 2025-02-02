@@ -186,6 +186,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildAirthmeticExpression(ctx, "^");
   }
 
+  /**
+   * Builds a function that retrieves a stream's value
+   * @param {string} target - The target stream identifier
+   * @param {Function|null} rescopeFuture - Function to handle rescoping or null
+   * @param {string|null} conversionMaybe - Optional conversion specification
+   * @returns {Function} A function that retrieves the stream value
+   */
   buildStreamGetExpression(target, rescopeFuture, conversionMaybe) {
     const self = this;
 
@@ -195,21 +202,40 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a direct stream access
+   * @param {Object} ctx - The parser context for stream access
+   * @returns {Function} A function that gets the stream value
+   */
   visitGetStream(ctx) {
     const self = this;
     return self.buildStreamGetExpression(ctx.target.getText(), null, null);
   }
 
+  /**
+   * Process an indirect stream access with rescoping
+   * @param {Object} ctx - The parser context for indirect stream access
+   * @returns {Function} A function that gets the rescoped stream value
+   */
   visitGetStreamIndirect(ctx) {
     const self = this;
     return self.buildStreamGetExpression(ctx.target.getText(), ctx.rescope.accept(self), null);
   }
 
+  /**
+   * Process a stream access with unit conversion
+   * @param {Object} ctx - The parser context for stream access with conversion
+   * @returns {Function} A function that gets the converted stream value
+   */
   visitGetStreamConversion(ctx) {
     const self = this;
     return self.buildStreamGetExpression(ctx.target.getText(), null, ctx.conversion.accept(self));
   }
 
+  /**
+   * Process an indirect stream access with substance application units
+   * @param {Object} ctx - The parser context for substance-specific stream access
+   */
   visitGetStreamIndirectSubstanceAppUnits(ctx) {
     const self = this;
     return self.buildStreamGetExpression(
