@@ -644,6 +644,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a retire command applying to all simulation years
+   * @param {Object} ctx - The parser context for the retire command
+   * @returns {Function} A function that executes the retirement
+   */
   visitRetireAllYears(ctx) {
     const self = this;
     const volumeFuture = ctx.volume.accept(self);
@@ -654,6 +659,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a retire command for a specific duration
+   * @param {Object} ctx - The parser context for the retire command
+   * @returns {Function} A function that executes the retirement for the specified duration
+   */
   visitRetireDuration(ctx) {
     const self = this;
     const volumeFuture = ctx.volume.accept(self);
@@ -726,11 +736,21 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a basic simulation scenario
+   * @param {Object} ctx - The parser context for the simulation
+   * @returns {Function} A function that builds the simulation configuration
+   */
   visitBaseSimulation(ctx) {
     const self = this;
     return self.buildSimulate(ctx, ["default"], (x) => 1);
   }
 
+  /**
+   * Process a policy simulation scenario
+   * @param {Object} ctx - The parser context for the policy simulation
+   * @returns {Function} A function that builds the policy simulation configuration
+   */
   visitPolicySim(ctx) {
     const self = this;
     const numPolicies = Math.ceil((ctx.getChildCount() - 8) / 2);
@@ -765,6 +785,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildSimulate(ctx, policies, futureNumTrials);
   }
 
+  /**
+   * Process the complete program AST
+   * @param {Object} ctx - The parser context for the entire program
+   * @returns {Function} A function that executes the complete program
+   */
   visitProgram(ctx) {
     const self = this;
 
@@ -839,6 +864,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return ctx.getChild(0).accept(self);
   }
 
+  /**
+   * Remove surrounding quotes from a string
+   * @param {string} target - The string potentially containing quotes
+   * @returns {string} The string with quotes removed if present
+   * @private
+   */
   _getStringWithoutQuotes(target) {
     const self = this;
     if (target.startsWith('"') && target.endsWith('"')) {
