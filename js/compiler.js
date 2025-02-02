@@ -676,6 +676,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a set command for all simulation years
+   * @param {Object} ctx - The parser context containing the set command
+   * @returns {Function} A function that executes the set operation
+   */
   visitSetAllYears(ctx) {
     const self = this;
     const target = ctx.target.getText();
@@ -687,6 +692,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process a set command for a specific duration
+   * @param {Object} ctx - The parser context containing the set command with duration
+   * @returns {Function} A function that executes the set operation for the duration
+   */
   visitSetDuration(ctx) {
     const self = this;
     const target = ctx.target.getText();
@@ -700,6 +710,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process an equals command for all simulation years
+   * @param {Object} ctx - The parser context containing the equals command
+   * @returns {Function} A function that executes the equals operation
+   */
   visitEqualsAllYears(ctx) {
     const self = this;
     const valueFuture = ctx.value.accept(self);
@@ -710,6 +725,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Process an equals command for a specific duration
+   * @param {Object} ctx - The parser context containing the equals command with duration
+   * @returns {Function} A function that executes the equals operation for the duration
+   */
   visitEqualsDuration(ctx) {
     const self = this;
     const valueFuture = ctx.value.accept(self);
@@ -766,12 +786,22 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return self.buildSimulate(ctx, policies, (x) => 1);
   }
 
+  /**
+   * Process a base simulation with multiple trials
+   * @param {Object} ctx - The parser context containing the simulation configuration
+   * @returns {Function} A function that builds the simulation with trials
+   */
   visitBaseSimulationTrials(ctx) {
     const self = this;
     const futureNumTrials = ctx.trials.accept(self);
     return self.buildSimulate(ctx, ["default"], futureNumTrials);
   }
 
+  /**
+   * Process a policy simulation with multiple trials
+   * @param {Object} ctx - The parser context containing the policy simulation configuration
+   * @returns {Function} A function that builds the policy simulation with trials
+   */
   visitPolicySimTrials(ctx) {
     const self = this;
     const numPolicies = Math.ceil((ctx.getChildCount() - 11) / 2);
@@ -854,11 +884,21 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     return execute;
   }
 
+  /**
+   * Process a global statement node in the AST
+   * @param {Object} ctx - The parser context containing the global statement
+   * @returns {Function} A function that executes the global statement
+   */
   visitGlobalStatement(ctx) {
     const self = this;
     return ctx.getChild(0).accept(self);
   }
 
+  /**
+   * Process a substance statement node in the AST
+   * @param {Object} ctx - The parser context containing the substance statement
+   * @returns {Function} A function that executes the substance statement
+   */
   visitSubstanceStatement(ctx) {
     const self = this;
     return ctx.getChild(0).accept(self);
