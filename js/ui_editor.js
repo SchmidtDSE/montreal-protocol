@@ -1410,7 +1410,23 @@ class SimulationListPresenter {
   }
 }
 
+/**
+ * Manages the UI editor interface.
+ * 
+ * Coordinates between code editing and visual editing interfaces, managing
+ * tabs and content display.
+ */
 class UiEditorPresenter {
+  /**
+   * Creates a new UiEditorPresenter.
+   * 
+   * @param {boolean} startOnCode - Whether to start in code view.
+   * @param {HTMLElement} tabRoot - Root element for editor tabs.
+   * @param {HTMLElement} contentsRoot - Root element for editor contents.
+   * @param {Function} getCodeAsObj - Callback to get current code object.
+   * @param {Function} onCodeObjUpdate - Callback when code object updates.
+   * @param {Function} onTabChange - Callback when active tab changes.
+   */
   constructor(startOnCode, tabRoot, contentsRoot, getCodeAsObj, onCodeObjUpdate, onTabChange) {
     const self = this;
 
@@ -1458,11 +1474,19 @@ class UiEditorPresenter {
     }
   }
 
+  /**
+   * Shows the code editor interface.
+   */
   showCode() {
     const self = this;
     self._tabs.toggle("#code-editor-pane");
   }
 
+  /**
+   * Refreshes the UI with new code object data.
+   *
+   * @param {Object} codeObj - The new code object to display.
+   */
   refresh(codeObj) {
     const self = this;
 
@@ -1483,11 +1507,21 @@ class UiEditorPresenter {
     }
   }
 
+  /**
+   * Forces update with new code object.
+   *
+   * @param {Object} codeObj - The code object to force update with.
+   */
   forceCodeObj(codeObj) {
     const self = this;
     self._onCodeObjUpdate(codeObj);
   }
 
+  /**
+   * Sets up event listeners for advanced editor links.
+   * 
+   * @private
+   */
   _setupAdvancedLinks() {
     const self = this;
     const links = Array.of(...self._contentsSelection.querySelectorAll(".advanced-editor-link"));
@@ -1499,11 +1533,22 @@ class UiEditorPresenter {
     );
   }
 
+  /**
+   * Gets the current code object.
+   *
+   * @returns {Object} The current code object.
+   * @private
+   */
   _getCodeAsObj() {
     const self = this;
     return self._codeObj;
   }
 
+  /**
+   * Initializes the code object from current state.
+   *
+   * @private
+   */
   _initCodeObj() {
     const self = this;
     const result = self._getCodeAsObjInner();
@@ -1522,18 +1567,34 @@ class UiEditorPresenter {
     }
   }
 
+  /**
+   * Enables the basic panel interface.
+   *
+   * @private
+   */
   _enableBasicPanel() {
     const self = this;
     self._contentsSelection.querySelector(".available-contents").style.display = "block";
     self._contentsSelection.querySelector(".not-available-contents").style.display = "none";
   }
 
+  /**
+   * Disables the basic panel interface.
+   *
+   * @private
+   */
   _disableBasicPanel() {
     const self = this;
     self._contentsSelection.querySelector(".available-contents").style.display = "none";
     self._contentsSelection.querySelector(".not-available-contents").style.display = "block";
   }
 
+  /**
+   * Handles code object updates.
+   *
+   * @param {Object} codeObj - The updated code object.
+   * @private
+   */
   _onCodeObjUpdate(codeObj) {
     const self = this;
     self._codeObj = codeObj;
