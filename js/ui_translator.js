@@ -910,7 +910,18 @@ class Application {
   }
 }
 
+/**
+ * Builds substances with their properties and commands.
+ * Provides a fluent interface for constructing Substance objects
+ * with various commands and properties.
+ */
 class SubstanceBuilder {
+  /**
+   * Creates a new SubstanceBuilder.
+   * 
+   * @param {string} name - Name of the substance.
+   * @param {boolean} isModification - Whether this modifies an existing substance.
+   */
   constructor(name, isModification) {
     const self = this;
     self._name = name;
@@ -926,6 +937,12 @@ class SubstanceBuilder {
     self._setVals = [];
   }
 
+  /**
+   * Builds a new Substance from the current state.
+   * 
+   * @param {boolean} isCompatibleRaw - Whether substance should be UI-compatible.
+   * @returns {Substance} The constructed substance.
+   */
   build(isCompatibleRaw) {
     const self = this;
 
@@ -965,6 +982,12 @@ class SubstanceBuilder {
     );
   }
 
+  /**
+   * Adds a command to the substance being built.
+   * 
+   * @param {Command} command - The command to add.
+   * @returns {Command|IncompatibleCommand} The added command or incompatibility marker.
+   */
   addCommand(command) {
     const self = this;
 
@@ -1002,56 +1025,117 @@ class SubstanceBuilder {
     }
   }
 
+  /**
+   * Sets the name of the substance.
+   * 
+   * @param {string} newVal - New name for the substance.
+   */
   setName(newVal) {
     const self = this;
     self._name = newVal;
   }
 
+  /**
+   * Adds an initial charge command.
+   * 
+   * @param {Command} newVal - Initial charge command to add.
+   */
   addInitialCharge(newVal) {
     const self = this;
     self._initialCharges.push(newVal);
   }
 
+  /**
+   * Adds a limit command.
+   * 
+   * @param {LimitCommand} newVal - Limit command to add.
+   */
   addLimit(newVal) {
     const self = this;
     self._limits.push(newVal);
   }
 
+  /**
+   * Adds a change command.
+   * 
+   * @param {Command} newVal - Change command to add.
+   */
   addChange(newVal) {
     const self = this;
     self._changes.push(newVal);
   }
 
+  /**
+   * Sets the equals command.
+   * 
+   * @param {Command} newVal - Equals command to set.
+   * @returns {Command|IncompatibleCommand} The command or incompatibility marker.
+   */
   setEquals(newVal) {
     const self = this;
     self._equals = self._checkDuplicate(self._equals, newVal);
   }
 
+  /**
+   * Sets the recharge command.
+   * 
+   * @param {Command} newVal - Recharge command to set.
+   * @returns {Command|IncompatibleCommand} The command or incompatibility marker.
+   */
   setRecharge(newVal) {
     const self = this;
     self._recharge = self._checkDuplicate(self._recharge, newVal);
   }
 
+  /**
+   * Adds a recycle command.
+   * 
+   * @param {Command} newVal - Recycle command to add.
+   */
   addRecycle(newVal) {
     const self = this;
     self._recycles.push(newVal);
   }
 
+  /**
+   * Adds a replace command.
+   * 
+   * @param {ReplaceCommand} newVal - Replace command to add.
+   */
   addReplace(newVal) {
     const self = this;
     self._replaces.push(newVal);
   }
 
+  /**
+   * Sets the retire command.
+   * 
+   * @param {Command} newVal - Retire command to set.
+   * @returns {Command|IncompatibleCommand} The command or incompatibility marker.
+   */
   setRetire(newVal) {
     const self = this;
     self._retire = self._checkDuplicate(self._retire, newVal);
   }
 
+  /**
+   * Adds a set value command.
+   * 
+   * @param {Command} newVal - Set value command to add.
+   */
   addSetVal(newVal) {
     const self = this;
     self._setVals.push(newVal);
   }
 
+  /**
+   * Checks for duplicate single-value commands.
+   * 
+   * @param {Command|null} originalVal - Existing command if any.
+   * @param {Command} newVal - New command to check.
+   * @returns {Command|IncompatibleCommand} The command or incompatibility marker.
+   * @private
+   */
   _checkDuplicate(originalVal, newVal) {
     if (originalVal === null) {
       return newVal;
@@ -1060,6 +1144,12 @@ class SubstanceBuilder {
     }
   }
 
+  /**
+   * Creates an incompatible command for invalid placement.
+   * 
+   * @returns {IncompatibleCommand} An incompatibility marker.
+   * @private
+   */
   _makeInvalidPlacement() {
     const self = this;
     return new IncompatibleCommand("invalid placement");
