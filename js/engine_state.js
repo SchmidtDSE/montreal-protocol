@@ -1019,6 +1019,17 @@ class StreamKeeper {
     return parameterization.getRetirementRate();
   }
 
+  /**
+   * Retrieve parameterization for a specific application and substance.
+   * 
+   * Verifies the existence of the substance and application combination
+   * and returns the associated StreamParameterization object.
+   * 
+   * @private
+   * @param {string} application - The name of the application.
+   * @param {string} substance - The name of the substance.
+   * @returns {StreamParameterization} The parameterization for the given application and substance.
+   */
   _getParameterization(application, substance) {
     const self = this;
     self._ensureSubstancePresent(application, substance, "getParameterization");
@@ -1027,7 +1038,7 @@ class StreamKeeper {
   }
 
   /**
-   * Generate a key for storing substance-application-stream data.
+   * Generate a key identifying a stream within a substance and application.
    * 
    * @private
    * @param {string} application - The application name.
