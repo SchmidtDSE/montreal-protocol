@@ -839,8 +839,8 @@ class ConsumptionListPresenter {
 /**
  * Manages the UI for listing and editing policies.
  *
- * Manages the UI for listing and editing policies that define
- * recycling, replacement, level changes, and limits on substances.
+ * Manages the UI for listing and editing policies that define recycling,
+ * replacement, level changes, limits, etc on substances.
  */
 class PolicyListPresenter {
   /**
@@ -862,7 +862,7 @@ class PolicyListPresenter {
   }
 
   /**
-   * Enables the policy list interface
+   * Visually and functionally enables the policy list interface.
    */
   enable() {
     const self = this;
@@ -870,7 +870,7 @@ class PolicyListPresenter {
   }
 
   /**
-   * Disables the policy list interface
+   * Visually and functionally sisables the policy list interface.
    */
   disable() {
     const self = this;
@@ -878,8 +878,9 @@ class PolicyListPresenter {
   }
 
   /**
-   * Updates the policy list with new data
-   * @param {Object} codeObj - Current code object to display
+   * Updates the policy list to visualize new policies.
+   *
+   * @param {Object} codeObj - Current code object to display.
    */
   refresh(codeObj) {
     const self = this;
@@ -887,8 +888,9 @@ class PolicyListPresenter {
   }
 
   /**
-   * Updates the policy list UI with current data
-   * @param {Object} codeObj - Current code object from which to extract policies
+   * Updates the policy list UI with current logic.
+   *
+   * @param {Object} codeObj - Current code object from which to extract policies.
    * @private
    */
   _refreshList(codeObj) {
@@ -938,11 +940,11 @@ class PolicyListPresenter {
   }
 
   /**
-   * Sets up the dialog for adding/editing policies
-   * 
-   * Sets up the dialog for adding/editing policies, initializing
-   * tabs and event handlers for recycling, replacement, level changes,
-   * and limits.
+   * Sets up the dialog for adding/editing policies.
+   *
+   * Sets up the dialog for adding/editing policies, initializing tabs and
+   * event handlers for recycling, replacement, level changes, limits, etc.
+   *
    * @private
    */
   _setupDialog() {
