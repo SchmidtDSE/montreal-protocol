@@ -1758,31 +1758,61 @@ class LimitCommand {
     self._displacing = displacing;
   }
 
+  /**
+   * Gets the type name of this limit command.
+   * 
+   * @returns {string} The command type ("cap" or "floor").
+   */
   getTypeName() {
     const self = this;
     return self._typeName;
   }
 
+  /**
+   * Gets the target of this limit command.
+   * 
+   * @returns {string} The target name (e.g. "manufacture", "import", etc).
+   */
   getTarget() {
     const self = this;
     return self._target;
   }
 
+  /**
+   * Gets the value associated with this limit.
+   * 
+   * @returns {EngineNumber} The limit value with units.
+   */
   getValue() {
     const self = this;
     return self._value;
   }
 
+  /**
+   * Gets the duration for which this limit applies.
+   * 
+   * @returns {YearMatcher} The duration specification, or null for all years.
+   */
   getDuration() {
     const self = this;
     return self._duration;
   }
 
+  /**
+   * Gets the substance being displaced by this limit.
+   * 
+   * @returns {string|null} Name of substance being displaced, or null if none.
+   */
   getDisplacing() {
     const self = this;
     return self._displacing;
   }
 
+  /**
+   * Checks if this limit command is compatible with UI editing.
+   * 
+   * @returns {boolean} Always returns true as limit commands are UI-compatible.
+   */
   getIsCompatible() {
     const self = this;
     return true;
