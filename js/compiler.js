@@ -537,7 +537,6 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
    *     as usual.
    */
   visitDefaultStanza(ctx) {
-    unesi;
     const self = this;
     const numApplications = ctx.getChildCount() - 4;
 
