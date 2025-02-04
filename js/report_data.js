@@ -1,3 +1,12 @@
+/**
+ * Data structures for report and visualization functionality.
+ *
+ * Data structures which simplify enigne results for use in the reporting /
+ * visualization functionality.
+ *
+ * @license BSD, see LICENSE.md.
+ */
+
 import {EngineNumber} from "engine_number";
 
 class AggregatedResult {
