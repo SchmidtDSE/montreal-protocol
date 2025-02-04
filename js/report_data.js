@@ -1,4 +1,3 @@
-
 /**
  * Data structures for report and visualization functionality.
  *
@@ -8,15 +7,16 @@
 import {EngineNumber} from "engine_number";
 
 /**
- * Class representing aggregated result data for a specific metric
+ * Class representing aggregated result which can be visualized.
  */
 class AggregatedResult {
   /**
-   * Create a new aggregated result
-   * @param {EngineNumber} manufactureValue - The manufacturing value
-   * @param {EngineNumber} importValue - The import value
-   * @param {EngineNumber} consumptionValue - The consumption value
-   * @param {EngineNumber} populationValue - The equipment population value
+   * Create a new aggregated result.
+   *
+   * @param {EngineNumber} manufactureValue - The manufacturing value.
+   * @param {EngineNumber} importValue - The import value.
+   * @param {EngineNumber} consumptionValue - The consumption value.
+   * @param {EngineNumber} populationValue - The equipment population value.
    */
   constructor(manufactureValue, importValue, consumptionValue, populationValue) {
     const self = this;
@@ -27,8 +27,9 @@ class AggregatedResult {
   }
 
   /**
-   * Get the manufacture value
-   * @returns {EngineNumber} The manufacture value
+   * Get the manufacture (as opposed to import) of substance.
+   *
+   * @returns {EngineNumber} The manufacture value with units.
    */
   getManufacture() {
     const self = this;
@@ -36,8 +37,9 @@ class AggregatedResult {
   }
 
   /**
-   * Get the import value
-   * @returns {EngineNumber} The import value
+   * Get the import (as opposed to manufacture) value.
+   *
+   * @returns {EngineNumber} The import value with units.
    */
   getImport() {
     const self = this;
@@ -45,8 +47,9 @@ class AggregatedResult {
   }
 
   /**
-   * Get combined sales value (manufacture + import)
-   * @returns {EngineNumber} The combined sales value
+   * Get combined sales value (manufacture + import).
+   *
+   * @returns {EngineNumber} The combined sales value with units.
    */
   getSales() {
     const self = this;
@@ -57,8 +60,9 @@ class AggregatedResult {
   }
 
   /**
-   * Get the consumption value
-   * @returns {EngineNumber} The consumption value
+   * Get the consumption of substance value.
+   *
+   * @returns {EngineNumber} The consumption value with units.
    */
   getConsumption() {
     const self = this;
@@ -66,8 +70,9 @@ class AggregatedResult {
   }
 
   /**
-   * Get the population value
-   * @returns {EngineNumber} The population value
+   * Get the population (amount of equipment) value.
+   *
+   * @returns {EngineNumber} The population value with units.
    */
   getPopulation() {
     const self = this;
@@ -75,9 +80,13 @@ class AggregatedResult {
   }
 
   /**
-   * Combine this result with another result
-   * @param {AggregatedResult} other - The other result to combine with
-   * @returns {AggregatedResult} A new combined result
+   * Combine this result with another result.
+   *
+   * Combine this result with another result in an additive way with unit
+   * standardization and conversion.
+   *
+   * @param {AggregatedResult} other - The other result to combine with.
+   * @returns {AggregatedResult} A new combined result.
    */
   combine(other) {
     const self = this;
@@ -91,12 +100,13 @@ class AggregatedResult {
   }
 
   /**
-   * Combine two unit values with the same units
+   * Combine two unit values with the same units.
+   *
    * @private
-   * @param {EngineNumber} a - First value
-   * @param {EngineNumber} b - Second value
-   * @returns {EngineNumber} Combined value
-   * @throws {string} If units don't match
+   * @param {EngineNumber} a - First value.
+   * @param {EngineNumber} b - Second value.
+   * @returns {EngineNumber} Combined value.
+   * @throws {string} If units don't match.
    */
   _combineUnitValue(a, b) {
     const self = this;
@@ -108,12 +118,16 @@ class AggregatedResult {
 }
 
 /**
- * Wrapper class for report data that provides filtering and aggregation capabilities
+ * Facade which simplifies access to engine outputs.
+ *
+ * Wrapper class for report data that provides filtering and aggregation
+ * capabilities over simplified engine outputs.
  */
 class ReportDataWrapper {
   /**
-   * Create a new report data wrapper
-   * @param {Object} innerData - The raw report data to wrap
+   * Create a new report data wrapper.
+   *
+   * @param {Object} innerData - The raw report data to wrap.
    */
   constructor(innerData) {
     const self = this;
@@ -121,8 +135,9 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get the raw underlying data
-   * @returns {Object} The raw data
+   * Get the raw underlying data.
+   *
+   * @returns {Object} The raw data.
    */
   getRawData() {
     const self = this;
@@ -130,9 +145,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get metric value based on filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {EngineNumber} The filtered metric value
+   * Get metric value based on filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {EngineNumber} The filtered metric value.
    */
   getMetric(filterSet) {
     const self = this;
@@ -147,9 +163,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get dimension values based on filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {Set<*>} Set of dimension values
+   * Get dimension values based on a given filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {Set<*>} Set of dimension values.
    */
   getDimensionValues(filterSet) {
     const self = this;
@@ -164,9 +181,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get scenarios matching filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {Set<string>} Set of scenario names
+   * Get scenarios matching a given filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {Set<string>} Set of scenario names.
    */
   getScenarios(filterSet) {
     const self = this;
@@ -178,9 +196,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get applications matching filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {Set<string>} Set of application names
+   * Get applications matching a given filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {Set<string>} Set of application names.
    */
   getApplications(filterSet) {
     const self = this;
@@ -188,9 +207,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get substances matching filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {Set<string>} Set of substance names
+   * Get substances matching a given filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {Set<string>} Set of substance names.
    */
   getSubstances(filterSet) {
     const self = this;
@@ -198,9 +218,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get years matching filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {Set<number>} Set of years
+   * Get years matching a given filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {Set<number>} Set of years.
    */
   getYears(filterSet) {
     const self = this;
@@ -208,9 +229,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get consumption value matching filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {EngineNumber} The consumption value
+   * Get consumption value matching a given filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {EngineNumber} The consumption value.
    */
   getConsumption(filterSet) {
     const self = this;
@@ -219,9 +241,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get sales value matching filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {EngineNumber} The sales value
+   * Get sales value matching a given filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {EngineNumber} The sales value.
    */
   getSales(filterSet) {
     const self = this;
@@ -230,9 +253,10 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get population value matching filter set
-   * @param {FilterSet} filterSet - The filter criteria to apply
-   * @returns {EngineNumber} The population value
+   * Get population value matching a given filter set.
+   *
+   * @param {FilterSet} filterSet - The filter criteria to apply.
+   * @returns {EngineNumber} The population value.
    */
   getPopulation(filterSet) {
     const self = this;
@@ -241,7 +265,8 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get flattened array of all results
+   * Get flattened array of all results.
+   *
    * @private
    * @returns {Array<*>} Flattened results array
    */
@@ -251,11 +276,12 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get filtered set of values using a getter function
+   * Get filtered set of values using a getter function.
+   *
    * @private
-   * @param {FilterSet} filterSet - The filter criteria
-   * @param {Function} getter - Function to get values from filtered results
-   * @returns {Set<*>} Set of filtered values
+   * @param {FilterSet} filterSet - The filter criteria.
+   * @param {Function} getter - Function to get values from filtered results.
+   * @returns {Set<*>} Set of filtered values.
    */
   _getSetAfterFilter(filterSet, getter) {
     const self = this;
@@ -265,10 +291,11 @@ class ReportDataWrapper {
   }
 
   /**
-   * Get aggregated result after applying filters
+   * Get aggregated result after applying filters.
+   *
    * @private
-   * @param {FilterSet} filterSet - The filter criteria
-   * @returns {AggregatedResult|null} Aggregated result or null if no matches
+   * @param {FilterSet} filterSet - The filter criteria.
+   * @returns {AggregatedResult|null} Aggregated result or null if no matches.
    */
   _getAggregatedAfterFilter(filterSet) {
     const self = this;
@@ -293,10 +320,11 @@ class ReportDataWrapper {
   }
 
   /**
-   * Apply filter set to get matching results
+   * Apply filter set to get matching results.
+   *
    * @private
-   * @param {FilterSet} filterSet - The filter criteria
-   * @returns {Array<*>} Array of matching results
+   * @param {FilterSet} filterSet - The filter criteria.
+   * @returns {Array<*>} Array of matching results.
    */
   _applyFilterSet(filterSet) {
     const self = this;
@@ -334,17 +362,22 @@ class ReportDataWrapper {
 }
 
 /**
- * Class representing a set of filters for report data
+ *Filters to apply in creating a visualization.
+ *
+ * Class representing a set of filters to apply in identifying a subset of data
+ * to visualize.
  */
 class FilterSet {
   /**
-   * Create a new filter set
-   * @param {number|null} year - Year filter
-   * @param {string|null} scenario - Scenario name filter
-   * @param {string|null} application - Application name filter
-   * @param {string|null} substance - Substance name filter
-   * @param {string|null} metric - Metric type filter
-   * @param {string|null} dimension - Dimension type filter
+   * Create a new filter set.
+   *
+   * @param {number|null} year - Year for which data will be filtered.
+   * @param {string|null} scenario - Name of scenario for which to filter.
+   * @param {string|null} application - Name of application for which to
+   *     filter.
+   * @param {string|null} substance - Name of substance for which to filter.
+   * @param {string|null} metric - Metric name for which to filter.
+   * @param {string|null} dimension - Dimension type for which to filter.
    */
   constructor(year, scenario, application, substance, metric, dimension) {
     const self = this;
@@ -357,9 +390,11 @@ class FilterSet {
   }
 
   /**
-   * Get a new filter set with updated dimension value
-   * @param {*} value - The new dimension value
-   * @returns {FilterSet} New filter set with updated dimension
+   * Get a new filter set with updated dimension value.
+   *
+   * @param {*} value - The new dimension value (simulations, applications,
+   *     substances).
+   * @returns {FilterSet} New filter set with updated dimension.
    */
   getWithDimensionValue(value) {
     const self = this;
@@ -372,8 +407,9 @@ class FilterSet {
   }
 
   /**
-   * Get the year filter
-   * @returns {number|null} The year filter
+   * Get the year filter.
+   *
+   * @returns {number|null} The year for which to filter like 10.
    */
   getYear() {
     const self = this;
@@ -381,9 +417,10 @@ class FilterSet {
   }
 
   /**
-   * Get a new filter set with updated year
-   * @param {number} newYear - The new year value
-   * @returns {FilterSet} New filter set with updated year
+   * Get a new filter set with updated year.
+   *
+   * @param {number} newYear - The new year value.
+   * @returns {FilterSet} New filter set with updated year.
    */
   getWithYear(newYear) {
     const self = this;
@@ -398,8 +435,10 @@ class FilterSet {
   }
 
   /**
-   * Get the scenario filter
-   * @returns {string|null} The scenario filter
+   * Get the scenario filter.
+   *
+   * @returns {string|null} The scenario for which to filter like Business as
+   *     Usual.
    */
   getScenario() {
     const self = this;
@@ -407,9 +446,10 @@ class FilterSet {
   }
 
   /**
-   * Get a new filter set with updated scenario
-   * @param {string} newScenario - The new scenario value
-   * @returns {FilterSet} New filter set with updated scenario
+   * Get a new filter set with updated scenario.
+   *
+   * @param {string} newScenario - The new scenario value.
+   * @returns {FilterSet} New filter set with updated scenario.
    */
   getWithScenario(newScenario) {
     const self = this;
@@ -424,8 +464,10 @@ class FilterSet {
   }
 
   /**
-   * Get the application filter
-   * @returns {string|null} The application filter
+   * Get the application filter.
+   *
+   * @returns {string|null} The application for which to filter like commerical
+   *     refrigerant.
    */
   getApplication() {
     const self = this;
@@ -433,9 +475,10 @@ class FilterSet {
   }
 
   /**
-   * Get a new filter set with updated application
-   * @param {string} newApplication - The new application value
-   * @returns {FilterSet} New filter set with updated application
+   * Get a new filter set with updated application.
+   *
+   * @param {string} newApplication - The new application value.
+   * @returns {FilterSet} New filter set with updated application.
    */
   getWithApplication(newApplication) {
     const self = this;
@@ -450,8 +493,9 @@ class FilterSet {
   }
 
   /**
-   * Get the substance filter
-   * @returns {string|null} The substance filter
+   * Get the substance filter.
+   *
+   * @returns {string|null} The substance for which to filter like HFC-134a.
    */
   getSubstance() {
     const self = this;
@@ -459,9 +503,10 @@ class FilterSet {
   }
 
   /**
-   * Get a new filter set with updated substance
-   * @param {string} newSubstance - The new substance value
-   * @returns {FilterSet} New filter set with updated substance
+   * Get a new filter set with updated substance.
+   *
+   * @param {string} newSubstance - The new substance value.
+   * @returns {FilterSet} New filter set with updated substance.
    */
   getWithSubstance(newSubstance) {
     const self = this;
@@ -476,8 +521,9 @@ class FilterSet {
   }
 
   /**
-   * Get the metric filter
-   * @returns {string|null} The metric filter
+   * Get the metric filter.
+   *
+   * @returns {string|null} The metric for which to filter like sales.
    */
   getMetric() {
     const self = this;
@@ -485,9 +531,10 @@ class FilterSet {
   }
 
   /**
-   * Get a new filter set with updated metric
-   * @param {string} newMetric - The new metric value
-   * @returns {FilterSet} New filter set with updated metric
+   * Get a new filter set with updated metric.
+   *
+   * @param {string} newMetric - The new metric value.
+   * @returns {FilterSet} New filter set with updated metric.
    */
   getWithMetric(newMetric) {
     const self = this;
@@ -502,8 +549,9 @@ class FilterSet {
   }
 
   /**
-   * Get the dimension filter
-   * @returns {string|null} The dimension filter
+   * Get the dimension filter.
+   *
+   * @returns {string|null} The dimension for which to filter like simulations.
    */
   getDimension() {
     const self = this;
@@ -511,9 +559,10 @@ class FilterSet {
   }
 
   /**
-   * Get a new filter set with updated dimension
-   * @param {string} newDimension - The new dimension value
-   * @returns {FilterSet} New filter set with updated dimension
+   * Get a new filter set with updated dimension.
+   *
+   * @param {string} newDimension - The new dimension value.
+   * @returns {FilterSet} New filter set with updated dimension.
    */
   getWithDimension(newDimension) {
     const self = this;
@@ -528,9 +577,10 @@ class FilterSet {
   }
 
   /**
-   * Check if there is a single scenario selected or available
-   * @param {Set<string>} scenarios - Set of available scenarios
-   * @returns {boolean} True if single scenario
+   * Check if there is a single scenario selected or available.
+   *
+   * @param {Set<string>} scenarios - Set of available scenarios.
+   * @returns {boolean} True if single scenario.
    */
   hasSingleScenario(scenarios) {
     const self = this;
