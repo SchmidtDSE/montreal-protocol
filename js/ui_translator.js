@@ -1686,26 +1686,51 @@ class Command {
     self._duration = duration;
   }
 
+  /**
+   * Gets the type name of this command.
+   * 
+   * @returns {string} The command type name (e.g. "change", "retire", "setVal", etc).
+   */
   getTypeName() {
     const self = this;
     return self._typeName;
   }
 
+  /**
+   * Gets the target of this command.
+   * 
+   * @returns {string} The target name (e.g. "manufacture", "import", etc).
+   */
   getTarget() {
     const self = this;
     return self._target;
   }
 
+  /**
+   * Gets the value associated with this command.
+   * 
+   * @returns {EngineNumber} The command's value with units.
+   */
   getValue() {
     const self = this;
     return self._value;
   }
 
+  /**
+   * Gets the duration for which this command applies.
+   * 
+   * @returns {YearMatcher} The duration specification, or null for all years.
+   */
   getDuration() {
     const self = this;
     return self._duration;
   }
 
+  /**
+   * Checks if this command is compatible with UI editing.
+   * 
+   * @returns {boolean} Always returns true as basic commands are UI-compatible.
+   */
   getIsCompatible() {
     const self = this;
     return true;
