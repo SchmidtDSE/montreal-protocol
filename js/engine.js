@@ -758,6 +758,13 @@ class Engine {
     });
   }
 
+  /**
+   * Creates a unit converter with total values initialized.
+   * 
+   * @param {string} stream - The stream identifier to create converter for.
+   * @returns {UnitConverter} A configured unit converter instance.
+   * @private
+   */
   _createUnitConverterWithTotal(stream) {
     const self = this;
 
@@ -775,6 +782,13 @@ class Engine {
     return unitConverter;
   }
 
+  /**
+   * Determines if a year matcher applies to current year.
+   * 
+   * @param {Object|null} yearMatcher - The year matcher to check.
+   * @returns {boolean} True if in range or no matcher provided.
+   * @private
+   */
   _getIsInRange(yearMatcher) {
     const self = this;
     const noYearMatcher = yearMatcher === undefined || yearMatcher === null;
@@ -782,6 +796,12 @@ class Engine {
     return inRange;
   }
 
+  /**
+   * Recalculates population changes based on current state.
+   * 
+   * @param {Scope|null} scope - The scope to recalculate for.
+   * @private 
+   */
   _recalcPopulationChange(scope) {
     const self = this;
 
@@ -859,6 +879,12 @@ class Engine {
     self.setStream("equipment", newVolume, null, scopeEffective, false);
   }
 
+  /**
+   * Recalculates consumption values based on current state.
+   * 
+   * @param {Scope|null} scope - The scope to recalculate for.
+   * @private
+   */
   _recalcConsumption(scope) {
     const self = this;
 
@@ -891,6 +917,12 @@ class Engine {
     self.setStream("consumption", consumptionAllowed, null, scopeEffective, false);
   }
 
+  /**
+   * Recalculates sales values based on current state.
+   * 
+   * @param {Scope|null} scope - The scope to recalculate for.
+   * @private
+   */
   _recalcSales(scope) {
     const self = this;
 
@@ -982,6 +1014,12 @@ class Engine {
     self.setStream("sales", totalSales, null, scopeEffective, false);
   }
 
+  /**
+   * Recalculates retirement values based on current state.
+   * 
+   * @param {Scope|null} scope - The scope to recalculate for.
+   * @private
+   */
   _recalcRetire(scope) {
     const self = this;
 
