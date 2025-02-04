@@ -419,7 +419,16 @@ class ApplicationsListPresenter {
   }
 }
 
+/**
+ * Manages the UI for listing and editing consumption data.
+ */
 class ConsumptionListPresenter {
+  /**
+   * Creates a new ConsumptionListPresenter.
+   * @param {HTMLElement} root - The root DOM element for the consumption list.
+   * @param {Function} getCodeObj - Callback to get the current code object.
+   * @param {Function} onCodeObjUpdate - Callback when the code object is updated.
+   */
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
     self._root = root;
@@ -431,21 +440,36 @@ class ConsumptionListPresenter {
     self.refresh();
   }
 
+  /**
+   * Enables the consumption list interface
+   */
   enable() {
     const self = this;
     self._root.classList.remove("inactive");
   }
 
+  /**
+   * Disables the consumption list interface
+   */
   disable() {
     const self = this;
     self._root.classList.add("inactive");
   }
 
+  /**
+   * Updates the consumption list display with new data
+   * @param {Object} codeObj - Current code object to display
+   */
   refresh(codeObj) {
     const self = this;
     self._refreshList(codeObj);
   }
 
+  /**
+   * Refreshes the consumption list display.
+   * @param {Object} codeObj - The current code object.
+   * @private
+   */
   _refreshList(codeObj) {
     const self = this;
     const consumptionNames = self._getConsumptionNames();
@@ -496,6 +520,11 @@ class ConsumptionListPresenter {
       .attr("aria-label", (x) => "delete " + x);
   }
 
+  /**
+   * Sets up the dialog for adding/editing consumption records
+   * Initializes tabs and event handlers
+   * @private
+   */
   _setupDialog() {
     const self = this;
 
@@ -535,6 +564,11 @@ class ConsumptionListPresenter {
     );
   }
 
+  /**
+   * Shows the dialog for editing a consumption record
+   * @param {string|null} name - Name of consumption to edit, or null for new record
+   * @private
+   */
   _showDialogFor(name) {
     const self = this;
     self._editingName = name;
@@ -665,6 +699,11 @@ class ConsumptionListPresenter {
     self._dialog.showModal();
   }
 
+  /**
+   * Gets list of all consumption names.
+   * @returns {string[]} Array of consumption names.
+   * @private
+   */
   _getConsumptionNames() {
     const self = this;
     const codeObj = self._getCodeObj();
@@ -681,6 +720,10 @@ class ConsumptionListPresenter {
     return consumptions;
   }
 
+  /**
+   * Saves the current consumption data.
+   * @private
+   */
   _save() {
     const self = this;
     const substance = self._parseObj();
@@ -703,6 +746,11 @@ class ConsumptionListPresenter {
     self._onCodeObjUpdate(codeObj);
   }
 
+  /**
+   * Parses the dialog form data into a substance object
+   * @returns {Object} The parsed substance object
+   * @private
+   */
   _parseObj() {
     const self = this;
 
@@ -903,7 +951,7 @@ class PolicyListPresenter {
   }
 
   _showDialogFor(name) {
-    const self = this;
+    const self= this;
     self._editingName = name;
     const codeObj = self._getCodeObj();
 
