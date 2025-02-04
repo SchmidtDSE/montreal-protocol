@@ -590,18 +590,38 @@ class StreamParameterization {
   }
 }
 
+/**
+ * Class representing a unique identifier for a substance within a specific application.
+ * This class helps track and identify substances that may appear in multiple applications.
+ */
 class SubstanceInApplicationId {
+  /**
+   * Create a new substance-in-application identifier.
+   * 
+   * @param {string} application - The name of the application (e.g., "domestic refrigeration").
+   * @param {string} substance - The name of the substance (e.g., "HFC-134a").
+   */
   constructor(application, substance) {
     const self = this;
     self._application = application;
     self._substance = substance;
   }
 
+  /**
+   * Get the name of the application.
+   * 
+   * @returns {string} The application name associated with this identifier.
+   */
   getApplication() {
     const self = this;
     return self._application;
   }
 
+  /**
+   * Get the name of the substance.
+   * 
+   * @returns {string} The substance name associated with this identifier.
+   */
   getSubstance() {
     const self = this;
     return self._substance;
