@@ -1,3 +1,8 @@
+/**
+ * Entrypoint into the tool.
+ *
+ * @license BSD, see LICENSE.md.
+ */
 
 import {CodeEditorPresenter} from "code_editor";
 import {Compiler} from "compiler";
@@ -13,11 +18,16 @@ const NEW_FILE_MSG = [
 ].join(" ");
 
 /**
- * Controls the functionality of the button panel in the UI.
+ * Presenter controlling the main simluation buttons.
+ *
+ * Presenter which controlls the functionality of the script and run button panel
+ * in the UI which allow for basic tool functionality (switching authoring modes
+ * and running the simulation).
  */
 class ButtonPanelPresenter {
   /**
    * Creates a new ButtonPanelPresenter instance.
+   *
    * @param {HTMLElement} root - The root element containing the button panel.
    * @param {Function} onBuild - Callback function triggered when build/run is initiated.
    */
@@ -119,6 +129,7 @@ class MainPresenter {
 
   /**
    * Handles code change events and updates the UI accordingly.
+   *
    * @private
    */
   _onCodeChange() {
@@ -140,6 +151,7 @@ class MainPresenter {
 
   /**
    * Handles build/run events and compiles/executes the code.
+   *
    * @param {boolean} run - Whether to execute the code after compilation.
    * @private
    */
@@ -208,6 +220,7 @@ class MainPresenter {
 
   /**
    * Handles program execution results and displays them.
+   *
    * @param {Object} results - The results of program execution.
    * @private
    */
@@ -219,6 +232,7 @@ class MainPresenter {
 
   /**
    * Gets the code as an object representation.
+   *
    * @param {string} [overrideCode] - Optional code to use instead of editor content.
    * @returns {Object} The compiled code object.
    * @private
@@ -233,6 +247,7 @@ class MainPresenter {
 
   /**
    * Handles code object updates and refreshes the UI.
+   *
    * @param {Object} codeObj - The updated code object.
    * @private
    */
@@ -254,6 +269,7 @@ class MainPresenter {
 
   /**
    * Sets up file-related button handlers.
+   *
    * @private
    */
   _setupFileButtons() {
@@ -305,7 +321,8 @@ class MainPresenter {
   }
 
   /**
-   * Sets up workshop sample functionality.
+   * Sets up workshop sample button functionality.
+   *
    * @private
    */
   _setupWorkshopSample() {

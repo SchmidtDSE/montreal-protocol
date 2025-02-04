@@ -1,4 +1,10 @@
 /**
+ * Structures to represent numbers with units inside the engine.
+ *
+ * @license BSD, see LICENSE.md.
+ */
+
+/**
  * Representation of a number with units within the engine.
  */
 class EngineNumber {

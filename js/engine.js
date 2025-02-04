@@ -1,3 +1,9 @@
+/**
+ * Simulation engine that underpins simulations regardless of interface.
+ *
+ * @license BSD, see LICENSE.md.
+ */
+
 import {
   EngineNumber,
   UnitConverter,

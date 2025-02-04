@@ -1,3 +1,9 @@
+/**
+ * Structures to represent internal state within the engine.
+ *
+ * @license BSD, see LICENSE.md.
+ */
+
 import {
   GLOBAL_CONTEXT,
   STANZA_CONTEXT,
@@ -412,7 +418,7 @@ class StreamParameterization {
 
   /**
    * Set the greenhouse gas intensity.
-   * 
+   *
    * @param {EngineNumber} newValue - The new GHG intensity value.
    */
   setGhgIntensity(newValue) {
@@ -422,7 +428,7 @@ class StreamParameterization {
 
   /**
    * Get the greenhouse gas intensity.
-   * 
+   *
    * @returns {EngineNumber} The current GHG intensity value.
    */
   getGhgIntensity() {
@@ -432,7 +438,7 @@ class StreamParameterization {
 
   /**
    * Set the initial charge for a stream.
-   * 
+   *
    * @param {string} stream - The stream identifier ('manufacture' or 'import').
    * @param {EngineNumber} newValue - The new initial charge value.
    */
@@ -444,7 +450,7 @@ class StreamParameterization {
 
   /**
    * Get the initial charge for a stream.
-   * 
+   *
    * @param {string} stream - The stream identifier ('manufacture' or 'import').
    * @returns {EngineNumber} The initial charge value for the stream.
    */
@@ -456,7 +462,7 @@ class StreamParameterization {
 
   /**
    * Set the recharge population percentage.
-   * 
+   *
    * @param {EngineNumber} newValue - The new recharge population value.
    */
   setRechargePopulation(newValue) {
@@ -466,7 +472,7 @@ class StreamParameterization {
 
   /**
    * Get the recharge population percentage.
-   * 
+   *
    * @returns {EngineNumber} The current recharge population value.
    */
   getRechargePopulation() {
@@ -476,7 +482,7 @@ class StreamParameterization {
 
   /**
    * Set the recharge intensity.
-   * 
+   *
    * @param {EngineNumber} newValue - The new recharge intensity value.
    */
   setRechargeIntensity(newValue) {
@@ -486,7 +492,7 @@ class StreamParameterization {
 
   /**
    * Get the recharge intensity.
-   * 
+   *
    * @returns {EngineNumber} The current recharge intensity value.
    */
   getRechargeIntensity() {
@@ -496,7 +502,7 @@ class StreamParameterization {
 
   /**
    * Set the recovery rate percentage.
-   * 
+   *
    * @param {EngineNumber} newValue - The new recovery rate value.
    */
   setRecoveryRate(newValue) {
@@ -506,7 +512,7 @@ class StreamParameterization {
 
   /**
    * Get the recovery rate percentage.
-   * 
+   *
    * @returns {EngineNumber} The current recovery rate value.
    */
   getRecoveryRate() {
@@ -516,7 +522,7 @@ class StreamParameterization {
 
   /**
    * Set the yield rate percentage for recycling.
-   * 
+   *
    * @param {EngineNumber} newValue - The new yield rate value.
    */
   setYieldRate(newValue) {
@@ -526,7 +532,7 @@ class StreamParameterization {
 
   /**
    * Get the yield rate percentage for recycling.
-   * 
+   *
    * @returns {EngineNumber} The current yield rate value.
    */
   getYieldRate() {
@@ -536,7 +542,7 @@ class StreamParameterization {
 
   /**
    * Set the displacement rate percentage.
-   * 
+   *
    * @param {EngineNumber} newValue - The new displacement rate value.
    */
   setDisplacementRate(newValue) {
@@ -546,7 +552,7 @@ class StreamParameterization {
 
   /**
    * Get the displacement rate percentage.
-   * 
+   *
    * @returns {EngineNumber} The current displacement rate value.
    */
   getDisplacementRate() {
@@ -556,7 +562,7 @@ class StreamParameterization {
 
   /**
    * Set the retirement rate percentage.
-   * 
+   *
    * @param {EngineNumber} newValue - The new retirement rate value.
    */
   setRetirementRate(newValue) {
@@ -576,7 +582,7 @@ class StreamParameterization {
 
   /**
    * Validate that the given stream name is allowed for sales operations.
-   * 
+   *
    * @private
    * @param {string} name - The stream name to validate.
    * @throws {Error} If the stream name is not 'manufacture' or 'import'.
@@ -596,7 +602,7 @@ class StreamParameterization {
 class SubstanceInApplicationId {
   /**
    * Create a new substance-in-application identifier.
-   * 
+   *
    * @param {string} application - The name of the application (e.g., "domestic refrigeration").
    * @param {string} substance - The name of the substance (e.g., "HFC-134a").
    */
@@ -608,7 +614,7 @@ class SubstanceInApplicationId {
 
   /**
    * Get the name of the application.
-   * 
+   *
    * @returns {string} The application name associated with this identifier.
    */
   getApplication() {
@@ -618,7 +624,7 @@ class SubstanceInApplicationId {
 
   /**
    * Get the name of the substance.
-   * 
+   *
    * @returns {string} The substance name associated with this identifier.
    */
   getSubstance() {
@@ -629,14 +635,14 @@ class SubstanceInApplicationId {
 
 /**
  * Class responsible for managing / tracking substance streams.
- * 
+ *
  * State management object for storage and retrieval of substance data, stream
  * values, and associated parameterizations.
  */
 class StreamKeeper {
   /**
    * Create a new StreamKeeper instance.
-   * 
+   *
    * @param {UnitConverter} unitConverter - Converter for handling unit
    *     transformations.
    */
@@ -649,7 +655,7 @@ class StreamKeeper {
 
   /**
    * Get all registered substance-application pairs.
-   * 
+   *
    * @returns {SubstanceInApplicationId[]} Array of substance identifiers.
    */
   getRegisteredSubstances() {
@@ -664,7 +670,7 @@ class StreamKeeper {
 
   /**
    * Check if a substance exists for an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @returns {boolean} True if the substance exists for the application.
@@ -677,8 +683,8 @@ class StreamKeeper {
 
   /**
    * Ensure a substance exists for an application, creating it if needed.
-   * 
-   * 
+   *
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name to initialize with zero
    *     values.
@@ -709,7 +715,7 @@ class StreamKeeper {
 
   /**
    * Set the value for a specific stream.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {string} name - The stream name.
@@ -750,7 +756,7 @@ class StreamKeeper {
 
   /**
    * Get the value of a specific stream.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {string} name - The stream name.
@@ -777,7 +783,7 @@ class StreamKeeper {
 
   /**
    * Check if a stream exists for a substance-application pair.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {string} name - The stream name.
@@ -811,7 +817,7 @@ class StreamKeeper {
 
   /**
    * Set the greenhouse gas intensity for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {EngineNumber} newValue - The new GHG intensity value.
@@ -824,7 +830,7 @@ class StreamKeeper {
 
   /**
    * Get the greenhouse gas intensity for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @returns {EngineNumber} The current GHG intensity value.
@@ -837,7 +843,7 @@ class StreamKeeper {
 
   /**
    * Set the initial charge for a substance in an application's stream.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {string} substream - The stream identifier ('manufacture' or 'import').
@@ -851,7 +857,7 @@ class StreamKeeper {
 
   /**
    * Get the initial charge for a substance in an application's stream.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {string} substream - The stream identifier ('manufacture' or 'import').
@@ -865,7 +871,7 @@ class StreamKeeper {
 
   /**
    * Set the recharge population percentage for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {EngineNumber} newValue - The new recharge population value.
@@ -878,7 +884,7 @@ class StreamKeeper {
 
   /**
    * Get the recharge population percentage for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @returns {EngineNumber} The current recharge population value.
@@ -891,7 +897,7 @@ class StreamKeeper {
 
   /**
    * Set the recharge intensity for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {EngineNumber} newValue - The new recharge intensity value.
@@ -904,7 +910,7 @@ class StreamKeeper {
 
   /**
    * Get the recharge intensity for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @returns {EngineNumber} The current recharge intensity value.
@@ -917,7 +923,7 @@ class StreamKeeper {
 
   /**
    * Set the recovery rate percentage for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {EngineNumber} newValue - The new recovery rate value.
@@ -930,7 +936,7 @@ class StreamKeeper {
 
   /**
    * Get the recovery rate percentage for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @returns {EngineNumber} The current recovery rate value.
@@ -943,7 +949,7 @@ class StreamKeeper {
 
   /**
    * Set the displacement rate percentage for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {EngineNumber} newValue - The new displacement rate value.
@@ -956,7 +962,7 @@ class StreamKeeper {
 
   /**
    * Get the displacement rate percentage for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @returns {EngineNumber} The current displacement rate value.
@@ -969,7 +975,7 @@ class StreamKeeper {
 
   /**
    * Set the yield rate percentage for recycling a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {EngineNumber} newValue - The new yield rate value.
@@ -982,7 +988,7 @@ class StreamKeeper {
 
   /**
    * Get the yield rate percentage for recycling a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @returns {EngineNumber} The current yield rate value.
@@ -995,7 +1001,7 @@ class StreamKeeper {
 
   /**
    * Set the retirement rate percentage for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @param {EngineNumber} newValue - The new retirement rate value.
@@ -1008,7 +1014,7 @@ class StreamKeeper {
 
   /**
    * Get the retirement rate percentage for a substance in an application.
-   * 
+   *
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
    * @returns {EngineNumber} The current retirement rate value.
@@ -1021,10 +1027,10 @@ class StreamKeeper {
 
   /**
    * Retrieve parameterization for a specific application and substance.
-   * 
+   *
    * Verifies the existence of the substance and application combination
    * and returns the associated StreamParameterization object.
-   * 
+   *
    * @private
    * @param {string} application - The name of the application.
    * @param {string} substance - The name of the substance.
@@ -1039,7 +1045,7 @@ class StreamKeeper {
 
   /**
    * Generate a key identifying a stream within a substance and application.
-   * 
+   *
    * @private
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
@@ -1057,7 +1063,7 @@ class StreamKeeper {
 
   /**
    * Verify that a substance exists for an application.
-   * 
+   *
    * @private
    * @param {string} application - The application name.
    * @param {string} substance - The substance name.
@@ -1075,7 +1081,7 @@ class StreamKeeper {
 
   /**
    * Verify that a stream name is valid.
-   * 
+   *
    * @private
    * @param {string} name - The stream name to verify.
    * @throws {string} If the stream name is not recognized.
@@ -1089,7 +1095,7 @@ class StreamKeeper {
 
   /**
    * Get the base units for a stream.
-   * 
+   *
    * @private
    * @param {string} name - The stream name.
    * @returns {string} The base units for the stream.
