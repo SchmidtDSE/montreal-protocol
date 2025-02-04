@@ -92,7 +92,18 @@ function finalizeCodePieces(target) {
   return target.join("\n");
 }
 
+/**
+ * Represents a complete program containing applications, policies, and scenarios.
+ */
 class Program {
+  /**
+   * Creates a new Program.
+   *
+   * @param {Application[]} applications - Array of application definitions.
+   * @param {DefinitionalStanza[]} policies - Array of policy definitions.
+   * @param {SimulationScenario[]} scenarios - Array of simulation scenarios.
+   * @param {boolean} isCompatible - Whether program is compatible with UI editing.
+   */
   constructor(applications, policies, scenarios, isCompatible) {
     const self = this;
     self._applications = applications;
@@ -101,6 +112,11 @@ class Program {
     self._isCompatible = isCompatible && self._passesTempCompatiblityTests();
   }
 
+  /**
+   * Gets all substances across all applications.
+   *
+   * @returns {Substance[]} Array of all substances.
+   */
   getSubstances() {
     const self = this;
     return self
@@ -109,12 +125,25 @@ class Program {
       .flat();
   }
 
+  /**
+   * Inserts or updates a substance in an application.
+   *
+   * @param {string} priorApplication - Name of application to insert into.
+   * @param {string} priorSubstanceName - Name of substance to replace, or null for new.
+   * @param {Substance} substance - The substance to insert.
+   */
   insertSubstance(priorApplication, priorSubstanceName, substance) {
     const self = this;
     const application = self.getApplication(priorApplication);
     application.insertSubstance(priorSubstanceName, substance);
   }
 
+  /**
+   * Deletes a substance from an application.
+   *
+   * @param {string} applicationName - Name of application containing substance.
+   * @param {string} substanceName - Name of substance to delete.
+   */
   deleteSubstance(applicationName, substanceName) {
     const self = this;
     const application = self.getApplication(applicationName);
@@ -128,22 +157,43 @@ class Program {
     self._removeUnknownPoliciesFromScenarios();
   }
 
+  /**
+   * Gets all applications.
+   *
+   * @returns {Application[]} Array of applications.
+   */
   getApplications() {
     const self = this;
     return self._applications;
   }
 
+  /**
+   * Gets an application by name.
+   *
+   * @param {string} name - Name of application to find.
+   * @returns {Application|null} The application or null if not found.
+   */
   getApplication(name) {
     const self = this;
     const matching = self._applications.filter((x) => x.getName() === name);
     return matching.length == 0 ? null : matching[0];
   }
 
+  /**
+   * Adds a new application.
+   *
+   * @param {Application} newApplication - Application to add.
+   */
   addApplication(newApplication) {
     const self = this;
     self._applications.push(newApplication);
   }
 
+  /**
+   * Deletes an application by name.
+   *
+   * @param {string} name - Name of application to delete.
+   */
   deleteApplication(name) {
     const self = this;
     self._applications = self._applications.filter((x) => x.getName() !== name);
@@ -151,23 +201,46 @@ class Program {
     self._removeUnknownPoliciesFromScenarios();
   }
 
+  /**
+   * Renames an application.
+   *
+   * @param {string} oldName - Current name of application.
+   * @param {string} newName - New name for application.
+   */
   renameApplication(oldName, newName) {
     const self = this;
     const priorApplications = self._applications.filter((x) => x.getName() === oldName);
     priorApplications.forEach((x) => x.rename(newName));
   }
 
+  /**
+   * Gets all policies.
+   *
+   * @returns {DefinitionalStanza[]} Array of policies.
+   */
   getPolicies() {
     const self = this;
     return self._policies;
   }
 
+  /**
+   * Gets a policy by name.
+   *
+   * @param {string} name - Name of policy to find.
+   * @returns {DefinitionalStanza|null} The policy or null if not found.
+   */
   getPolicy(name) {
     const self = this;
     const matching = self._policies.filter((x) => x.getName() === name);
     return matching.length == 0 ? null : matching[0];
   }
 
+  /**
+   * Deletes a policy by name.
+   *
+   * @param {string} name - Name of policy to delete.
+   * @param {boolean} [filterUnknown=true] - Whether to filter unknown policies.
+   */
   deletePolicy(name, filterUnknown) {
     const self = this;
 
@@ -182,6 +255,12 @@ class Program {
     }
   }
 
+  /**
+   * Inserts or updates a policy.
+   *
+   * @param {string} oldName - Name of policy to replace, or null for new.
+   * @param {DefinitionalStanza} newPolicy - Policy to insert.
+   */
   insertPolicy(oldName, newPolicy) {
     const self = this;
     const nameChange = oldName !== newPolicy.getName();
@@ -189,28 +268,55 @@ class Program {
     self._policies.push(newPolicy);
   }
 
+  /**
+   * Gets all simulation scenarios.
+   *
+   * @returns {SimulationScenario[]} Array of scenarios.
+   */
   getScenarios() {
     const self = this;
     return self._scenarios;
   }
 
+  /**
+   * Gets a simulation scenario by name.
+   *
+   * @param {string} name - Name of scenario to find.
+   * @returns {SimulationScenario|null} The scenario or null if not found.
+   */
   getScenario(name) {
     const self = this;
     const matching = self._scenarios.filter((x) => x.getName() === name);
     return matching.length == 0 ? null : matching[0];
   }
 
+  /**
+   * Deletes a simulation scenario by name.
+   *
+   * @param {string} name - Name of scenario to delete.
+   */
   deleteScenario(name) {
     const self = this;
     self._scenarios = self._scenarios.filter((x) => x.getName() !== name);
   }
 
+  /**
+   * Inserts or updates a simulation scenario.
+   *
+   * @param {string} oldName - Name of scenario to replace, or null for new.
+   * @param {SimulationScenario} scenario - Scenario to insert.
+   */
   insertScenario(oldName, scenario) {
     const self = this;
     self.deleteScenario(oldName);
     self._scenarios.push(scenario);
   }
 
+  /**
+   * Gets whether program is compatible with UI editing.
+   *
+   * @returns {boolean} True if compatible, false otherwise.
+   */
   getIsCompatible() {
     const self = this;
     return self._isCompatible;
