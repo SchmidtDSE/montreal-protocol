@@ -538,21 +538,45 @@ class DefinitionalStanza {
     self._isCompatible = isCompatible;
   }
 
+  /**
+   * Gets the name of this definitional stanza.
+   *
+   * @returns {string} The name of the stanza ("default" or policy name).
+   */
   getName() {
     const self = this;
-    return self._name;
+    return self._name; 
   }
 
+  /**
+   * Gets the applications defined in this stanza.
+   *
+   * @returns {Application[]} Array of applications defined in the stanza.
+   */
   getApplications() {
     const self = this;
     return self._applications;
   }
 
+  /**
+   * Checks if this stanza is compatible with UI editing.
+   *
+   * @returns {boolean} True if stanza can be edited in UI, false otherwise.
+   */
   getIsCompatible() {
     const self = this;
     return self._isCompatible;
   }
 
+  /**
+   * Generates the code representation of this stanza.
+   * 
+   * Generates the QubecTalk code representation of this definitional stanza,
+   * including all its applications and appropriate indentation.
+   *
+   * @param {number} spaces - Number of spaces to use for indentation.
+   * @returns {string} The code representation of the stanza.
+   */
   toCode(spaces) {
     const self = this;
 
