@@ -1145,11 +1145,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Build a simulation configuration function
-   * @param {Object} ctx - The parser context containing simulation details
-   * @param {Array<string>} stanzas - Array of stanza names to execute in order
-   * @param {Function} futureNumTrials - Function that returns number of trials to run
-   * @returns {Function} A function that creates the simulation configuration
+   * Process a simulate command.
+   *
+   * @param {Object} ctx - The parser context containing simulation details.
+   * @param {Array<string>} stanzas - Array of stanza names to execute in order.
+   * @param {Function} futureNumTrials - Function that returns number of trials to run.
+   * @returns {Function} A function that creates the simulation configuration.
    */
   buildSimulate(ctx, stanzas, futureNumTrials) {
     const self = this;
@@ -1166,9 +1167,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a basic simulation scenario
-   * @param {Object} ctx - The parser context for the simulation
-   * @returns {Function} A function that builds the simulation configuration
+   * Process a simulation scenario using only the default / baseline.
+   *
+   * @param {Object} ctx - The parser context for the simulation.
+   * @returns {Function} A function that builds the simulation configuration.
    */
   visitBaseSimulation(ctx) {
     const self = this;
@@ -1176,9 +1178,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a policy simulation scenario
-   * @param {Object} ctx - The parser context for the policy simulation
-   * @returns {Function} A function that builds the policy simulation configuration
+   * Process a policy simulation scenario.
+   *
+   * @param {Object} ctx - The parser context for the policy simulation.
+   * @returns {Function} A function that builds the policy simulation configuration.
    */
   visitPolicySim(ctx) {
     const self = this;
@@ -1196,9 +1199,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a base simulation with multiple trials
-   * @param {Object} ctx - The parser context containing the simulation configuration
-   * @returns {Function} A function that builds the simulation with trials
+   * Process a base simulation with multiple trials.
+   *
+   * @param {Object} ctx - The parser context containing the simulation configuration.
+   * @returns {Function} A function that builds the simulation with trials.
    */
   visitBaseSimulationTrials(ctx) {
     const self = this;
@@ -1207,9 +1211,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a policy simulation with multiple trials
-   * @param {Object} ctx - The parser context containing the policy simulation configuration
-   * @returns {Function} A function that builds the policy simulation with trials
+   * Process a policy simulation with multiple trials.
+   *
+   * @param {Object} ctx - The parser context containing the policy simulation
+   *     configuration.
+   * @returns {Function} A function that builds the policy simulation with
+   *     trials.
    */
   visitPolicySimTrials(ctx) {
     const self = this;
@@ -1225,9 +1232,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process the complete program AST
-   * @param {Object} ctx - The parser context for the entire program
-   * @returns {Function} A function that executes the complete program
+   * Process an entire program.
+   *
+   * @param {Object} ctx - The parser context for the entire program.
+   * @returns {Function} A function that executes the complete program.
    */
   visitProgram(ctx) {
     const self = this;
@@ -1294,9 +1302,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a global statement node in the AST
-   * @param {Object} ctx - The parser context containing the global statement
-   * @returns {Function} A function that executes the global statement
+   * Process a global (non-stanza) statement.
+   *
+   * @param {Object} ctx - The parser context containing the global statement.
+   * @returns {Function} A function that executes the global statement.
    */
   visitGlobalStatement(ctx) {
     const self = this;
@@ -1304,9 +1313,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a substance statement node in the AST
-   * @param {Object} ctx - The parser context containing the substance statement
-   * @returns {Function} A function that executes the substance statement
+   * Process a substance definition statement.
+   *
+   * @param {Object} ctx - The parser context containing the substance
+   *     statement.
+   * @returns {Function} A function that executes the substance statement.
    */
   visitSubstanceStatement(ctx) {
     const self = this;
@@ -1314,9 +1325,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Remove surrounding quotes from a string
-   * @param {string} target - The string potentially containing quotes
-   * @returns {string} The string with quotes removed if present
+   * Remove surrounding quotes from a string.
+   *
+   * @param {string} target - The string potentially containing quotes.
+   * @returns {string} The string with quotes removed if present.
    * @private
    */
   _getStringWithoutQuotes(target) {
@@ -1330,13 +1342,14 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
 }
 
 /**
- * Class representing the results of a simulation run
+ * Class representing the results of a simulation run.
  */
 class SimulationResult {
   /**
    * Creates a new simulation result instance
    * @param {string} name - The name of the simulation
-   * @param {Array} trialResults - Array containing the results of each trial run
+   * @param {Array} trialResults - Array containing the results of each trial
+   *     run.
    */
   constructor(name, trialResults) {
     const self = this;
@@ -1345,8 +1358,9 @@ class SimulationResult {
   }
 
   /**
-   * Gets the name of the simulation
-   * @returns {string} The simulation name
+   * Gets the name of the simulation as defined in code.
+   *
+   * @returns {string} The simulation name.
    */
   getName() {
     const self = this;
@@ -1354,8 +1368,9 @@ class SimulationResult {
   }
 
   /**
-   * Gets the results from all trial runs
-   * @returns {Array} Array of trial results
+   * Gets the results from all trial runs.
+   *
+   * @returns {Array} Array of trial results.
    */
   getTrialResults() {
     const self = this;
@@ -1370,7 +1385,8 @@ class CompileResult {
   /**
    * Create a new record of a compilation attempt.
    *
-   * @param program The compiled program as a lambda if successful or null if unsuccessful.
+   * @param program The compiled program as a function if successful or null if
+   *     unsuccessful.
    * @param errors Any errors enountered or empty list if no errors.
    */
   constructor(program, errors) {
@@ -1380,9 +1396,9 @@ class CompileResult {
   }
 
   /**
-   * Get the program as a lambda.
+   * Get the program as a function.
    *
-   * @returns The compiled program as a lambda or null if compilation failed.
+   * @returns The compiled program as a function or null if compilation failed.
    */
   getProgram() {
     const self = this;
@@ -1402,7 +1418,9 @@ class CompileResult {
 
 /**
  * Compiler class for QubecTalk scripts.
- * Handles parsing and compilation of QubecTalk code into executable functions.
+ *
+ * Facade which manages the parsing and compilation of QubecTalk code into
+ * executable functions.
  */
 class Compiler {
   /**
