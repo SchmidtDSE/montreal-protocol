@@ -52,7 +52,7 @@ class EngineResult {
 
   /**
    * Get the application.
-   * 
+   *
    * @returns {string} The application.
    */
   getApplication() {
@@ -62,7 +62,7 @@ class EngineResult {
 
   /**
    * Get the substance.
-   * 
+   *
    * @returns {string} The substance.
    */
   getSubstance() {
@@ -72,7 +72,7 @@ class EngineResult {
 
   /**
    * Get the year the result is relevant to.
-   * 
+   *
    * @returns {number} The year.
    */
   getYear() {
@@ -82,7 +82,7 @@ class EngineResult {
 
   /**
    * Get the manufacture value.
-   * 
+   *
    * @returns {EngineNumber} The manufacture value.
    */
   getManufacture() {
@@ -92,7 +92,7 @@ class EngineResult {
 
   /**
    * Get the import value.
-   * 
+   *
    * @returns {EngineNumber} The import value.
    */
   getImport() {
@@ -102,7 +102,7 @@ class EngineResult {
 
   /**
    * Get the consumption value.
-   * 
+   *
    * @returns {EngineNumber} The consumption value.
    */
   getConsumption() {
@@ -112,7 +112,7 @@ class EngineResult {
 
   /**
    * Get the population value.
-   * 
+   *
    * @returns {EngineNumber} The population value.
    */
   getPopulation() {
@@ -125,7 +125,6 @@ class EngineResult {
  * Facade which runs engine mechanics.
  */
 class Engine {
-
   /**
    * Create a new engine running from
    */
@@ -333,7 +332,7 @@ class Engine {
 
   /**
    * Create a user-defined variable in the current scope.
-   * 
+   *
    * @param {string} name - The name of the variable to define.
    * @throws {Error} When trying to define protected variables 'yearsElapsed'
    *     or 'yearAbsolute'.
@@ -348,7 +347,7 @@ class Engine {
 
   /**
    * Get the value of a user-defined variable in the current scope.
-   * 
+   *
    * @param {string} name - The name of the variable to retrieve.
    * @returns {*} The value of the variable, or special values for
    *     'yearsElapsed' and 'yearAbsolute'.
@@ -366,7 +365,7 @@ class Engine {
 
   /**
    * Set the value of a variable in the current scope.
-   * 
+   *
    * @param {string} name - The name of the variable to set.
    * @param {*} value - The value to assign to the variable.
    * @throws {Error} When trying to set protected variables
@@ -382,7 +381,7 @@ class Engine {
 
   /**
    * Get the initial charge value for a given stream.
-   * 
+   *
    * @param {string} stream - The stream identifier to get the initial charge
    *     for.
    * @returns {EngineNumber} The initial charge value for the stream.
@@ -427,7 +426,7 @@ class Engine {
 
   /**
    * Set the initial charge for a stream.
-   * 
+   *
    * @param {EngineNumber} value - The initial charge value to set.
    * @param {string} stream - The stream identifier to set the initial charge
    *     for.
@@ -455,7 +454,7 @@ class Engine {
 
   /**
    * Get the recharge volume for the current application and substance.
-   * 
+   *
    * @returns {EngineNumber} The recharge volume value.
    */
   getRechargeVolume() {
@@ -467,7 +466,7 @@ class Engine {
 
   /**
    * Get the recharge intensity for the current application and substance.
-   * 
+   *
    * @returns {EngineNumber} The recharge intensity value.
    */
   getRechargeIntensity() {
@@ -479,7 +478,7 @@ class Engine {
 
   /**
    * Set recharge parameters for the current application and substance.
-   * 
+   *
    * @param {EngineNumber} volume - The recharge volume to set.
    * @param {EngineNumber} intensity - The recharge intensity to set.
    * @param {Object} yearMatcher - Matcher to determine if the change applies
@@ -513,7 +512,7 @@ class Engine {
 
   /**
    * Set retirement rate for the current application and substance.
-   * 
+   *
    * @param {EngineNumber} amount - The retirement rate to set.
    * @param {Object} yearMatcher - Matcher to determine if the change applies
    *     to current year.
@@ -533,7 +532,7 @@ class Engine {
 
   /**
    * Get the retirement rate for the current application and substance.
-   * 
+   *
    * @returns {EngineNumber} The retirement rate value.
    */
   getRetirementRate() {
@@ -545,7 +544,7 @@ class Engine {
 
   /**
    * Set recycling parameters for the current application and substance.
-   * 
+   *
    * @param {EngineNumber} recoveryWithUnits - The recovery rate.
    * @param {EngineNumber} yieldWithUnits - The yield rate.
    * @param {EngineNumber} displaceLevel - The displacement level.
@@ -575,7 +574,7 @@ class Engine {
 
   /**
    * Set GHG equivalency for the current application and substance.
-   * 
+   *
    * @param {EngineNumber} amount - The GHG intensity value to set.
    * @param {Object} yearMatcher - Matcher to determine if the change applies
    *     to current year.
@@ -596,7 +595,7 @@ class Engine {
 
   /**
    * Change a stream value by a delta amount.
-   * 
+   *
    * @param {string} stream - The stream identifier to modify.
    * @param {EngineNumber} amount - The amount to change the stream by.
    * @param {Object} yearMatcher - Matcher to determine if the change applies
@@ -621,7 +620,7 @@ class Engine {
 
   /**
    * Cap a stream at a maximum value.
-   * 
+   *
    * @param {string} stream - The stream identifier to cap.
    * @param {EngineNumber} amount - The maximum value to cap at.
    * @param {Object} yearMatcher - Matcher to determine if the change applies
@@ -662,7 +661,7 @@ class Engine {
 
   /**
    * Set a minimum floor value for a stream.
-   * 
+   *
    * @param {string} stream - The stream identifier to set floor for.
    * @param {EngineNumber} amount - The minimum value to set as floor.
    * @param {Object} yearMatcher - Matcher to determine if the change applies
@@ -703,7 +702,7 @@ class Engine {
 
   /**
    * Replace an amount from one substance with another.
-   * 
+   *
    * @param {EngineNumber} amountRaw - The amount to replace.
    * @param {string} stream - The stream identifier to modify.
    * @param {string} destinationSubstance - The substance to replace with.
@@ -729,7 +728,7 @@ class Engine {
 
   /**
    * Get the results for all registered substances.
-   * 
+   *
    * @returns {EngineResult[]} Array of results for each registered substance.
    */
   getResults() {
@@ -760,7 +759,7 @@ class Engine {
 
   /**
    * Creates a unit converter with total values initialized.
-   * 
+   *
    * @param {string} stream - The stream identifier to create converter for.
    * @returns {UnitConverter} A configured unit converter instance.
    * @private
@@ -784,7 +783,7 @@ class Engine {
 
   /**
    * Determines if a year matcher applies to current year.
-   * 
+   *
    * @param {Object|null} yearMatcher - The year matcher to check.
    * @returns {boolean} True if in range or no matcher provided.
    * @private
@@ -798,9 +797,9 @@ class Engine {
 
   /**
    * Recalculates population changes based on current state.
-   * 
+   *
    * @param {Scope|null} scope - The scope to recalculate for.
-   * @private 
+   * @private
    */
   _recalcPopulationChange(scope) {
     const self = this;
@@ -881,7 +880,7 @@ class Engine {
 
   /**
    * Recalculates consumption values based on current state.
-   * 
+   *
    * @param {Scope|null} scope - The scope to recalculate for.
    * @private
    */
@@ -919,7 +918,7 @@ class Engine {
 
   /**
    * Recalculates sales values based on current state.
-   * 
+   *
    * @param {Scope|null} scope - The scope to recalculate for.
    * @private
    */
@@ -1016,7 +1015,7 @@ class Engine {
 
   /**
    * Recalculates retirement values based on current state.
-   * 
+   *
    * @param {Scope|null} scope - The scope to recalculate for.
    * @private
    */
