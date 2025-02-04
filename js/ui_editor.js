@@ -101,7 +101,7 @@ function setupListButton(button, targetList, templateId, initUiCallback) {
 
 /**
  * Sets a form field value with fallback to default.
- * 
+ *
  * @param {HTMLElement} selection - Form field element.
  * @param {Object} source - Source object to get value from.
  * @param {*} defaultValue - Default value if source is null.
@@ -115,7 +115,7 @@ function setFieldValue(selection, source, defaultValue, strategy) {
 
 /**
  * Gets raw value from a form field.
- * 
+ *
  * @param {HTMLElement} selection - Form field to get value from.
  * @returns {string} The field's value.
  */
@@ -125,7 +125,7 @@ function getFieldValue(selection) {
 
 /**
  * Gets sanitized value from a form field, removing quotes and commas.
- * 
+ *
  * @param {HTMLElement} selection - Form field to get sanitized value from.
  * @returns {string} Sanitized field value.
  */
@@ -136,7 +136,7 @@ function getSanitizedFieldValue(selection) {
 
 /**
  * Sets up a list input with template-based items.
- * 
+ *
  * @param {HTMLElement} listSelection - Container element for list.
  * @param {string} itemTemplate - HTML template for list items.
  * @param {Array} items - Array of items to populate list.
@@ -174,7 +174,7 @@ function getListInput(selection, itemReadStrategy) {
 
 /**
  * Sets a value/units pair for engine number inputs.
- * 
+ *
  * @param {HTMLElement} valSelection - Value input element.
  * @param {HTMLElement} unitsSelection - Units select element.
  * @param {Object} source - Source object for values.
@@ -190,7 +190,7 @@ function setEngineNumberValue(valSelection, unitsSelection, source, defaultValue
 
 /**
  * Gets an engine number from value/units form fields.
- * 
+ *
  * @param {HTMLElement} valSelection - Value input element.
  * @param {HTMLElement} unitsSelection - Units select element.
  * @returns {EngineNumber} Combined engine number object.
@@ -256,7 +256,7 @@ function setDuring(selection, command, defaultVal) {
 class ApplicationsListPresenter {
   /**
    * Creates a new ApplicationsListPresenter.
-   * 
+   *
    * @param {HTMLElement} root - Root DOM element for the applications list.
    * @param {Function} getCodeObj - Callback to get the current code object.
    * @param {Function} onCodeObjUpdate - Callback when code object is updated.
@@ -274,7 +274,7 @@ class ApplicationsListPresenter {
 
   /**
    * Refreshes the applications list display.
-   * 
+   *
    * @param {Object} codeObj - Current code object.
    */
   refresh(codeObj) {
@@ -284,7 +284,7 @@ class ApplicationsListPresenter {
 
   /**
    * Updates the applications list UI with current data.
-   * 
+   *
    * @param {Object} codeObj - Current code object from which to extract
    *     applications.
    * @private
@@ -337,7 +337,7 @@ class ApplicationsListPresenter {
 
   /**
    * Sets up the dialog window for adding/editing applications.
-   * 
+   *
    * @private
    */
   _setupDialog() {
@@ -384,7 +384,7 @@ class ApplicationsListPresenter {
 
   /**
    * Shows the dialog for adding or editing an application.
-   * 
+   *
    * @param {string|null} name - Name of application to edit. Pass null if this
    *     is for a new application.
    * @private
@@ -406,7 +406,7 @@ class ApplicationsListPresenter {
 
   /**
    * Gets list of all application names.
-   * 
+   *
    * @returns {string[]} Array of application names.
    * @private
    */
@@ -420,11 +420,15 @@ class ApplicationsListPresenter {
 }
 
 /**
- * Manages the UI for listing and editing consumption data.
+ * Manages the UI for listing and editing consumption logic.
+ *
+ * Manages the UI for listing and editing consumption logic where substances
+ * are consumed for different applications.
  */
 class ConsumptionListPresenter {
   /**
    * Creates a new ConsumptionListPresenter.
+   *
    * @param {HTMLElement} root - The root DOM element for the consumption list.
    * @param {Function} getCodeObj - Callback to get the current code object.
    * @param {Function} onCodeObjUpdate - Callback when the code object is updated.
@@ -441,7 +445,7 @@ class ConsumptionListPresenter {
   }
 
   /**
-   * Enables the consumption list interface
+   * Visually and functionally enables the consumption list interface.
    */
   enable() {
     const self = this;
@@ -449,7 +453,7 @@ class ConsumptionListPresenter {
   }
 
   /**
-   * Disables the consumption list interface
+   * Visually and functionally disables the consumption list interface.
    */
   disable() {
     const self = this;
@@ -457,8 +461,9 @@ class ConsumptionListPresenter {
   }
 
   /**
-   * Updates the consumption list display with new data
-   * @param {Object} codeObj - Current code object to display
+   * Updates the consumption list display with new data.
+   *
+   * @param {Object} codeObj - Current code object to display.
    */
   refresh(codeObj) {
     const self = this;
@@ -467,6 +472,7 @@ class ConsumptionListPresenter {
 
   /**
    * Refreshes the consumption list display.
+   *
    * @param {Object} codeObj - The current code object.
    * @private
    */
@@ -521,8 +527,11 @@ class ConsumptionListPresenter {
   }
 
   /**
-   * Sets up the dialog for adding/editing consumption records
-   * Initializes tabs and event handlers
+   * Sets up the dialog for adding/editing consumption records.
+   *
+   * Sets up the dialog for adding/editing consumption records, initializing
+   * tabs and event handlers.
+   *
    * @private
    */
   _setupDialog() {
@@ -565,8 +574,9 @@ class ConsumptionListPresenter {
   }
 
   /**
-   * Shows the dialog for editing a consumption record
-   * @param {string|null} name - Name of consumption to edit, or null for new record
+   * Shows the dialog for editing a consumption record.
+   *
+   * @param {string|null} name - Name of consumption to edit, or null for new record.
    * @private
    */
   _showDialogFor(name) {
@@ -701,6 +711,7 @@ class ConsumptionListPresenter {
 
   /**
    * Gets list of all consumption names.
+   *
    * @returns {string[]} Array of consumption names.
    * @private
    */
@@ -722,6 +733,7 @@ class ConsumptionListPresenter {
 
   /**
    * Saves the current consumption data.
+   *
    * @private
    */
   _save() {
@@ -747,7 +759,8 @@ class ConsumptionListPresenter {
   }
 
   /**
-   * Parses the dialog form data into a substance object
+   * Parses the dialog form data into a substance object.
+   *
    * @returns {Object} The parsed substance object
    * @private
    */
@@ -951,7 +964,7 @@ class PolicyListPresenter {
   }
 
   _showDialogFor(name) {
-    const self= this;
+    const self = this;
     self._editingName = name;
     const codeObj = self._getCodeObj();
 
@@ -994,7 +1007,7 @@ class PolicyListPresenter {
     const substanceName = targetSubstance === null ? "" : targetSubstance.getName();
     substanceSelect.html("");
     substanceSelect
-            .selectAll("option")
+      .selectAll("option")
       .data(substanceNames)
       .enter()
       .append("option")
