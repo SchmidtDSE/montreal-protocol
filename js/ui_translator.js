@@ -623,31 +623,62 @@ class SimulationScenario {
     self._isCompatible = isCompatible;
   }
 
+  /**
+   * Gets the name of this simulation scenario.
+   *
+   * @returns {string} The scenario name.
+   */
   getName() {
     const self = this;
     return self._name;
   }
 
+  /**
+   * Gets names of policies included in this scenario.
+   *
+   * @returns {string[]} Array of policy names to apply.
+   */
   getPolicyNames() {
     const self = this;
     return self._policyNames;
   }
 
+  /**
+   * Gets the start year of the simulation.
+   *
+   * @returns {number} The year the simulation starts.
+   */
   getYearStart() {
     const self = this;
     return self._yearStart;
   }
 
+  /**
+   * Gets the end year of the simulation.
+   *
+   * @returns {number} The year the simulation ends.
+   */
   getYearEnd() {
     const self = this;
     return self._yearEnd;
   }
 
+  /**
+   * Checks if this scenario is compatible with UI editing.
+   *
+   * @returns {boolean} True if scenario can be edited in UI, false otherwise.
+   */
   getIsCompatible() {
     const self = this;
     return self._isCompatible;
   }
 
+  /**
+   * Generates the code representation of this scenario.
+   *
+   * @param {number} spaces - Number of spaces to use for indentation.
+   * @returns {string} The code representation of the simulation scenario.
+   */
   toCode(spaces) {
     const self = this;
 
