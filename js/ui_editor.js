@@ -1412,14 +1412,14 @@ class SimulationListPresenter {
 
 /**
  * Manages the UI editor interface.
- * 
+ *
  * Coordinates between code editing and visual editing interfaces, managing
  * tabs and content display.
  */
 class UiEditorPresenter {
   /**
    * Creates a new UiEditorPresenter.
-   * 
+   *
    * @param {boolean} startOnCode - Whether to start in code view.
    * @param {HTMLElement} tabRoot - Root element for editor tabs.
    * @param {HTMLElement} contentsRoot - Root element for editor contents.
@@ -1519,7 +1519,7 @@ class UiEditorPresenter {
 
   /**
    * Sets up event listeners for advanced editor links.
-   * 
+   *
    * @private
    */
   _setupAdvancedLinks() {
@@ -1619,7 +1619,7 @@ class UiEditorPresenter {
 
 /**
  * Initializes a set command UI element.
- * 
+ *
  * @param {Object} itemObj - The command object to initialize from.
  * @param {HTMLElement} root - The root element containing the UI.
  */
