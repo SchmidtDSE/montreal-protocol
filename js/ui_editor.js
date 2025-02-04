@@ -836,7 +836,20 @@ class ConsumptionListPresenter {
   }
 }
 
+/**
+ * Manages the UI for listing and editing policies.
+ *
+ * Manages the UI for listing and editing policies that define
+ * recycling, replacement, level changes, and limits on substances.
+ */
 class PolicyListPresenter {
+  /**
+   * Creates a new PolicyListPresenter.
+   *
+   * @param {HTMLElement} root - The root DOM element for the policy list.
+   * @param {Function} getCodeObj - Callback to get the current code object.
+   * @param {Function} onCodeObjUpdate - Callback when the code object is updated.
+   */
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
     self._root = root;
@@ -848,21 +861,36 @@ class PolicyListPresenter {
     self.refresh();
   }
 
+  /**
+   * Enables the policy list interface
+   */
   enable() {
     const self = this;
     self._root.classList.remove("inactive");
   }
 
+  /**
+   * Disables the policy list interface
+   */
   disable() {
     const self = this;
     self._root.classList.add("inactive");
   }
 
+  /**
+   * Updates the policy list with new data
+   * @param {Object} codeObj - Current code object to display
+   */
   refresh(codeObj) {
     const self = this;
     self._refreshList(codeObj);
   }
 
+  /**
+   * Updates the policy list UI with current data
+   * @param {Object} codeObj - Current code object from which to extract policies
+   * @private
+   */
   _refreshList(codeObj) {
     const self = this;
     const policyNames = self._getPolicyNames();
@@ -909,6 +937,14 @@ class PolicyListPresenter {
       .attr("aria-label", (x) => "delete " + x);
   }
 
+  /**
+   * Sets up the dialog for adding/editing policies
+   * 
+   * Sets up the dialog for adding/editing policies, initializing
+   * tabs and event handlers for recycling, replacement, level changes,
+   * and limits.
+   * @private
+   */
   _setupDialog() {
     const self = this;
 
@@ -963,6 +999,12 @@ class PolicyListPresenter {
     );
   }
 
+  /**
+   * Shows the dialog for adding or editing a policy.
+   *
+   * @param {string|null} name - Name of policy to edit, or null for new policy.
+   * @private
+   */
   _showDialogFor(name) {
     const self = this;
     self._editingName = name;
@@ -1053,6 +1095,12 @@ class PolicyListPresenter {
     self._dialog.showModal();
   }
 
+  /**
+   * Gets list of all policy names.
+   *
+   * @returns {string[]} Array of policy names.
+   * @private
+   */
   _getPolicyNames() {
     const self = this;
     const codeObj = self._getCodeObj();
@@ -1060,6 +1108,12 @@ class PolicyListPresenter {
     return policies.map((x) => x.getName());
   }
 
+  /**
+   * Parses the dialog form data into a policy object.
+   *
+   * @returns {Object} The parsed policy object.
+   * @private
+   */
   _parseObj() {
     const self = this;
 
@@ -1101,6 +1155,11 @@ class PolicyListPresenter {
     return policy;
   }
 
+  /**
+   * Saves the current policy data.
+   *
+   * @private
+   */
   _save() {
     const self = this;
     const policy = self._parseObj();
