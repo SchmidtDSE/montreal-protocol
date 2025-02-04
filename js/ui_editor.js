@@ -249,13 +249,17 @@ function setDuring(selection, command, defaultVal) {
 
 /**
  * Manages the UI for listing and editing applications.
+ *
+ * Manages the UI for listing and editing applications where these refer to
+ * collections of substances based on use like commercial refrigeration.
  */
 class ApplicationsListPresenter {
   /**
-   * Creates a new ApplicationsListPresenter
-   * @param {HTMLElement} root - Root DOM element for the applications list
-   * @param {Function} getCodeObj - Callback to get the current code object
-   * @param {Function} onCodeObjUpdate - Callback when code object is updated
+   * Creates a new ApplicationsListPresenter.
+   * 
+   * @param {HTMLElement} root - Root DOM element for the applications list.
+   * @param {Function} getCodeObj - Callback to get the current code object.
+   * @param {Function} onCodeObjUpdate - Callback when code object is updated.
    */
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
@@ -269,8 +273,9 @@ class ApplicationsListPresenter {
   }
 
   /**
-   * Refreshes the applications list display
-   * @param {Object} codeObj - Current code object
+   * Refreshes the applications list display.
+   * 
+   * @param {Object} codeObj - Current code object.
    */
   refresh(codeObj) {
     const self = this;
@@ -278,8 +283,10 @@ class ApplicationsListPresenter {
   }
 
   /**
-   * Updates the applications list UI with current data
-   * @param {Object} codeObj - Current code object
+   * Updates the applications list UI with current data.
+   * 
+   * @param {Object} codeObj - Current code object from which to extract
+   *     applications.
    * @private
    */
   _refreshList(codeObj) {
@@ -329,7 +336,8 @@ class ApplicationsListPresenter {
   }
 
   /**
-   * Sets up the dialog for adding/editing applications
+   * Sets up the dialog window for adding/editing applications.
+   * 
    * @private
    */
   _setupDialog() {
@@ -375,8 +383,10 @@ class ApplicationsListPresenter {
   }
 
   /**
-   * Shows the dialog for adding or editing an application
-   * @param {string|null} name - Name of application to edit, or null for adding new
+   * Shows the dialog for adding or editing an application.
+   * 
+   * @param {string|null} name - Name of application to edit. Pass null if this
+   *     is for a new application.
    * @private
    */
   _showDialogFor(name) {
@@ -395,8 +405,9 @@ class ApplicationsListPresenter {
   }
 
   /**
-   * Gets list of all application names
-   * @returns {string[]} Array of application names
+   * Gets list of all application names.
+   * 
+   * @returns {string[]} Array of application names.
    * @private
    */
   _getAppNames() {
