@@ -103,6 +103,7 @@ class UnitConverter {
   /**
    * Convert a number to kilograms.
    *
+   * @private
    * @param target The EngineNumber to convert.
    * @returns Target converted to kilograms.
    */
@@ -120,6 +121,7 @@ class UnitConverter {
   /**
    * Convert a number to metric tons.
    *
+   * @private
    * @param target The EngineNumber to convert.
    * @returns Target converted to metric tons.
    */
@@ -137,6 +139,7 @@ class UnitConverter {
   /**
    * Convert a number to a volume units.
    *
+   * @private
    * @param target The EngineNumber to convert.
    * @returns Target converted to kilograms or metric tons.
    */
@@ -177,6 +180,7 @@ class UnitConverter {
   /**
    * Convert a number to units (population).
    *
+   * @private
    * @param target The EngineNumber to convert.
    * @returns Target converted to units (population).
    */
@@ -220,6 +224,7 @@ class UnitConverter {
   /**
    * Convert a number to consumption as tCO2e.
    *
+   * @private
    * @param target The EngineNumber to convert.
    * @returns Target converted to consumption as tCO2e.
    */
@@ -261,6 +266,7 @@ class UnitConverter {
   /**
    * Convert a number to years.
    *
+   * @private
    * @param target The EngineNumber to convert.
    * @returns Target converted to years.
    */
@@ -301,6 +307,13 @@ class UnitConverter {
     }
   }
 
+  /**
+   * Convert a number to percentage.
+   *
+   * @private
+   * @param target The EngineNumber to convert.
+   * @returns Target converted to percentage.
+   */
   _toPercent(target) {
     const self = this;
 
@@ -330,9 +343,10 @@ class UnitConverter {
   /**
    * Normalize to non-ratio units if possible.
    *
-   * @param target The number to convert from a units with ratio to single type units.
-   * @returns Number after conversion to non-ratio units or target unchanged if it does not have a
-   *    ratio units or could not be normalized.
+   * @param target The number to convert from a units with ratio to single type
+   *     units.
+   * @returns Number after conversion to non-ratio units or target unchanged if
+   *     it does not have a ratio units or could not be normalized.
    */
   _normalize(target) {
     const self = this;
@@ -344,8 +358,10 @@ class UnitConverter {
   }
 
   /**
-   * Convert a number where a units ratio has population in the denominator to a non-ratio units.
+   * Convert a number where a units ratio has population in the denominator to
+   * a non-ratio units.
    *
+   * @private
    * @param target The value to normalize by population.
    * @returns Target without population in its units denominator.
    */
@@ -373,6 +389,7 @@ class UnitConverter {
   /**
    * Convert a number where a units ratio has time in the denominator to a non-ratio units.
    *
+   * @private
    * @param target The value to normalize by time.
    * @returns Target without time in its units denominator.
    */
@@ -394,8 +411,10 @@ class UnitConverter {
   }
 
   /**
-   * Convert a number where a units ratio has consumption in the denominator to a non-ratio units.
+   * Convert a number where a units ratio has consumption in the denominator to
+   * a non-ratio units.
    *
+   * @private
    * @param target The value to normalize by consumption.
    * @returns Target without consumption in its units denominator.
    */
@@ -417,8 +436,10 @@ class UnitConverter {
   }
 
   /**
-   * Convert a number where a units ratio has volume in the denominator to a non-ratio units.
+   * Convert a number where a units ratio has volume in the denominator to a
+   * non-ratio units.
    *
+   * @private
    * @param target The value to normalize by volume.
    * @returns Target without volume in its units denominator.
    */
