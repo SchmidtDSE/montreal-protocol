@@ -628,7 +628,17 @@ class SubstanceInApplicationId {
   }
 }
 
+/**
+ * Class responsible for managing and tracking substance streams and their parameters.
+ * Handles storage and retrieval of substance data, stream values, and associated
+ * parameterizations.
+ */
 class StreamKeeper {
+  /**
+   * Create a new StreamKeeper instance.
+   * 
+   * @param {UnitConverter} unitConverter - Converter for handling unit transformations.
+   */
   constructor(unitConverter) {
     const self = this;
     self._substances = new Map();
@@ -636,6 +646,11 @@ class StreamKeeper {
     self._unitConverter = unitConverter;
   }
 
+  /**
+   * Get all registered substance-application pairs.
+   * 
+   * @returns {SubstanceInApplicationId[]} Array of substance identifiers.
+   */
   getRegisteredSubstances() {
     const self = this;
     const keys = Array.of(...self._substances.keys());
@@ -646,12 +661,26 @@ class StreamKeeper {
     return substanceIds;
   }
 
+  /**
+   * Check if a substance exists for an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @returns {boolean} True if the substance exists for the application.
+   */
   hasSubstance(application, substance) {
     const self = this;
     const key = self._getKey(application, substance);
     return self._substances.has(key);
   }
 
+  /**
+   * Ensure a substance exists for an application, creating it if needed.
+   * Initializes all required streams with zero values.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   */
   ensureSubstance(application, substance) {
     const self = this;
 
@@ -676,6 +705,14 @@ class StreamKeeper {
     self._streams.set(self._getKey(application, substance, "priorEquipment"), makeZero("units"));
   }
 
+  /**
+   * Set the value for a specific stream.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {string} name - The stream name.
+   * @param {EngineNumber} value - The value to set.
+   */
   setStream(application, substance, name, value) {
     const self = this;
     self._ensureSubstancePresent(application, substance, "setStream");
@@ -709,6 +746,14 @@ class StreamKeeper {
     self._streams.set(self._getKey(application, substance, name), valueConverted);
   }
 
+  /**
+   * Get the value of a specific stream.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {string} name - The stream name.
+   * @returns {EngineNumber} The stream value.
+   */
   getStream(application, substance, name) {
     const self = this;
     self._ensureSubstancePresent(application, substance, "getStream");
@@ -728,11 +773,22 @@ class StreamKeeper {
     }
   }
 
+  /**
+   * Check if a stream exists for a substance-application pair.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {string} name - The stream name.
+   * @returns {boolean} True if the stream exists.
+   */
   isKnownStream(application, substance, name) {
     const self = this;
     return self._streams.has(self._getKey(application, substance, name));
   }
 
+  /**
+   * Increment the year, updating populations and resetting internal parameters.
+   */
   incrementYear() {
     const self = this;
 
@@ -854,6 +910,16 @@ class StreamKeeper {
     return self._substances.get(key);
   }
 
+  /**
+   * Generate a key for storing substance-application-stream data.
+   * 
+   * @private
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {string} [name] - The stream name.
+   * @param {string} [substream] - The substream identifier.
+   * @returns {string} The generated key.
+   */
   _getKey(application, substance, name, substream) {
     const self = this;
     const pieces = [application, substance, name, substream];
@@ -862,6 +928,15 @@ class StreamKeeper {
     return piecesSafe.join("\t");
   }
 
+  /**
+   * Verify that a substance exists for an application.
+   * 
+   * @private
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {string} context - The context for error reporting.
+   * @throws {string} If the substance does not exist for the application.
+   */
   _ensureSubstancePresent(application, substance, context) {
     const self = this;
 
@@ -871,6 +946,13 @@ class StreamKeeper {
     }
   }
 
+  /**
+   * Verify that a stream name is valid.
+   * 
+   * @private
+   * @param {string} name - The stream name to verify.
+   * @throws {string} If the stream name is not recognized.
+   */
   _ensureStreamKnown(name) {
     const self = this;
     if (!STREAM_BASE_UNITS.has(name)) {
@@ -878,6 +960,13 @@ class StreamKeeper {
     }
   }
 
+  /**
+   * Get the base units for a stream.
+   * 
+   * @private
+   * @param {string} name - The stream name.
+   * @returns {string} The base units for the stream.
+   */
   _getUnits(name) {
     const self = this;
     self._ensureStreamKnown(name);
