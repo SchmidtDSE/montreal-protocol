@@ -1144,6 +1144,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
     };
   }
 
+  /**
+   * Build a simulation configuration function
+   * @param {Object} ctx - The parser context containing simulation details
+   * @param {Array<string>} stanzas - Array of stanza names to execute in order
+   * @param {Function} futureNumTrials - Function that returns number of trials to run
+   * @returns {Function} A function that creates the simulation configuration
+   */
   buildSimulate(ctx, stanzas, futureNumTrials) {
     const self = this;
     const name = self._getStringWithoutQuotes(ctx.name.getText());
