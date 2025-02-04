@@ -13,6 +13,10 @@ import {
   SubstanceBuilder,
 } from "ui_translator";
 
+/**
+ * Updates the visibility of duration selector elements based on selected type
+ * @param {HTMLElement} dateSelector - The date selector element to update
+ */
 function updateDurationSelector(dateSelector) {
   const makeVisibilityCallback = (showStart, showEnd) => {
     return () => {
@@ -45,6 +49,10 @@ function updateDurationSelector(dateSelector) {
   refreshVisibility(dateSelector);
 }
 
+/**
+ * Initializes duration selector functionality for new elements
+ * @param {HTMLElement} newDiv - The new element to set up duration selector for
+ */
 function setupDurationSelector(newDiv) {
   const dateSelectors = Array.of(...newDiv.querySelectorAll(".duration-subcomponent"));
   dateSelectors.forEach((dateSelector) => {
@@ -55,6 +63,13 @@ function setupDurationSelector(newDiv) {
   });
 }
 
+/**
+ * Sets up a list button with add/delete functionality
+ * @param {HTMLElement} button - Button element to set up
+ * @param {HTMLElement} targetList - List element to add items to 
+ * @param {string} templateId - ID of template to use for new items
+ * @param {Function} initUiCallback - Callback to initialize new item UI
+ */
 function setupListButton(button, targetList, templateId, initUiCallback) {
   button.addEventListener("click", (event) => {
     event.preventDefault();
@@ -916,7 +931,7 @@ class PolicyListPresenter {
   _save() {
     const self = this;
     const policy = self._parseObj();
-    const codeObj = self._getCodeObj();
+const codeObj = self._getCodeObj();
     codeObj.insertPolicy(self._editingName, policy);
     self._onCodeObjUpdate(codeObj);
   }
