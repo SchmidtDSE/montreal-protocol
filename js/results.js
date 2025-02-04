@@ -1,3 +1,8 @@
+/**
+ * Presenters and logic to visualize engine result.
+ *
+ * @license BSD, see LICENSE.md.
+ */
 import {FilterSet} from "report_data";
 
 const COLORS = [
