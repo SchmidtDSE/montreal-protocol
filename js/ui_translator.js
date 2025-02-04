@@ -796,48 +796,96 @@ class Application {
     self._isCompatible = isCompatible;
   }
 
+  /**
+   * Gets the name of this application.
+   * 
+   * @returns {string} The application name.
+   */
   getName() {
     const self = this;
     return self._name;
   }
 
+  /**
+   * Renames this application.
+   * 
+   * @param {string} newName - The new name for the application.
+   */
   rename(newName) {
     const self = this;
     self._name = newName;
   }
 
+  /**
+   * Gets all substances defined in this application.
+   * 
+   * @returns {Substance[]} Array of substances.
+   */
   getSubstances() {
     const self = this;
     return self._substances;
   }
 
+  /**
+   * Inserts or updates a substance in this application.
+   * 
+   * @param {string} substanceName - Name of substance to replace, or null for new.
+   * @param {Substance} newVersion - The substance to insert.
+   */
   insertSubstance(substanceName, newVersion) {
     const self = this;
     self.deleteSubstance(substanceName);
     self._substances.push(newVersion);
   }
 
+  /**
+   * Deletes a substance from this application.
+   * 
+   * @param {string} substanceName - Name of substance to delete.
+   */
   deleteSubstance(substanceName) {
     const self = this;
     self._substances = self._substances.filter((x) => x.getName() !== substanceName);
   }
 
+  /**
+   * Gets a specific substance by name.
+   * 
+   * @param {string} name - Name of substance to find.
+   * @returns {Substance|null} The substance or null if not found.
+   */
   getSubstance(name) {
     const self = this;
     const matching = self._substances.filter((x) => x.getName() === name);
     return matching.length == 0 ? null : matching[0];
   }
 
+  /**
+   * Checks if this application modifies an existing one.
+   * 
+   * @returns {boolean} True if this modifies an existing application.
+   */
   getIsModification() {
     const self = this;
     return self._isModification;
   }
 
+  /**
+   * Checks if this application is compatible with UI editing.
+   * 
+   * @returns {boolean} True if application can be edited in UI.
+   */
   getIsCompatible() {
     const self = this;
     return self._isCompatible;
   }
 
+  /**
+   * Generates the code representation of this application.
+   * 
+   * @param {number} spaces - Number of spaces to use for indentation.
+   * @returns {string} The code representation of the application.
+   */
   toCode(spaces) {
     const self = this;
 
