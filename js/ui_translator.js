@@ -1,11 +1,25 @@
 /**
- * Logic to interpret a plastics language script.
- *
- * @license BSD, see LICENSE.md.
+ * Logic to interpret and translate plastics language scripts.
+ * Provides classes and utilities for converting between text-based scripts
+ * and object representations.
+ * 
+ * @module ui_translator
+ * @license BSD, see LICENSE.md
  */
 
 import {EngineNumber} from "engine_number";
 import {YearMatcher} from "engine_state";
+
+/**
+ * Command compatibility mapping.
+ * Maps command types to their compatibility modes:
+ * - "any": Compatible with both policy and definition contexts
+ * - "none": Not compatible with simplified UI
+ * - "definition": Only compatible with substance definitions
+ * - "policy": Only compatible with policy modifications
+ * 
+ * @type {Object.<string, string>}
+ */
 
 const COMMAND_COMPATIBILITIES = {
   "change": "any",
@@ -24,6 +38,14 @@ const COMMAND_COMPATIBILITIES = {
 
 const toolkit = QubecTalk.getToolkit();
 
+/**
+ * Indents a single piece of text by the specified number of spaces.
+ *
+ * @param {string} piece - The text to indent
+ * @param {number} [spaces=0] - Number of spaces to indent
+ * @returns {string} The indented text
+ * @private
+ */
 function indentSingle(piece, spaces) {
   if (spaces === undefined) {
     spaces = 0;
@@ -37,16 +59,35 @@ function indentSingle(piece, spaces) {
   return prefix + piece;
 }
 
+/**
+ * Indents an array of text pieces by the specified number of spaces.
+ *
+ * @param {string[]} pieces - Array of text pieces to indent
+ * @param {number} spaces - Number of spaces to indent each piece
+ * @returns {string[]} Array of indented text pieces
+ */
 function indent(pieces, spaces) {
   return pieces.map((piece) => indentSingle(piece, spaces));
 }
 
+/**
+ * Creates a function that adds indented code pieces to a target array.
+ *
+ * @param {string[]} target - Target array to add code pieces to
+ * @returns {Function} Function that takes a code piece and spaces count
+ */
 function buildAddCode(target) {
   return (x, spaces) => {
     target.push(indentSingle(x, spaces));
   };
 }
 
+/**
+ * Joins code pieces into a single string with newlines.
+ *
+ * @param {string[]} target - Array of code pieces to join
+ * @returns {string} Combined code string
+ */
 function finalizeCodePieces(target) {
   return target.join("\n");
 }
