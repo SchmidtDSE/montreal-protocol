@@ -2991,7 +2991,23 @@ class TranslationResult {
   }
 }
 
+/**
+ * Compiler that translates QubecTalk code into object representation.
+ * 
+ * Handles parsing QubecTalk scripts and converting them into JavaScript objects
+ * that represent the program structure. Detects and reports syntax errors.
+ */
 class UiTranslatorCompiler {
+  /**
+   * Compiles QubecTalk code into an object representation.
+   * 
+   * Parses the input code using ANTLR and translates it into JavaScript objects
+   * representing the program structure. Reports any syntax errors encountered.
+   *
+   * @param {string} input - The QubecTalk code to compile.
+   * @returns {TranslationResult} Result containing either the compiled program 
+   *     object or any encountered errors.
+   */
   compile(input) {
     const self = this;
 
