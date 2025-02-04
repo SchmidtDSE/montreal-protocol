@@ -454,7 +454,14 @@ class Program {
   }
 }
 
+/**
+ * Represents an "about" stanza in the QubecTalk script.
+ */
 class AboutStanza {
+  /**
+   * Gets the name of this stanza.
+   * @returns {string} The stanza name "about".
+   */
   getName() {
     const self = this;
     return "about";
@@ -478,7 +485,16 @@ class AboutStanza {
   }
 }
 
+/**
+ * Represents a definitional stanza that can contain applications and policies.
+ */
 class DefinitionalStanza {
+  /**
+   * Creates a new DefinitionalStanza.
+   * @param {string} name - Name of the stanza.
+   * @param {Application[]} applications - Array of applications.
+   * @param {boolean} isCompatible - Whether stanza is UI-compatible.
+   */
   constructor(name, applications, isCompatible) {
     const self = this;
     self._name = name;
@@ -526,7 +542,18 @@ class DefinitionalStanza {
   }
 }
 
+/**
+ * Represents a simulation scenario that applies policies over a time period.
+ */
 class SimulationScenario {
+  /**
+   * Creates a new SimulationScenario.
+   * @param {string} name - Name of the scenario.
+   * @param {string[]} policyNames - Array of policy names to apply.
+   * @param {number} yearStart - Start year of simulation.
+   * @param {number} yearEnd - End year of simulation.
+   * @param {boolean} isCompatible - Whether scenario is UI-compatible.
+   */
   constructor(name, policyNames, yearStart, yearEnd, isCompatible) {
     const self = this;
     self._name = name;
@@ -626,7 +653,17 @@ class SimulationStanza {
   }
 }
 
+/**
+ * Represents an application that contains substances and their properties.
+ */
 class Application {
+  /**
+   * Creates a new Application.
+   * @param {string} name - Name of the application.
+   * @param {Substance[]} substances - Array of substances.
+   * @param {boolean} isModification - Whether this modifies existing application.
+   * @param {boolean} isCompatible - Whether application is UI-compatible.
+   */
   constructor(name, substances, isModification, isCompatible) {
     const self = this;
     self._name = name;
@@ -857,7 +894,25 @@ class SubstanceBuilder {
   }
 }
 
+/**
+ * Represents a substance with its properties and behaviors.
+ */
 class Substance {
+  /**
+   * Creates a new Substance.
+   * @param {string} name - Name of the substance.
+   * @param {Command[]} charges - Initial charge commands.
+   * @param {LimitCommand[]} limits - Limit commands.
+   * @param {Command[]} changes - Change commands.
+   * @param {Command} equals - Equals command.
+   * @param {Command} recharge - Recharge command.
+   * @param {Command[]} recycles - Recycle commands.
+   * @param {ReplaceCommand[]} replaces - Replace commands.
+   * @param {Command} retire - Retire command.
+   * @param {Command[]} setVals - Set value commands.
+   * @param {boolean} isMod - Whether this modifies existing substance.
+   * @param {boolean} compat - Whether substance is UI-compatible.
+   */
   constructor(
     name,
     charges,
@@ -1216,7 +1271,17 @@ class Substance {
   }
 }
 
+/**
+ * Represents a basic command with type, target, value and duration.
+ */
 class Command {
+  /**
+   * Creates a new Command.
+   * @param {string} typeName - Type of the command.
+   * @param {string} target - Target of the command.
+   * @param {EngineNumber} value - Value for the command.
+   * @param {YearMatcher} duration - Duration for the command.
+   */
   constructor(typeName, target, value, duration) {
     const self = this;
     self._typeName = typeName;
@@ -1251,7 +1316,18 @@ class Command {
   }
 }
 
+/**
+ * Represents a limit command with displacement capability.
+ */
 class LimitCommand {
+  /**
+   * Creates a new LimitCommand.
+   * @param {string} typeName - Type of limit (cap/floor).
+   * @param {string} target - Target of the limit.
+   * @param {EngineNumber} value - Limit value.
+   * @param {YearMatcher} duration - Duration of limit.
+   * @param {string} displacing - Substance being displaced.
+   */
   constructor(typeName, target, value, duration, displacing) {
     const self = this;
     self._typeName = typeName;
@@ -1292,7 +1368,17 @@ class LimitCommand {
   }
 }
 
+/**
+ * Represents a command to replace one substance with another.
+ */
 class ReplaceCommand {
+  /**
+   * Creates a new ReplaceCommand.
+   * @param {EngineNumber} volume - Volume to replace.
+   * @param {string} source - Source substance.
+   * @param {string} destination - Destination substance.
+   * @param {YearMatcher} duration - Duration of replacement.
+   */
   constructor(volume, source, destination, duration) {
     const self = this;
     self._volume = volume;
@@ -1332,7 +1418,14 @@ class ReplaceCommand {
   }
 }
 
+/**
+ * Represents a command that is not compatible with the UI editor.
+ */
 class IncompatibleCommand {
+  /**
+   * Creates a new IncompatibleCommand.
+   * @param {string} typeName - Type of incompatible command.
+   */
   constructor(typeName) {
     const self = this;
     self._typeName = typeName;
