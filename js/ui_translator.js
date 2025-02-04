@@ -1204,67 +1204,133 @@ class Substance {
     self._isCompatible = compat;
   }
 
+  /**
+   * Gets the name of this substance.
+   * 
+   * @returns {string} The substance name.
+   */
   getName() {
     const self = this;
     return self._name;
   }
 
+  /**
+   * Gets all initial charge commands for this substance.
+   * 
+   * @returns {Command[]} Array of initial charge commands.
+   */
   getInitialCharges() {
     const self = this;
     return self._initialCharges;
   }
 
+  /**
+   * Gets the initial charge command for a specific stream.
+   * 
+   * @param {string} stream - The stream to get initial charge for.
+   * @returns {Command|null} The initial charge command or null if not found.
+   */
   getInitialCharge(stream) {
     const self = this;
     const matching = self._initialCharges.filter((x) => x.getTarget() === stream);
     return matching.length == 0 ? null : matching[0];
   }
 
+  /**
+   * Gets all limit commands for this substance.
+   * 
+   * @returns {LimitCommand[]} Array of limit commands.
+   */
   getLimits() {
     const self = this;
     return self._limits;
   }
 
+  /**
+   * Gets all change commands for this substance.
+   * 
+   * @returns {Command[]} Array of change commands.
+   */
   getChanges() {
     const self = this;
     return self._changes;
   }
 
+  /**
+   * Gets the equals command for this substance.
+   * 
+   * @returns {Command|null} The equals command or null if not set.
+   */
   getEquals() {
     const self = this;
     return self._equals;
   }
 
+  /**
+   * Gets the recharge command for this substance.
+   * 
+   * @returns {Command|null} The recharge command or null if not set.
+   */
   getRecharge() {
     const self = this;
     return self._recharge;
   }
 
+  /**
+   * Gets all recycle commands for this substance.
+   * 
+   * @returns {Command[]} Array of recycle commands.
+   */
   getRecycles() {
     const self = this;
     return self._recycles;
   }
 
+  /**
+   * Gets all replace commands for this substance.
+   * 
+   * @returns {ReplaceCommand[]} Array of replace commands.
+   */
   getReplaces() {
     const self = this;
     return self._replaces;
   }
 
+  /**
+   * Gets the retire command for this substance.
+   * 
+   * @returns {Command|null} The retire command or null if not set.
+   */
   getRetire() {
     const self = this;
     return self._retire;
   }
 
+  /**
+   * Gets all set value commands for this substance.
+   * 
+   * @returns {Command[]} Array of set value commands.
+   */
   getSetVals() {
     const self = this;
     return self._setVals;
   }
 
+  /**
+   * Checks if this substance modifies an existing one.
+   * 
+   * @returns {boolean} True if this modifies an existing substance.
+   */
   getIsModification() {
     const self = this;
     return self._isModification;
   }
 
+  /**
+   * Checks if this substance is compatible with UI editing.
+   * 
+   * @returns {boolean} True if substance can be edited in UI.
+   */
   getIsCompatible() {
     const self = this;
     return self._isCompatible;
@@ -1307,6 +1373,12 @@ class Substance {
     return finalizeCodePieces(baselinePieces);
   }
 
+  /**
+   * Generates code for initial charge commands.
+   * 
+   * @returns {string[]|null} Array of code strings or null if no charges.
+   * @private
+   */
   _getInitialChargesCode() {
     const self = this;
     if (self._initialCharges === null) {
@@ -1328,6 +1400,12 @@ class Substance {
     return self._initialCharges.map(buildInitialCharge);
   }
 
+  /**
+   * Generates code for the equals command.
+   * 
+   * @returns {string|null} Code string or null if no equals command.
+   * @private
+   */
   _getEqualsCode() {
     const self = this;
     if (self._equals === null) {
@@ -1344,6 +1422,12 @@ class Substance {
     return self._finalizeStatement(pieces);
   }
 
+  /**
+   * Generates code for set value commands.
+   * 
+   * @returns {string[]|null} Array of code strings or null if no set values.
+   * @private
+   */
   _getSetValsCode() {
     const self = this;
     if (self._setVals.length == 0) {
@@ -1365,6 +1449,12 @@ class Substance {
     return self._setVals.map(buildSetVal);
   }
 
+  /**
+   * Generates code for change commands.
+   * 
+   * @returns {string[]|null} Array of code strings or null if no changes.
+   * @private
+   */
   _getChangesCode() {
     const self = this;
     if (self._change === null) {
@@ -1386,6 +1476,12 @@ class Substance {
     return self._changes.map(buildChange);
   }
 
+  /**
+   * Generates code for the retire command.
+   * 
+   * @returns {string|null} Code string or null if no retire command.
+   * @private
+   */
   _getRetireCode() {
     const self = this;
     if (self._retire === null) {
@@ -1402,6 +1498,12 @@ class Substance {
     return self._finalizeStatement(pieces);
   }
 
+  /**
+   * Generates code for limit commands.
+   * 
+   * @returns {string[]|null} Array of code strings or null if no limits.
+   * @private
+   */
   _getLimitCode() {
     const self = this;
     if (self._limits === null || self._limits.length == 0) {
@@ -1430,6 +1532,12 @@ class Substance {
     return self._limits.map(buildLimit);
   }
 
+  /**
+   * Generates code for the recharge command.
+   * 
+   * @returns {string|null} Code string or null if no recharge command.
+   * @private
+   */
   _getRechargeCode() {
     const self = this;
     if (self._recharge === null) {
@@ -1449,6 +1557,12 @@ class Substance {
     return self._finalizeStatement(pieces);
   }
 
+  /**
+   * Generates code for recycle commands.
+   * 
+   * @returns {string[]|null} Array of code strings or null if no recycles.
+   * @private
+   */
   _getRecycleCode() {
     const self = this;
     if (self._recycles === null) {
@@ -1473,6 +1587,12 @@ class Substance {
     return self._recycles.map(buildRecycle);
   }
 
+  /**
+   * Generates code for replace commands.
+   * 
+   * @returns {string[]|null} Array of code strings or null if no replaces.
+   * @private
+   */
   _getReplaceCode() {
     const self = this;
     if (self._replaces === null) {
@@ -1497,6 +1617,13 @@ class Substance {
     return self._replaces.map(buildReplace);
   }
 
+  /**
+   * Adds duration information to code pieces array.
+   * 
+   * @param {string[]} pieces - Array of code pieces to append to.
+   * @param {Command} command - Command containing duration info.
+   * @private
+   */
   _addDuration(pieces, command) {
     const self = this;
 
@@ -1527,6 +1654,13 @@ class Substance {
     pieces.push("during years " + startYear + " to " + endYear);
   }
 
+  /**
+   * Joins code pieces into a single statement.
+   * 
+   * @param {string[]} pieces - Array of code pieces to join.
+   * @returns {string} The combined code statement.
+   * @private
+   */
   _finalizeStatement(pieces) {
     const self = this;
     return pieces.map((x) => x + "").join(" ");
