@@ -16,7 +16,21 @@ const STREAM_NAMES = new Set([
   "sales",
 ]);
 
+/**
+ * Result of an engine execution for a substance for an application and year.
+ */
 class EngineResult {
+  /**
+   * Create an EngineResult.
+   *
+   * @param {string} application - The application associated with the result.
+   * @param {string} substance - The substance associated with the result.
+   * @param {number} year - The year the result is relevant to.
+   * @param {EngineNumber} manufactureValue - The manufacture value.
+   * @param {EngineNumber} importValue - The import value.
+   * @param {EngineNumber} consumptionValue - The consumption value.
+   * @param {EngineNumber} populationValue - The population value.
+   */
   constructor(
     application,
     substance,
@@ -36,36 +50,71 @@ class EngineResult {
     self._populationValue = populationValue;
   }
 
+  /**
+   * Get the application.
+   * 
+   * @returns {string} The application.
+   */
   getApplication() {
     const self = this;
     return self._application;
   }
 
+  /**
+   * Get the substance.
+   * 
+   * @returns {string} The substance.
+   */
   getSubstance() {
     const self = this;
     return self._substance;
   }
 
+  /**
+   * Get the year the result is relevant to.
+   * 
+   * @returns {number} The year.
+   */
   getYear() {
     const self = this;
     return self._year;
   }
 
+  /**
+   * Get the manufacture value.
+   * 
+   * @returns {EngineNumber} The manufacture value.
+   */
   getManufacture() {
     const self = this;
     return self._manufactureValue;
   }
 
+  /**
+   * Get the import value.
+   * 
+   * @returns {EngineNumber} The import value.
+   */
   getImport() {
     const self = this;
     return self._importValue;
   }
 
+  /**
+   * Get the consumption value.
+   * 
+   * @returns {EngineNumber} The consumption value.
+   */
   getConsumption() {
     const self = this;
     return self._consumptionValue;
   }
 
+  /**
+   * Get the population value.
+   * 
+   * @returns {EngineNumber} The population value.
+   */
   getPopulation() {
     const self = this;
     return self._populationValue;
@@ -76,6 +125,7 @@ class EngineResult {
  * Facade which runs engine mechanics.
  */
 class Engine {
+
   /**
    * Create a new engine running from
    */
@@ -91,11 +141,21 @@ class Engine {
     self._scope = new Scope(null, null, null);
   }
 
+  /**
+   * Get the starting year of the simulation.
+   *
+   * @returns {number} The start year.
+   */
   getStartYear() {
     const self = this;
     return self._startYear;
   }
 
+  /**
+   * Get the ending year of the simulation.
+   *
+   * @returns {number} The start year.
+   */
   getEndYear() {
     const self = this;
     return self._endYear;
@@ -192,6 +252,19 @@ class Engine {
     return self._currentYear > self._endYear;
   }
 
+  /**
+   * Set the value of a stream.
+   *
+   * @param {string} name - The name of the stream to set.
+   * @param {EngineNumber} value - The value to set for the stream.
+   * @param {Object|null} yearMatcher - The year matcher object to determine if
+   *     setting the stream applies to the current year, or null. No-op if the
+   *     year matcher is not satisifed.
+   * @param {Scope} scope - The scope in which the stream is being set. Uses
+   *     default scope if not provided.
+   * @param {boolean} propagateChanges - Specifies if changes should propagate
+   *     to other components. Defaults to true.
+   */
   setStream(name, value, yearMatcher, scope, propagateChanges) {
     const self = this;
 
@@ -234,6 +307,16 @@ class Engine {
     }
   }
 
+  /**
+   * Get the stream value for a given application and substance scope.
+   *
+   * @param {string} name - The name of the stream to retrieve.
+   * @param {Scope} scope - The scope within which the stream exists. Uses
+   *     default scope if not provided.
+   * @param {Object|null} conversion - The conversion specification for units,
+   *     or null for no conversion.
+   * @returns {EngineNumber} The value of the stream, possibly converted.
+   */
   getStream(name, scope, conversion) {
     const self = this;
     const scopeEffective = scope === undefined || scope === null ? self._scope : scope;
