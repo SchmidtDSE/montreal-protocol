@@ -11,12 +11,12 @@ import {EngineNumber} from "engine_number";
 import {YearMatcher} from "engine_state";
 
 /**
- * Command compatibility mapping.
- * Maps command types to their compatibility modes:
+ * Command compatibility mapping to compatibility modes:
+ * 
  * - "any": Compatible with both policy and definition contexts
  * - "none": Not compatible with simplified UI
- * - "definition": Only compatible with substance definitions
- * - "policy": Only compatible with policy modifications
+ * - "definition": Only compatible with substance definitions.
+ * - "policy": Only compatible with policy modifications.
  * 
  * @type {Object.<string, string>}
  */
@@ -322,6 +322,12 @@ class Program {
     return self._isCompatible;
   }
 
+  /**
+   * Generates the code representation of the program with the specified indentation.
+   *
+   * @param {number} spaces - Number of spaces to use for indenting the generated code.
+   * @returns {string} The code representation of the program with specified indentation.
+   */
   toCode(spaces) {
     const self = this;
 
@@ -368,6 +374,15 @@ class Program {
     return finalizeCodePieces(baselinePieces);
   }
 
+  /**
+   * Updates the scenarios by removing policies that are not known.
+   * 
+   * This method filters each scenario to include only the policies 
+   * that are in the known policies list. It subsequently updates each 
+   * scenario with the filtered list of policies.
+   * 
+   * @private
+   */
   _removeUnknownPoliciesFromScenarios() {
     const self = this;
     const knownPolicies = new Set(self._policies.map((x) => x.getName()));
@@ -387,6 +402,16 @@ class Program {
     });
   }
 
+  /**
+   * Determines if the temporary compatibility tests are passed.
+   *
+   * This private method evaluates the compatibility of applications 
+   * and policies with specific conditions that must be satisfied 
+   * to pass the temporary compatibility tests.
+   *
+   * @private
+   * @returns {boolean} True if all temporary compatibility tests are passed, false otherwise.
+   */
   _passesTempCompatiblityTests() {
     const self = this;
 
@@ -467,6 +492,12 @@ class AboutStanza {
     return "about";
   }
 
+  /**
+   * Generates the code representation of the "about" stanza.
+   *
+   * @param {number} spaces - Number of spaces for indentation.
+   * @returns {string} Code representation of the stanza.
+   */
   toCode(spaces) {
     const self = this;
 
@@ -479,6 +510,11 @@ class AboutStanza {
     return finalizeCodePieces(baselinePieces);
   }
 
+  /**
+   * Checks compatibility of the "about" stanza with UI editing.
+   *
+   * @returns {boolean} False, as "about" stanza is not compatible with UI.
+   */
   getIsCompatible() {
     const self = this;
     return false;
