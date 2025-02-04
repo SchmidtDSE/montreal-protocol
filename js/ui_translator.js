@@ -1080,8 +1080,7 @@ class SubstanceBuilder {
    * Sets the recharge command.
    * 
    * @param {Command} newVal - Recharge command to set.
-   * @returns {Command|IncompatibleCommand} The command or incompatibility marker.
-   */
+   * @returns {Command|IncompatibleCommand} The command or incompatibility marker. */
   setRecharge(newVal) {
     const self = this;
     self._recharge = self._checkDuplicate(self._recharge, newVal);
@@ -1931,10 +1930,10 @@ class IncompatibleCommand {
  */
 class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
-   * Visits a number node and parses it into a numerical value.
+   * Visits a number node and converts it to a numeric value.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {number} The parsed number value
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {number} The parsed number value, accounting for sign.
    */
   visitNumber(ctx) {
     const self = this;
@@ -1948,10 +1947,10 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a string node and strips the quotes.
+   * Visits a string node and removes surrounding quotes.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The string value without quotes
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The string value without quotes.
    */
   visitString(ctx) {
     const self = this;
@@ -1959,10 +1958,10 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a unit or ratio node and formats it.
+   * Visits a unit or ratio node and formats it appropriately.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The formatted unit or ratio string
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The formatted unit or ratio string.
    */
   visitUnitOrRatio(ctx) {
     const self = this;
@@ -1978,8 +1977,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a unit value node and creates an EngineNumber.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {EngineNumber} The value with units
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {EngineNumber} The value with its associated units.
    */
   visitUnitValue(ctx) {
     const self = this;
@@ -1991,10 +1990,10 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a simple expression node.
+   * Visits a simple expression node and processes its single child.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {*} The result of visiting the child expression
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {*} The result of visiting the child expression.
    */
   visitSimpleExpression(ctx) {
     const self = this;
@@ -2002,10 +2001,10 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a condition expression node.
+   * Visits a condition expression node and formats it.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The formatted condition expression
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The formatted condition expression.
    */
   visitConditionExpression(ctx) {
     const self = this;
@@ -2018,10 +2017,10 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a conditional expression node.
+   * Visits a conditional expression node and formats it.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The formatted conditional expression
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The formatted conditional expression.
    */
   visitConditionalExpression(ctx) {
     const self = this;
@@ -2036,9 +2035,9 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Builds an arithmetic expression from child nodes.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @param {string} op - The operator to use
-   * @returns {string} The formatted arithmetic expression
+   * @param {Object} ctx - The parse tree node context.
+   * @param {string} op - The operator to use.
+   * @returns {string} The formatted arithmetic expression.
    */
   buildAirthmeticExpression(ctx, op) {
     const self = this;
@@ -2052,8 +2051,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits an addition expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The formatted addition expression
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The formatted addition expression.
    */
   visitAdditionExpression(ctx) {
     const self = this;
@@ -2063,8 +2062,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a multiplication expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The formatted multiplication expression
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The formatted multiplication expression.
    */
   visitMultiplyExpression(ctx) {
     const self = this;
@@ -2074,8 +2073,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a power expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The formatted power expression
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The formatted power expression.
    */
   visitPowExpression(ctx) {
     const self = this;
@@ -2085,8 +2084,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a stream access expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The stream access text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The stream access text.
    */
   visitGetStream(ctx) {
     const self = this;
@@ -2096,8 +2095,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits an indirect stream access expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The indirect stream access text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The indirect stream access text.
    */
   visitGetStreamIndirect(ctx) {
     const self = this;
@@ -2107,8 +2106,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a stream conversion expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The stream conversion text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The stream conversion text.
    */
   visitGetStreamConversion(ctx) {
     const self = this;
@@ -2118,8 +2117,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a substance/application units stream access node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The stream access text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The stream access text.
    */
   visitGetStreamIndirectSubstanceAppUnits(ctx) {
     const self = this;
@@ -2129,8 +2128,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a minimum limit expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The minimum limit expression text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The minimum limit expression text.
    */
   visitLimitMinExpression(ctx) {
     const self = this;
@@ -2140,8 +2139,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a maximum limit expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The maximum limit expression text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The maximum limit expression text.
    */
   visitLimitMaxExpression(ctx) {
     const self = this;
@@ -2151,8 +2150,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a bounded limit expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The bounded limit expression text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The bounded limit expression text.
    */
   visitLimitBoundExpression(ctx) {
     const self = this;
@@ -2162,8 +2161,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a parenthesized expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The parenthesized expression text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The parenthesized expression text.
    */
   visitParenExpression(ctx) {
     const self = this;
@@ -2173,8 +2172,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a normal distribution expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The normal distribution expression text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The normal distribution expression text.
    */
   visitDrawNormalExpression(ctx) {
     const self = this;
@@ -2184,8 +2183,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a uniform distribution expression node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The uniform distribution expression text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The uniform distribution expression text.
    */
   visitDrawUniformExpression(ctx) {
     const self = this;
@@ -2195,8 +2194,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a simple identifier node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {string} The identifier text
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {string} The identifier text.
    */
   visitSimpleIdentifier(ctx) {
     const self = this;
@@ -2219,8 +2218,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a single year duration node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {YearMatcher} Year matcher for single year
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {YearMatcher} Year matcher for single year.
    */
   visitDuringSingleYear(ctx) {
     const self = this;
@@ -2231,8 +2230,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a start year duration node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {YearMatcher} Year matcher starting from engine start
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {YearMatcher} Year matcher starting from engine start.
    */
   visitDuringStart(ctx) {
     const self = this;
@@ -2243,8 +2242,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a year range duration node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {YearMatcher} Year matcher for range
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {YearMatcher} Year matcher for range.
    */
   visitDuringRange(ctx) {
     const self = this;
@@ -2256,8 +2255,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a minimum year duration node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {YearMatcher} Year matcher with min bound only
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {YearMatcher} Year matcher with min bound only.
    */
   visitDuringWithMin(ctx) {
     const self = this;
@@ -2269,8 +2268,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits a maximum year duration node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {YearMatcher} Year matcher with max bound only
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {YearMatcher} Year matcher with max bound only.
    */
   visitDuringWithMax(ctx) {
     const self = this;
@@ -2282,8 +2281,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits an "all years" duration node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {Function} Function that returns null for unbounded
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Function} Function that returns null for unbounded.
    */
   visitDuringAll(ctx) {
     const self = this;
@@ -2293,14 +2292,20 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
    * Visits an about stanza node.
    * 
-   * @param {Object} ctx - The parse tree node context
-   * @returns {AboutStanza} New about stanza instance
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {AboutStanza} New about stanza instance.
    */
   visitAboutStanza(ctx) {
     const self = this;
     return new AboutStanza();
   }
 
+  /**
+   * Visits a default stanza node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {DefinitionalStanza} New default stanza instance.
+   */
   visitDefaultStanza(ctx) {
     const self = this;
     const numApplications = ctx.getChildCount() - 4;
@@ -2315,6 +2320,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new DefinitionalStanza("default", applications, isCompatible);
   }
 
+  /**
+   * Visits a policy stanza node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {DefinitionalStanza} New policy stanza instance.
+   */
   visitPolicyStanza(ctx) {
     const self = this;
     const policyName = self._getStringWithoutQuotes(ctx.name.getText());
@@ -2330,6 +2341,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new DefinitionalStanza(policyName, applications, isCompatible);
   }
 
+  /**
+   * Visits a simulations stanza node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {SimulationStanza} New simulations stanza instance.
+   */
   visitSimulationsStanza(ctx) {
     const self = this;
     const numApplications = ctx.getChildCount() - 4;
@@ -2344,43 +2361,95 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new SimulationStanza(scenarios, isCompatible);
   }
 
+  /**
+   * Visits an application definition node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @param {boolean} isModification - Whether this is a modification.
+   * @returns {Application} New application instance.
+   */
   visitApplicationDef(ctx) {
     const self = this;
     return self._parseApplication(ctx, false);
   }
 
+  /**
+   * Visits a substance definition node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @param {boolean} isModification - Whether this is a modification.
+   * @returns {Substance} New substance instance.
+   */
   visitSubstanceDef(ctx) {
     const self = this;
     return self._parseSubstance(ctx, false);
   }
 
+  /**
+   * Visits an application modification node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @param {boolean} isModification - Whether this is a modification.
+   * @returns {Application} New application instance.
+   */
   visitApplicationMod(ctx) {
     const self = this;
     return self._parseApplication(ctx, true);
   }
 
+  /**
+   * Visits a substance modification node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @param {boolean} isModification - Whether this is a modification.
+   * @returns {Substance} New substance instance.
+   */
   visitSubstanceMod(ctx) {
     const self = this;
     return self._parseSubstance(ctx, true);
   }
 
+  /**
+   * Visits a limit command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {LimitCommand} New limit command instance.
+   */
   visitLimitCommandAllYears(ctx) {
     const self = this;
     return self._buildLimit(ctx, null, null);
   }
 
+  /**
+   * Visits a limit command with displacement and all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {LimitCommand} New limit command instance.
+   */
   visitLimitCommandDisplacingAllYears(ctx) {
     const self = this;
     const displaceTarget = self._getStringWithoutQuotes(ctx.getChild(5).getText());
     return self._buildLimit(ctx, null, displaceTarget);
   }
 
+  /**
+   * Visits a limit command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {LimitCommand} New limit command instance.
+   */
   visitLimitCommandDuration(ctx) {
     const self = this;
     const duration = ctx.duration.accept(self);
     return self._buildLimit(ctx, duration, null);
   }
 
+  /**
+   * Visits a limit command with displacement and duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {LimitCommand} New limit command instance.
+   */
   visitLimitCommandDisplacingDuration(ctx) {
     const self = this;
     const duration = ctx.duration.accept(self);
@@ -2388,33 +2457,69 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self._buildLimit(ctx, duration, displaceTarget);
   }
 
+  /**
+   * Visits a change command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New change command instance.
+   */
   visitChangeAllYears(ctx) {
     const self = this;
     return self._buildOperation(ctx, "change", null);
   }
 
+  /**
+   * Visits a change command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New change command instance.
+   */
   visitChangeDuration(ctx) {
     const self = this;
     const duration = ctx.duration.accept(self);
     return self._buildOperation(ctx, "change", duration);
   }
 
+  /**
+   * Visits a define var statement node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {IncompatibleCommand} Incompatibility marker for define var.
+   */
   visitDefineVarStatement(ctx) {
     const self = this;
     return new IncompatibleCommand("define var");
   }
 
+  /**
+   * Visits an initial charge command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New initial charge command instance.
+   */
   visitInitialChargeAllYears(ctx) {
     const self = this;
     return self._buildOperation(ctx, "initial charge", null);
   }
 
+  /**
+   * Visits an initial charge command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New initial charge command instance.
+   */
   visitInitialChargeDuration(ctx) {
     const self = this;
     const duration = ctx.duration.accept(self);
     return self._buildOperation(ctx, "initial charge", duration);
   }
 
+  /**
+   * Visits a recharge command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New recharge command instance.
+   */
   visitRechargeAllYears(ctx) {
     const self = this;
     const populationFuture = (ctx) => ctx.population.accept(self);
@@ -2422,6 +2527,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self._buildOperation(ctx, "recharge", null, populationFuture, volumeFuture);
   }
 
+  /**
+   * Visits a recharge command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New recharge command instance.
+   */
   visitRechargeDuration(ctx) {
     const self = this;
     const populationFuture = (ctx) => ctx.population.accept(self);
@@ -2430,6 +2541,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self._buildOperation(ctx, "recharge", duration, populationFuture, volumeFuture);
   }
 
+  /**
+   * Visits a recover command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New recover command instance.
+   */
   visitRecoverAllYears(ctx) {
     const self = this;
     const volumeFuture = (ctx) => ctx.volume.accept(self);
@@ -2437,6 +2554,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self._buildOperation(ctx, "recycle", null, volumeFuture, yieldFuture);
   }
 
+  /**
+   * Visits a recover command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New recover command instance.
+   */
   visitRecoverDuration(ctx) {
     const self = this;
     const volumeFuture = (ctx) => ctx.volume.accept(self);
@@ -2445,16 +2568,34 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self._buildOperation(ctx, "recycle", duration, volumeFuture, yieldFuture);
   }
 
+  /**
+   * Visits a recover command with displacement and all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {IncompatibleCommand} Incompatibility marker for recover with displace.
+   */
   visitRecoverDisplacementAllYears(ctx) {
     const self = this;
     return new IncompatibleCommand("recover with displace");
   }
 
+  /**
+   * Visits a recover command with displacement and duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {IncompatibleCommand} Incompatibility marker for recover with displace.
+   */
   visitRecoverDisplacementDuration(ctx) {
     const self = this;
     return new IncompatibleCommand("recover with displace");
   }
 
+  /**
+   * Visits a replace command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {ReplaceCommand} New replace command instance.
+   */
   visitReplaceAllYears(ctx) {
     const self = this;
     const volume = ctx.volume.accept(self);
@@ -2463,6 +2604,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new ReplaceCommand(volume, source, destination, null);
   }
 
+  /**
+   * Visits a replace command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {ReplaceCommand} New replace command instance.
+   */
   visitReplaceDuration(ctx) {
     const self = this;
     const volume = ctx.volume.accept(self);
@@ -2472,6 +2619,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new ReplaceCommand(volume, source, destination, duration);
   }
 
+  /**
+   * Visits a retire command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New retire command instance.
+   */
   visitRetireAllYears(ctx) {
     const self = this;
     const targetFuture = (ctx) => null;
@@ -2479,6 +2632,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self._buildOperation(ctx, "retire", null, targetFuture, volumeFuture);
   }
 
+  /**
+   * Visits a retire command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New retire command instance.
+   */
   visitRetireDuration(ctx) {
     const self = this;
     const targetFuture = (ctx) => null;
@@ -2487,23 +2646,47 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self._buildOperation(ctx, "retire", duration, targetFuture, volumeFuture);
   }
 
+  /**
+   * Visits a set command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New set command instance.
+   */
   visitSetAllYears(ctx) {
     const self = this;
     return self._buildOperation(ctx, "setVal", null);
   }
 
+  /**
+   * Visits a set command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New set command instance.
+   */
   visitSetDuration(ctx) {
     const self = this;
     const duration = ctx.duration.accept(self);
     return self._buildOperation(ctx, "setVal", duration);
   }
 
+  /**
+   * Visits an equals command with all years duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New equals command instance.
+   */
   visitEqualsAllYears(ctx) {
     const self = this;
     const targetFuture = (ctx) => null;
     return self._buildOperation(ctx, "equals", null, targetFuture);
   }
 
+  /**
+   * Visits an equals command with duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Command} New equals command instance.
+   */
   visitEqualsDuration(ctx) {
     const self = this;
     const targetFuture = (ctx) => null;
@@ -2511,6 +2694,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self._buildOperation(ctx, "equals", duration, targetFuture);
   }
 
+  /**
+   * Visits a base simulation node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {SimulationScenario} New simulation scenario instance.
+   */
   visitBaseSimulation(ctx) {
     const self = this;
     const name = self._getStringWithoutQuotes(ctx.name.getText());
@@ -2519,6 +2708,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new SimulationScenario(name, [], yearStart, yearEnd, true);
   }
 
+  /**
+   * Visits a policy simulation node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {SimulationScenario} New simulation scenario instance.
+   */
   visitPolicySim(ctx) {
     const self = this;
     const name = self._getStringWithoutQuotes(ctx.name.getText());
@@ -2536,16 +2731,34 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new SimulationScenario(name, policies, yearStart, yearEnd, true);
   }
 
+  /**
+   * Visits a base simulation with trials node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {IncompatibleCommand} Incompatibility marker for simulate with trials.
+   */
   visitBaseSimulationTrials(ctx) {
     const self = this;
     return new IncompatibleCommand("simulate with trials");
   }
 
+  /**
+   * Visits a policy simulation with trials node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {IncompatibleCommand} Incompatibility marker for simulate with trials.
+   */
   visitPolicySimTrials(ctx) {
     const self = this;
     return new IncompatibleCommand("simulate with trials");
   }
 
+  /**
+   * Visits a program node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {Program} New program instance.
+   */
   visitProgram(ctx) {
     const self = this;
 
@@ -2583,26 +2796,60 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new Program(applications, policies, scenarios, isCompatible);
   }
 
+  /**
+   * Visits a global statement node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {*} The result of visiting the child node.
+   */
   visitGlobalStatement(ctx) {
     const self = this;
     return ctx.getChild(0).accept(self);
   }
 
+  /**
+   * Visits a substance statement node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @returns {*} The result of visiting the child node.
+   */
   visitSubstanceStatement(ctx) {
     const self = this;
     return ctx.getChild(0).accept(self);
   }
 
+  /**
+   * Extracts string value from a quoted string node, removing quotes.
+   * 
+   * @param {string} target - The quoted string.
+   * @returns {string} The string without quotes.
+   * @private
+   */
   _getStringWithoutQuotes(target) {
     const self = this;
     return target.substring(1, target.length - 1);
   }
 
+  /**
+   * Checks compatibility of children nodes.
+   * 
+   * @param {Array} children - Array of nodes to check.
+   * @returns {boolean} True if all children are compatible, false otherwise.
+   * @private
+   */
   _getChildrenCompatible(children) {
     const self = this;
     return children.map((x) => x.getIsCompatible()).reduce((a, b) => a && b, true);
   }
 
+  /**
+   * Parses an application node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @param {boolean} isModification - Whether this is a modification.
+   * @returns {Application} New application instance.
+   * @private
+   */
   _parseApplication(ctx, isModification) {
     const self = this;
     const name = self._getStringWithoutQuotes(ctx.name.getText());
@@ -2619,6 +2866,14 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new Application(name, childrenParsed, isModification, isCompatible);
   }
 
+  /**
+   * Parses a substance node.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @param {boolean} isModification - Whether this is a modification.
+   * @returns {Substance} New substance instance.
+   * @private
+   */
   _parseSubstance(ctx, isModification) {
     const self = this;
     const name = self._getStringWithoutQuotes(ctx.name.getText());
@@ -2644,6 +2899,17 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return builder.build(isCompatibleRaw);
   }
 
+  /**
+   * Builds an operation command.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @param {string} typeName - Type name of the command.
+   * @param {YearMatcher} duration - Duration of the command.
+   * @param {Function} targetGetter - Function to get the target.
+   * @param {Function} valueGetter - Function to get the value.
+   * @returns {Command} New command instance.
+   * @private
+   */
   _buildOperation(ctx, typeName, duration, targetGetter, valueGetter) {
     const self = this;
     if (targetGetter === undefined || targetGetter === null) {
@@ -2659,6 +2925,17 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new Command(typeName, target, value, duration);
   }
 
+  /**
+   * Builds a limit command.
+   * 
+   * @param {Object} ctx - The parse tree node context.
+   * @param {YearMatcher} duration - Duration of the command.
+   * @param {string} displaceTarget - Displacing target.
+   * @param {Function} targetGetter - Function to get the target.
+   * @param {Function} valueGetter - Function to get the value.
+   * @returns {LimitCommand} New limit command instance.
+   * @private
+   */
   _buildLimit(ctx, duration, displaceTarget, targetGetter, valueGetter) {
     const self = this;
     const capType = ctx.getChild(0).getText();
