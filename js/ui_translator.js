@@ -699,28 +699,61 @@ class SimulationScenario {
   }
 }
 
+/**
+ * Represents a simulations stanza that contains multiple simulation scenarios.
+ */
 class SimulationStanza {
+  /**
+   * Creates a new SimulationStanza.
+   * 
+   * @param {SimulationScenario[]} scenarios - Array of simulation scenarios.
+   * @param {boolean} isCompatible - Whether stanza is compatible with UI editing.
+   */
   constructor(scenarios, isCompatible) {
     const self = this;
     self._scenarios = scenarios;
     self._isCompatible = isCompatible;
   }
 
+  /**
+   * Checks if this stanza is compatible with UI editing.
+   *
+   * @returns {boolean} True if stanza can be edited in UI, false otherwise.
+   */
   getIsCompatible() {
     const self = this;
     return self._isCompatible;
   }
 
+  /**
+   * Gets the simulation scenarios in this stanza.
+   *
+   * @returns {SimulationScenario[]} Array of simulation scenarios.
+   */
   getScenarios() {
     const self = this;
     return self._scenarios;
   }
 
+  /**
+   * Gets the name of this stanza.
+   *
+   * @returns {string} The string "simulations".
+   */
   getName() {
     const self = this;
     return "simulations";
   }
 
+  /**
+   * Generates the code representation of this stanza.
+   * 
+   * Generates the QubecTalk code representation of this simulations stanza,
+   * including all its scenarios and appropriate indentation.
+   *
+   * @param {number} spaces - Number of spaces to use for indentation.
+   * @returns {string} The code representation of the stanza.
+   */
   toCode(spaces) {
     const self = this;
 
