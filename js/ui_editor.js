@@ -91,21 +91,45 @@ function setupListButton(button, targetList, templateId, initUiCallback) {
   });
 }
 
+/**
+ * Sets a form field value with fallback to default
+ * @param {HTMLElement} selection - Form field element
+ * @param {Object} source - Source object to get value from
+ * @param {*} defaultValue - Default value if source is null
+ * @param {Function} strategy - Function to extract value from source
+ */
 function setFieldValue(selection, source, defaultValue, strategy) {
   const newValue = source === null ? null : strategy(source);
   const valueOrDefault = newValue === null ? defaultValue : newValue;
   selection.value = valueOrDefault;
 }
 
+/**
+ * Gets raw value from a form field
+ * @param {HTMLElement} selection - Form field to get value from
+ * @returns {string} The field's value
+ */
 function getFieldValue(selection) {
   return selection.value;
 }
 
+/**
+ * Gets sanitized value from a form field, removing quotes and commas
+ * @param {HTMLElement} selection - Form field to get sanitized value from
+ * @returns {string} Sanitized field value
+ */
 function getSanitizedFieldValue(selection) {
   const valueRaw = getFieldValue(selection);
   return valueRaw.replaceAll('"', "").replaceAll(",", "");
 }
 
+/**
+ * Sets up a list input with template-based items
+ * @param {HTMLElement} listSelection - Container element for list
+ * @param {string} itemTemplate - HTML template for list items
+ * @param {Array} items - Array of items to populate list
+ * @param {Function} uiInit - Callback to initialize each item's UI
+ */
 function setListInput(listSelection, itemTemplate, items, uiInit) {
   listSelection.innerHTML = "";
   const addItem = (item) => {
@@ -129,6 +153,14 @@ function getListInput(selection, itemReadStrategy) {
   return dialogListItems.map(itemReadStrategy);
 }
 
+/**
+ * Sets a value/units pair for engine number inputs
+ * @param {HTMLElement} valSelection - Value input element
+ * @param {HTMLElement} unitsSelection - Units select element 
+ * @param {Object} source - Source object for values
+ * @param {EngineNumber} defaultValue - Default engine number
+ * @param {Function} strategy - Function to extract engine number from source
+ */
 function setEngineNumberValue(valSelection, unitsSelection, source, defaultValue, strategy) {
   const newValue = source === null ? null : strategy(source);
   const valueOrDefault = newValue === null ? defaultValue : newValue;
@@ -136,6 +168,12 @@ function setEngineNumberValue(valSelection, unitsSelection, source, defaultValue
   unitsSelection.value = valueOrDefault.getUnits();
 }
 
+/**
+ * Gets an engine number from value/units form fields
+ * @param {HTMLElement} valSelection - Value input element
+ * @param {HTMLElement} unitsSelection - Units select element
+ * @returns {EngineNumber} Combined engine number object
+ */
 function getEngineNumberValue(valSelection, unitsSelection) {
   const value = valSelection.value;
   const units = unitsSelection.value;
@@ -178,7 +216,16 @@ function setDuring(selection, command, defaultVal) {
   updateDurationSelector(selection);
 }
 
+/**
+ * Manages the UI for listing and editing applications
+ */
 class ApplicationsListPresenter {
+  /**
+   * Creates a new applications list presenter
+   * @param {HTMLElement} root - Root element for this component
+   * @param {Function} getCodeObj - Callback to get current code object
+   * @param {Function} onCodeObjUpdate - Callback when code object changes
+   */
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
     self._root = root;
