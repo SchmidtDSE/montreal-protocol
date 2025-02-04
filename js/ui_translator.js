@@ -1838,31 +1838,61 @@ class ReplaceCommand {
     self._duration = duration;
   }
 
+  /**
+   * Gets the type name of this replace command.
+   * 
+   * @returns {string} Always returns "replace".
+   */
   getTypeName() {
     const self = this;
     return "replace";
   }
 
+  /**
+   * Gets the volume to be replaced.
+   * 
+   * @returns {EngineNumber} The volume with units.
+   */
   getVolume() {
     const self = this;
     return self._volume;
   }
 
+  /**
+   * Gets the source substance to replace from.
+   * 
+   * @returns {string} Name of source substance.
+   */
   getSource() {
     const self = this;
     return self._source;
   }
 
+  /**
+   * Gets the destination substance to replace with.
+   * 
+   * @returns {string} Name of destination substance.
+   */
   getDestination() {
     const self = this;
     return self._destination;
   }
 
+  /**
+   * Gets the duration for which this replacement applies.
+   * 
+   * @returns {YearMatcher} The duration specification, or null for all years.
+   */
   getDuration() {
     const self = this;
     return self._duration;
   }
 
+  /**
+   * Checks if this replace command is compatible with UI editing.
+   * 
+   * @returns {boolean} Always returns true as replace commands are UI-compatible.
+   */
   getIsCompatible() {
     const self = this;
     return true;
