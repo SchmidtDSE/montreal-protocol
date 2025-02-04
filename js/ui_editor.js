@@ -252,11 +252,10 @@ function setDuring(selection, command, defaultVal) {
  */
 class ApplicationsListPresenter {
   /**
-   * Creates a new applications list presenter.
-   * 
-   * @param {HTMLElement} root - Root element for this component.
-   * @param {Function} getCodeObj - Callback to get current code object.
-   * @param {Function} onCodeObjUpdate - Callback when code object changes.
+   * Creates a new ApplicationsListPresenter
+   * @param {HTMLElement} root - Root DOM element for the applications list
+   * @param {Function} getCodeObj - Callback to get the current code object
+   * @param {Function} onCodeObjUpdate - Callback when code object is updated
    */
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
@@ -269,11 +268,20 @@ class ApplicationsListPresenter {
     self.refresh();
   }
 
+  /**
+   * Refreshes the applications list display
+   * @param {Object} codeObj - Current code object
+   */
   refresh(codeObj) {
     const self = this;
     self._refreshList(codeObj);
   }
 
+  /**
+   * Updates the applications list UI with current data
+   * @param {Object} codeObj - Current code object
+   * @private
+   */
   _refreshList(codeObj) {
     const self = this;
     const appNames = self._getAppNames();
@@ -320,6 +328,10 @@ class ApplicationsListPresenter {
       .attr("aria-label", (x) => "delete " + x);
   }
 
+  /**
+   * Sets up the dialog for adding/editing applications
+   * @private
+   */
   _setupDialog() {
     const self = this;
     const addLink = self._root.querySelector(".add-link");
@@ -362,6 +374,11 @@ class ApplicationsListPresenter {
     });
   }
 
+  /**
+   * Shows the dialog for adding or editing an application
+   * @param {string|null} name - Name of application to edit, or null for adding new
+   * @private
+   */
   _showDialogFor(name) {
     const self = this;
     self._editingName = name;
@@ -377,6 +394,11 @@ class ApplicationsListPresenter {
     self._dialog.showModal();
   }
 
+  /**
+   * Gets list of all application names
+   * @returns {string[]} Array of application names
+   * @private
+   */
   _getAppNames() {
     const self = this;
     const codeObj = self._getCodeObj();
@@ -913,7 +935,7 @@ class PolicyListPresenter {
     const substanceName = targetSubstance === null ? "" : targetSubstance.getName();
     substanceSelect.html("");
     substanceSelect
-      .selectAll("option")
+            .selectAll("option")
       .data(substanceNames)
       .enter()
       .append("option")
