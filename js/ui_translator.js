@@ -1,9 +1,9 @@
 /**
- * Logic to interpret and translate plastics language scripts.
+ * Logic to interpret and translate scripts.
+ *
  * Provides classes and utilities for converting between text-based scripts
- * and object representations.
- * 
- * @module ui_translator
+ * and object representations used within the UI-based editor.
+ *
  * @license BSD, see LICENSE.md
  */
 
@@ -12,15 +12,14 @@ import {YearMatcher} from "engine_state";
 
 /**
  * Command compatibility mapping to compatibility modes:
- * 
+ *
  * - "any": Compatible with both policy and definition contexts
  * - "none": Not compatible with simplified UI
  * - "definition": Only compatible with substance definitions.
  * - "policy": Only compatible with policy modifications.
- * 
+ *
  * @type {Object.<string, string>}
  */
-
 const COMMAND_COMPATIBILITIES = {
   "change": "any",
   "define var": "none",
@@ -39,10 +38,10 @@ const COMMAND_COMPATIBILITIES = {
 const toolkit = QubecTalk.getToolkit();
 
 /**
- * Indents a single piece of text by the specified number of spaces.
+ * Indent a single piece of text by the specified number of spaces.
  *
  * @param {string} piece - The text to indent
- * @param {number} [spaces=0] - Number of spaces to indent
+ * @param {number} spaces - Number of spaces to indent. Defaults to 0.
  * @returns {string} The indented text
  * @private
  */
@@ -60,7 +59,7 @@ function indentSingle(piece, spaces) {
 }
 
 /**
- * Indents an array of text pieces by the specified number of spaces.
+ * Indent an array of text pieces by the specified number of spaces.
  *
  * @param {string[]} pieces - Array of text pieces to indent
  * @param {number} spaces - Number of spaces to indent each piece
@@ -71,7 +70,7 @@ function indent(pieces, spaces) {
 }
 
 /**
- * Creates a function that adds indented code pieces to a target array.
+ * Create a function that adds indented code pieces to a target array.
  *
  * @param {string[]} target - Target array to add code pieces to
  * @returns {Function} Function that takes a code piece and spaces count
@@ -83,7 +82,7 @@ function buildAddCode(target) {
 }
 
 /**
- * Joins code pieces into a single string with newlines.
+ * Join code pieces into a single string with newlines.
  *
  * @param {string[]} target - Array of code pieces to join
  * @returns {string} Combined code string
@@ -93,11 +92,14 @@ function finalizeCodePieces(target) {
 }
 
 /**
- * Represents a complete program containing applications, policies, and scenarios.
+ * Representation of a QubecTalk program.
+ *
+ * A complete program containing optionally applications, policies, and
+ * scenarios.
  */
 class Program {
   /**
-   * Creates a new Program.
+   * Create a new Program.
    *
    * @param {Application[]} applications - Array of application definitions.
    * @param {DefinitionalStanza[]} policies - Array of policy definitions.
@@ -113,7 +115,7 @@ class Program {
   }
 
   /**
-   * Gets all substances across all applications.
+   * Get all substances across all applications.
    *
    * @returns {Substance[]} Array of all substances.
    */
@@ -126,10 +128,11 @@ class Program {
   }
 
   /**
-   * Inserts or updates a substance in an application.
+   * Insert or updates a substance in an application.
    *
    * @param {string} priorApplication - Name of application to insert into.
-   * @param {string} priorSubstanceName - Name of substance to replace, or null for new.
+   * @param {string} priorSubstanceName - Name of substance to replace. Pass
+   *     null for new.
    * @param {Substance} substance - The substance to insert.
    */
   insertSubstance(priorApplication, priorSubstanceName, substance) {
@@ -139,9 +142,10 @@ class Program {
   }
 
   /**
-   * Deletes a substance from an application.
+   * Delete a substance from an application.
    *
-   * @param {string} applicationName - Name of application containing substance.
+   * @param {string} applicationName - Name of application containing
+   *     substance.
    * @param {string} substanceName - Name of substance to delete.
    */
   deleteSubstance(applicationName, substanceName) {
@@ -158,7 +162,7 @@ class Program {
   }
 
   /**
-   * Gets all applications.
+   * Get all applications.
    *
    * @returns {Application[]} Array of applications.
    */
@@ -180,7 +184,7 @@ class Program {
   }
 
   /**
-   * Adds a new application.
+   * Add a new application.
    *
    * @param {Application} newApplication - Application to add.
    */
@@ -190,7 +194,7 @@ class Program {
   }
 
   /**
-   * Deletes an application by name.
+   * Delete an application by name.
    *
    * @param {string} name - Name of application to delete.
    */
@@ -202,7 +206,7 @@ class Program {
   }
 
   /**
-   * Renames an application.
+   * Rename an application.
    *
    * @param {string} oldName - Current name of application.
    * @param {string} newName - New name for application.
@@ -214,7 +218,7 @@ class Program {
   }
 
   /**
-   * Gets all policies.
+   * Get all policies.
    *
    * @returns {DefinitionalStanza[]} Array of policies.
    */
@@ -224,7 +228,7 @@ class Program {
   }
 
   /**
-   * Gets a policy by name.
+   * Get a policy by name.
    *
    * @param {string} name - Name of policy to find.
    * @returns {DefinitionalStanza|null} The policy or null if not found.
@@ -236,7 +240,7 @@ class Program {
   }
 
   /**
-   * Deletes a policy by name.
+   * Delete a policy by name.
    *
    * @param {string} name - Name of policy to delete.
    * @param {boolean} [filterUnknown=true] - Whether to filter unknown policies.
@@ -256,7 +260,7 @@ class Program {
   }
 
   /**
-   * Inserts or updates a policy.
+   * Insert or update a policy.
    *
    * @param {string} oldName - Name of policy to replace, or null for new.
    * @param {DefinitionalStanza} newPolicy - Policy to insert.
@@ -269,7 +273,7 @@ class Program {
   }
 
   /**
-   * Gets all simulation scenarios.
+   * Get all simulation scenarios.
    *
    * @returns {SimulationScenario[]} Array of scenarios.
    */
@@ -279,7 +283,7 @@ class Program {
   }
 
   /**
-   * Gets a simulation scenario by name.
+   * Get a simulation scenario by name.
    *
    * @param {string} name - Name of scenario to find.
    * @returns {SimulationScenario|null} The scenario or null if not found.
@@ -291,7 +295,7 @@ class Program {
   }
 
   /**
-   * Deletes a simulation scenario by name.
+   * Delete a simulation scenario by name.
    *
    * @param {string} name - Name of scenario to delete.
    */
@@ -301,7 +305,7 @@ class Program {
   }
 
   /**
-   * Inserts or updates a simulation scenario.
+   * Insert or update a simulation scenario.
    *
    * @param {string} oldName - Name of scenario to replace, or null for new.
    * @param {SimulationScenario} scenario - Scenario to insert.
@@ -375,12 +379,12 @@ class Program {
   }
 
   /**
-   * Updates the scenarios by removing policies that are not known.
-   * 
-   * This method filters each scenario to include only the policies 
-   * that are in the known policies list. It subsequently updates each 
-   * scenario with the filtered list of policies.
-   * 
+   * Removing policies that are not compatible with the UI editor.
+   *
+   * Filters each scenario to include only the policies that are in the known
+   * policies list that are compatible with the UI-based editor. It
+   * subsequently updates each scenario with the filtered list of policies.
+   *
    * @private
    */
   _removeUnknownPoliciesFromScenarios() {
@@ -403,14 +407,14 @@ class Program {
   }
 
   /**
-   * Determines if the temporary compatibility tests are passed.
+   * Determine if the compatibility tests are passed.
    *
-   * This private method evaluates the compatibility of applications 
-   * and policies with specific conditions that must be satisfied 
-   * to pass the temporary compatibility tests.
+   * Evaluate the compatibility of applications and policies with specific
+   * conditions that must be satisfied to pass the compatibility tests.
    *
    * @private
-   * @returns {boolean} True if all temporary compatibility tests are passed, false otherwise.
+   * @returns {boolean} True if all temporary compatibility tests are passed or
+   *     false otherwise.
    */
   _passesTempCompatiblityTests() {
     const self = this;
@@ -480,7 +484,7 @@ class Program {
 }
 
 /**
- * Represents an "about" stanza in the QubecTalk script.
+ * An "about" stanza in the QubecTalk script.
  */
 class AboutStanza {
   /**
@@ -493,7 +497,7 @@ class AboutStanza {
   }
 
   /**
-   * Generates the code representation of the "about" stanza.
+   * Generates the code representation of the about stanza.
    *
    * @param {number} spaces - Number of spaces for indentation.
    * @returns {string} Code representation of the stanza.
@@ -511,9 +515,9 @@ class AboutStanza {
   }
 
   /**
-   * Checks compatibility of the "about" stanza with UI editing.
+   * Checks compatibility of the about stanza with UI editing.
    *
-   * @returns {boolean} False, as "about" stanza is not compatible with UI.
+   * @returns {boolean} False as about stanza is not compatible with UI.
    */
   getIsCompatible() {
     const self = this;
@@ -522,11 +526,12 @@ class AboutStanza {
 }
 
 /**
- * Represents a definitional stanza that can contain applications and policies.
+ * Definitional stanza that can contain application and / or policies.
  */
 class DefinitionalStanza {
   /**
-   * Creates a new DefinitionalStanza.
+   * Create a new DefinitionalStanza.
+   *
    * @param {string} name - Name of the stanza.
    * @param {Application[]} applications - Array of applications.
    * @param {boolean} isCompatible - Whether stanza is UI-compatible.
@@ -539,17 +544,17 @@ class DefinitionalStanza {
   }
 
   /**
-   * Gets the name of this definitional stanza.
+   * Get the name of this definitional stanza.
    *
    * @returns {string} The name of the stanza ("default" or policy name).
    */
   getName() {
     const self = this;
-    return self._name; 
+    return self._name;
   }
 
   /**
-   * Gets the applications defined in this stanza.
+   * Get the applications defined in this stanza.
    *
    * @returns {Application[]} Array of applications defined in the stanza.
    */
@@ -559,7 +564,7 @@ class DefinitionalStanza {
   }
 
   /**
-   * Checks if this stanza is compatible with UI editing.
+   * Check if this stanza is compatible with UI editing.
    *
    * @returns {boolean} True if stanza can be edited in UI, false otherwise.
    */
@@ -569,9 +574,9 @@ class DefinitionalStanza {
   }
 
   /**
-   * Generates the code representation of this stanza.
-   * 
-   * Generates the QubecTalk code representation of this definitional stanza,
+   * Generate the code representation of this stanza.
+   *
+   * Generate the QubecTalk code representation of this definitional stanza,
    * including all its applications and appropriate indentation.
    *
    * @param {number} spaces - Number of spaces to use for indentation.
@@ -603,11 +608,12 @@ class DefinitionalStanza {
 }
 
 /**
- * Represents a simulation scenario that applies policies over a time period.
+ * Represent a simulation scenario that applies policies over a time period.
  */
 class SimulationScenario {
   /**
-   * Creates a new SimulationScenario.
+   * Create a new SimulationScenario.
+   *
    * @param {string} name - Name of the scenario.
    * @param {string[]} policyNames - Array of policy names to apply.
    * @param {number} yearStart - Start year of simulation.
@@ -624,7 +630,7 @@ class SimulationScenario {
   }
 
   /**
-   * Gets the name of this simulation scenario.
+   * Get the name of this simulation scenario.
    *
    * @returns {string} The scenario name.
    */
@@ -634,7 +640,7 @@ class SimulationScenario {
   }
 
   /**
-   * Gets names of policies included in this scenario.
+   * Get names of policies included in this scenario.
    *
    * @returns {string[]} Array of policy names to apply.
    */
@@ -644,7 +650,7 @@ class SimulationScenario {
   }
 
   /**
-   * Gets the start year of the simulation.
+   * Get the start year of the simulation.
    *
    * @returns {number} The year the simulation starts.
    */
@@ -654,7 +660,7 @@ class SimulationScenario {
   }
 
   /**
-   * Gets the end year of the simulation.
+   * Get the end year of the simulation.
    *
    * @returns {number} The year the simulation ends.
    */
@@ -664,7 +670,7 @@ class SimulationScenario {
   }
 
   /**
-   * Checks if this scenario is compatible with UI editing.
+   * Check if this scenario is compatible with UI editing.
    *
    * @returns {boolean} True if scenario can be edited in UI, false otherwise.
    */
@@ -674,7 +680,7 @@ class SimulationScenario {
   }
 
   /**
-   * Generates the code representation of this scenario.
+   * Generate the code representation of this scenario.
    *
    * @param {number} spaces - Number of spaces to use for indentation.
    * @returns {string} The code representation of the simulation scenario.
@@ -700,12 +706,12 @@ class SimulationScenario {
 }
 
 /**
- * Represents a simulations stanza that contains multiple simulation scenarios.
+ * Simulations stanza that contains multiple simulation scenarios.
  */
 class SimulationStanza {
   /**
-   * Creates a new SimulationStanza.
-   * 
+   * Create a new SimulationStanza.
+   *
    * @param {SimulationScenario[]} scenarios - Array of simulation scenarios.
    * @param {boolean} isCompatible - Whether stanza is compatible with UI editing.
    */
@@ -716,7 +722,7 @@ class SimulationStanza {
   }
 
   /**
-   * Checks if this stanza is compatible with UI editing.
+   * Check if this stanza is compatible with UI editing.
    *
    * @returns {boolean} True if stanza can be edited in UI, false otherwise.
    */
@@ -726,7 +732,7 @@ class SimulationStanza {
   }
 
   /**
-   * Gets the simulation scenarios in this stanza.
+   * Get the simulation scenarios in this stanza.
    *
    * @returns {SimulationScenario[]} Array of simulation scenarios.
    */
@@ -736,7 +742,7 @@ class SimulationStanza {
   }
 
   /**
-   * Gets the name of this stanza.
+   * Get the name of this stanza.
    *
    * @returns {string} The string "simulations".
    */
@@ -746,8 +752,8 @@ class SimulationStanza {
   }
 
   /**
-   * Generates the code representation of this stanza.
-   * 
+   * Generate the code representation of this stanza.
+   *
    * Generates the QubecTalk code representation of this simulations stanza,
    * including all its scenarios and appropriate indentation.
    *
@@ -778,11 +784,12 @@ class SimulationStanza {
 }
 
 /**
- * Represents an application that contains substances and their properties.
+ * Represent an application that contains substances and their properties.
  */
 class Application {
   /**
-   * Creates a new Application.
+   * Create a new Application.
+   *
    * @param {string} name - Name of the application.
    * @param {Substance[]} substances - Array of substances.
    * @param {boolean} isModification - Whether this modifies existing application.
@@ -797,8 +804,8 @@ class Application {
   }
 
   /**
-   * Gets the name of this application.
-   * 
+   * Get the name of this application.
+   *
    * @returns {string} The application name.
    */
   getName() {
@@ -807,8 +814,8 @@ class Application {
   }
 
   /**
-   * Renames this application.
-   * 
+   * Rename this application.
+   *
    * @param {string} newName - The new name for the application.
    */
   rename(newName) {
@@ -817,8 +824,8 @@ class Application {
   }
 
   /**
-   * Gets all substances defined in this application.
-   * 
+   * Get all substances defined in this application.
+   *
    * @returns {Substance[]} Array of substances.
    */
   getSubstances() {
@@ -827,8 +834,8 @@ class Application {
   }
 
   /**
-   * Inserts or updates a substance in this application.
-   * 
+   * Insert or update a substance in this application.
+   *
    * @param {string} substanceName - Name of substance to replace, or null for new.
    * @param {Substance} newVersion - The substance to insert.
    */
@@ -839,8 +846,8 @@ class Application {
   }
 
   /**
-   * Deletes a substance from this application.
-   * 
+   * Delete a substance from this application.
+   *
    * @param {string} substanceName - Name of substance to delete.
    */
   deleteSubstance(substanceName) {
@@ -849,8 +856,8 @@ class Application {
   }
 
   /**
-   * Gets a specific substance by name.
-   * 
+   * Get a specific substance by name.
+   *
    * @param {string} name - Name of substance to find.
    * @returns {Substance|null} The substance or null if not found.
    */
@@ -861,8 +868,8 @@ class Application {
   }
 
   /**
-   * Checks if this application modifies an existing one.
-   * 
+   * Check if this application modifies an existing one.
+   *
    * @returns {boolean} True if this modifies an existing application.
    */
   getIsModification() {
@@ -871,8 +878,8 @@ class Application {
   }
 
   /**
-   * Checks if this application is compatible with UI editing.
-   * 
+   * Check if this application is compatible with UI editing.
+   *
    * @returns {boolean} True if application can be edited in UI.
    */
   getIsCompatible() {
@@ -881,8 +888,8 @@ class Application {
   }
 
   /**
-   * Generates the code representation of this application.
-   * 
+   * Generate the code representation of this application.
+   *
    * @param {number} spaces - Number of spaces to use for indentation.
    * @returns {string} The code representation of the application.
    */
@@ -911,14 +918,15 @@ class Application {
 }
 
 /**
- * Builds substances with their properties and commands.
- * Provides a fluent interface for constructing Substance objects
- * with various commands and properties.
+ * Build substances with their properties and commands.
+ *
+ * Provides a stateful interface for constructing Substances with various
+ * commands and properties.
  */
 class SubstanceBuilder {
   /**
-   * Creates a new SubstanceBuilder.
-   * 
+   * Create a new SubstanceBuilder.
+   *
    * @param {string} name - Name of the substance.
    * @param {boolean} isModification - Whether this modifies an existing substance.
    */
@@ -938,8 +946,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Builds a new Substance from the current state.
-   * 
+   * Build a new Substance from the current state.
+   *
    * @param {boolean} isCompatibleRaw - Whether substance should be UI-compatible.
    * @returns {Substance} The constructed substance.
    */
@@ -983,8 +991,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Adds a command to the substance being built.
-   * 
+   * Add a command to the substance being built.
+   *
    * @param {Command} command - The command to add.
    * @returns {Command|IncompatibleCommand} The added command or incompatibility marker.
    */
@@ -1026,8 +1034,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Sets the name of the substance.
-   * 
+   * Set the name of the substance.
+   *
    * @param {string} newVal - New name for the substance.
    */
   setName(newVal) {
@@ -1036,8 +1044,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Adds an initial charge command.
-   * 
+   * Add an initial charge command.
+   *
    * @param {Command} newVal - Initial charge command to add.
    */
   addInitialCharge(newVal) {
@@ -1046,8 +1054,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Adds a limit command.
-   * 
+   * Add a limit command.
+   *
    * @param {LimitCommand} newVal - Limit command to add.
    */
   addLimit(newVal) {
@@ -1056,8 +1064,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Adds a change command.
-   * 
+   * Add a change command.
+   *
    * @param {Command} newVal - Change command to add.
    */
   addChange(newVal) {
@@ -1066,8 +1074,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Sets the equals command.
-   * 
+   * Set the equals command.
+   *
    * @param {Command} newVal - Equals command to set.
    * @returns {Command|IncompatibleCommand} The command or incompatibility marker.
    */
@@ -1077,8 +1085,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Sets the recharge command.
-   * 
+   * Set the recharge command.
+   *
    * @param {Command} newVal - Recharge command to set.
    * @returns {Command|IncompatibleCommand} The command or incompatibility marker. */
   setRecharge(newVal) {
@@ -1087,8 +1095,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Adds a recycle command.
-   * 
+   * Add a recycle command.
+   *
    * @param {Command} newVal - Recycle command to add.
    */
   addRecycle(newVal) {
@@ -1097,8 +1105,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Adds a replace command.
-   * 
+   * Add a replace command.
+   *
    * @param {ReplaceCommand} newVal - Replace command to add.
    */
   addReplace(newVal) {
@@ -1107,8 +1115,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Sets the retire command.
-   * 
+   * Set the retire command.
+   *
    * @param {Command} newVal - Retire command to set.
    * @returns {Command|IncompatibleCommand} The command or incompatibility marker.
    */
@@ -1118,8 +1126,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Adds a set value command.
-   * 
+   * Add a set value command.
+   *
    * @param {Command} newVal - Set value command to add.
    */
   addSetVal(newVal) {
@@ -1128,8 +1136,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Checks for duplicate single-value commands.
-   * 
+   * Check for duplicate single-value commands.
+   *
    * @param {Command|null} originalVal - Existing command if any.
    * @param {Command} newVal - New command to check.
    * @returns {Command|IncompatibleCommand} The command or incompatibility marker.
@@ -1144,8 +1152,8 @@ class SubstanceBuilder {
   }
 
   /**
-   * Creates an incompatible command for invalid placement.
-   * 
+   * Create an incompatible command for invalid placement.
+   *
    * @returns {IncompatibleCommand} An incompatibility marker.
    * @private
    */
@@ -1156,11 +1164,12 @@ class SubstanceBuilder {
 }
 
 /**
- * Represents a substance with its properties and behaviors.
+ * A substance with various commands dictating its behavior.
  */
 class Substance {
   /**
-   * Creates a new Substance.
+   * Create a new Substance.
+   *
    * @param {string} name - Name of the substance.
    * @param {Command[]} charges - Initial charge commands.
    * @param {LimitCommand[]} limits - Limit commands.
@@ -1204,9 +1213,9 @@ class Substance {
   }
 
   /**
-   * Gets the name of this substance.
-   * 
-   * @returns {string} The substance name.
+   * Get the name of this substance.
+   *
+   * @returns {string} The substance name like HFC-134a.
    */
   getName() {
     const self = this;
@@ -1214,8 +1223,8 @@ class Substance {
   }
 
   /**
-   * Gets all initial charge commands for this substance.
-   * 
+   * Get all initial charge commands for this substance.
+   *
    * @returns {Command[]} Array of initial charge commands.
    */
   getInitialCharges() {
@@ -1224,8 +1233,8 @@ class Substance {
   }
 
   /**
-   * Gets the initial charge command for a specific stream.
-   * 
+   * Get the initial charge command for a specific stream.
+   *
    * @param {string} stream - The stream to get initial charge for.
    * @returns {Command|null} The initial charge command or null if not found.
    */
@@ -1236,8 +1245,8 @@ class Substance {
   }
 
   /**
-   * Gets all limit commands for this substance.
-   * 
+   * Get all limit commands for this substance.
+   *
    * @returns {LimitCommand[]} Array of limit commands.
    */
   getLimits() {
@@ -1246,8 +1255,8 @@ class Substance {
   }
 
   /**
-   * Gets all change commands for this substance.
-   * 
+   * Get all change commands for this substance.
+   *
    * @returns {Command[]} Array of change commands.
    */
   getChanges() {
@@ -1256,8 +1265,8 @@ class Substance {
   }
 
   /**
-   * Gets the equals command for this substance.
-   * 
+   * Get the equals command for this substance.
+   *
    * @returns {Command|null} The equals command or null if not set.
    */
   getEquals() {
@@ -1266,8 +1275,8 @@ class Substance {
   }
 
   /**
-   * Gets the recharge command for this substance.
-   * 
+   * Get the recharge command for this substance.
+   *
    * @returns {Command|null} The recharge command or null if not set.
    */
   getRecharge() {
@@ -1276,8 +1285,8 @@ class Substance {
   }
 
   /**
-   * Gets all recycle commands for this substance.
-   * 
+   * Get all recycle commands for this substance.
+   *
    * @returns {Command[]} Array of recycle commands.
    */
   getRecycles() {
@@ -1286,8 +1295,8 @@ class Substance {
   }
 
   /**
-   * Gets all replace commands for this substance.
-   * 
+   * Get all replace commands for this substance.
+   *
    * @returns {ReplaceCommand[]} Array of replace commands.
    */
   getReplaces() {
@@ -1296,8 +1305,8 @@ class Substance {
   }
 
   /**
-   * Gets the retire command for this substance.
-   * 
+   * Get the retire command for this substance.
+   *
    * @returns {Command|null} The retire command or null if not set.
    */
   getRetire() {
@@ -1306,8 +1315,8 @@ class Substance {
   }
 
   /**
-   * Gets all set value commands for this substance.
-   * 
+   * Get all set value commands for this substance.
+   *
    * @returns {Command[]} Array of set value commands.
    */
   getSetVals() {
@@ -1316,8 +1325,8 @@ class Substance {
   }
 
   /**
-   * Checks if this substance modifies an existing one.
-   * 
+   * Check if this substance modifies an existing one.
+   *
    * @returns {boolean} True if this modifies an existing substance.
    */
   getIsModification() {
@@ -1326,8 +1335,8 @@ class Substance {
   }
 
   /**
-   * Checks if this substance is compatible with UI editing.
-   * 
+   * Check if this substance is compatible with UI editing.
+   *
    * @returns {boolean} True if substance can be edited in UI.
    */
   getIsCompatible() {
@@ -1335,6 +1344,15 @@ class Substance {
     return self._isCompatible;
   }
 
+  /**
+   * Generate the code representation of the substance.
+   *
+   * Translate the substance's properties and commands into their code
+   * representation based on the number of spaces specified for the indentation.
+   *
+   * @param {number} spaces - Number of spaces to use for indentation.
+   * @returns {string} The code representation of the substance.
+   */
   toCode(spaces) {
     const self = this;
 
@@ -1373,8 +1391,8 @@ class Substance {
   }
 
   /**
-   * Generates code for initial charge commands.
-   * 
+   * Generate code for initial charge commands.
+   *
    * @returns {string[]|null} Array of code strings or null if no charges.
    * @private
    */
@@ -1400,8 +1418,8 @@ class Substance {
   }
 
   /**
-   * Generates code for the equals command.
-   * 
+   * Generate code for the equals command.
+   *
    * @returns {string|null} Code string or null if no equals command.
    * @private
    */
@@ -1422,8 +1440,8 @@ class Substance {
   }
 
   /**
-   * Generates code for set value commands.
-   * 
+   * Generate code for set value commands.
+   *
    * @returns {string[]|null} Array of code strings or null if no set values.
    * @private
    */
@@ -1449,8 +1467,8 @@ class Substance {
   }
 
   /**
-   * Generates code for change commands.
-   * 
+   * Generate code for change commands.
+   *
    * @returns {string[]|null} Array of code strings or null if no changes.
    * @private
    */
@@ -1476,8 +1494,8 @@ class Substance {
   }
 
   /**
-   * Generates code for the retire command.
-   * 
+   * Generate code for the retire command.
+   *
    * @returns {string|null} Code string or null if no retire command.
    * @private
    */
@@ -1498,8 +1516,8 @@ class Substance {
   }
 
   /**
-   * Generates code for limit commands.
-   * 
+   * Generate code for limit commands.
+   *
    * @returns {string[]|null} Array of code strings or null if no limits.
    * @private
    */
@@ -1532,8 +1550,8 @@ class Substance {
   }
 
   /**
-   * Generates code for the recharge command.
-   * 
+   * Generate code for the recharge command.
+   *
    * @returns {string|null} Code string or null if no recharge command.
    * @private
    */
@@ -1557,8 +1575,8 @@ class Substance {
   }
 
   /**
-   * Generates code for recycle commands.
-   * 
+   * Generate code for recycle commands.
+   *
    * @returns {string[]|null} Array of code strings or null if no recycles.
    * @private
    */
@@ -1587,8 +1605,8 @@ class Substance {
   }
 
   /**
-   * Generates code for replace commands.
-   * 
+   * Generate code for replace commands.
+   *
    * @returns {string[]|null} Array of code strings or null if no replaces.
    * @private
    */
@@ -1618,7 +1636,7 @@ class Substance {
 
   /**
    * Adds duration information to code pieces array.
-   * 
+   *
    * @param {string[]} pieces - Array of code pieces to append to.
    * @param {Command} command - Command containing duration info.
    * @private
@@ -1654,8 +1672,8 @@ class Substance {
   }
 
   /**
-   * Joins code pieces into a single statement.
-   * 
+   * Join code pieces into a single statement.
+   *
    * @param {string[]} pieces - Array of code pieces to join.
    * @returns {string} The combined code statement.
    * @private
@@ -1667,11 +1685,15 @@ class Substance {
 }
 
 /**
- * Represents a basic command with type, target, value and duration.
+ * Command with type, target, value and duration.
+ *
+ * Command such as a set command with a specified type, target, value and
+ * duration.
  */
 class Command {
   /**
-   * Creates a new Command.
+   * Create a new Command.
+   *
    * @param {string} typeName - Type of the command.
    * @param {string} target - Target of the command.
    * @param {EngineNumber} value - Value for the command.
@@ -1686,8 +1708,8 @@ class Command {
   }
 
   /**
-   * Gets the type name of this command.
-   * 
+   * Get the type name of this command.
+   *
    * @returns {string} The command type name (e.g. "change", "retire", "setVal", etc).
    */
   getTypeName() {
@@ -1696,8 +1718,8 @@ class Command {
   }
 
   /**
-   * Gets the target of this command.
-   * 
+   * Get the target of this command.
+   *
    * @returns {string} The target name (e.g. "manufacture", "import", etc).
    */
   getTarget() {
@@ -1706,8 +1728,8 @@ class Command {
   }
 
   /**
-   * Gets the value associated with this command.
-   * 
+   * Get the value associated with this command.
+   *
    * @returns {EngineNumber} The command's value with units.
    */
   getValue() {
@@ -1716,8 +1738,8 @@ class Command {
   }
 
   /**
-   * Gets the duration for which this command applies.
-   * 
+   * Get the duration for which this command applies.
+   *
    * @returns {YearMatcher} The duration specification, or null for all years.
    */
   getDuration() {
@@ -1726,8 +1748,8 @@ class Command {
   }
 
   /**
-   * Checks if this command is compatible with UI editing.
-   * 
+   * Check if this command is compatible with UI editing.
+   *
    * @returns {boolean} Always returns true as basic commands are UI-compatible.
    */
   getIsCompatible() {
@@ -1737,11 +1759,12 @@ class Command {
 }
 
 /**
- * Represents a limit command with displacement capability.
+ * Limit command with displacement capability.
  */
 class LimitCommand {
   /**
-   * Creates a new LimitCommand.
+   * Create a new LimitCommand.
+   *
    * @param {string} typeName - Type of limit (cap/floor).
    * @param {string} target - Target of the limit.
    * @param {EngineNumber} value - Limit value.
@@ -1758,8 +1781,8 @@ class LimitCommand {
   }
 
   /**
-   * Gets the type name of this limit command.
-   * 
+   * Get the type name of this limit command.
+   *
    * @returns {string} The command type ("cap" or "floor").
    */
   getTypeName() {
@@ -1768,8 +1791,8 @@ class LimitCommand {
   }
 
   /**
-   * Gets the target of this limit command.
-   * 
+   * Get the target of this limit command.
+   *
    * @returns {string} The target name (e.g. "manufacture", "import", etc).
    */
   getTarget() {
@@ -1778,8 +1801,8 @@ class LimitCommand {
   }
 
   /**
-   * Gets the value associated with this limit.
-   * 
+   * Get the value associated with this limit.
+   *
    * @returns {EngineNumber} The limit value with units.
    */
   getValue() {
@@ -1788,8 +1811,8 @@ class LimitCommand {
   }
 
   /**
-   * Gets the duration for which this limit applies.
-   * 
+   * Get the duration for which this limit applies.
+   *
    * @returns {YearMatcher} The duration specification, or null for all years.
    */
   getDuration() {
@@ -1798,8 +1821,8 @@ class LimitCommand {
   }
 
   /**
-   * Gets the substance being displaced by this limit.
-   * 
+   * Get the substance being displaced by this limit.
+   *
    * @returns {string|null} Name of substance being displaced, or null if none.
    */
   getDisplacing() {
@@ -1808,8 +1831,8 @@ class LimitCommand {
   }
 
   /**
-   * Checks if this limit command is compatible with UI editing.
-   * 
+   * Check if this limit command is compatible with UI editing.
+   *
    * @returns {boolean} Always returns true as limit commands are UI-compatible.
    */
   getIsCompatible() {
@@ -1819,11 +1842,12 @@ class LimitCommand {
 }
 
 /**
- * Represents a command to replace one substance with another.
+ * Represent a command to replace one substance with another.
  */
 class ReplaceCommand {
   /**
-   * Creates a new ReplaceCommand.
+   * Create a new ReplaceCommand.
+   *
    * @param {EngineNumber} volume - Volume to replace.
    * @param {string} source - Source substance.
    * @param {string} destination - Destination substance.
@@ -1838,8 +1862,8 @@ class ReplaceCommand {
   }
 
   /**
-   * Gets the type name of this replace command.
-   * 
+   * Get the type name of this replace command.
+   *
    * @returns {string} Always returns "replace".
    */
   getTypeName() {
@@ -1848,8 +1872,8 @@ class ReplaceCommand {
   }
 
   /**
-   * Gets the volume to be replaced.
-   * 
+   * Get the volume to be replaced.
+   *
    * @returns {EngineNumber} The volume with units.
    */
   getVolume() {
@@ -1858,8 +1882,8 @@ class ReplaceCommand {
   }
 
   /**
-   * Gets the source substance to replace from.
-   * 
+   * Get the source substance to replace from.
+   *
    * @returns {string} Name of source substance.
    */
   getSource() {
@@ -1868,8 +1892,8 @@ class ReplaceCommand {
   }
 
   /**
-   * Gets the destination substance to replace with.
-   * 
+   * Get the destination substance to replace with.
+   *
    * @returns {string} Name of destination substance.
    */
   getDestination() {
@@ -1878,8 +1902,8 @@ class ReplaceCommand {
   }
 
   /**
-   * Gets the duration for which this replacement applies.
-   * 
+   * Get the duration for which this replacement applies.
+   *
    * @returns {YearMatcher} The duration specification, or null for all years.
    */
   getDuration() {
@@ -1888,8 +1912,8 @@ class ReplaceCommand {
   }
 
   /**
-   * Checks if this replace command is compatible with UI editing.
-   * 
+   * Check if this replace command is compatible with UI editing.
+   *
    * @returns {boolean} Always returns true as replace commands are UI-compatible.
    */
   getIsCompatible() {
@@ -1899,11 +1923,12 @@ class ReplaceCommand {
 }
 
 /**
- * Represents a command that is not compatible with the UI editor.
+ * Command that is not compatible with the UI editor.
  */
 class IncompatibleCommand {
   /**
-   * Creates a new IncompatibleCommand.
+   * Create a new IncompatibleCommand.
+   *
    * @param {string} typeName - Type of incompatible command.
    */
   constructor(typeName) {
@@ -1911,11 +1936,21 @@ class IncompatibleCommand {
     self._typeName = typeName;
   }
 
+  /**
+   * Get the type name of this incompatible command.
+   *
+   * @returns {string} The type name of the command.
+   */
   getTypeName() {
     const self = this;
     return self._typeName;
   }
 
+  /**
+   * Check compatibility with UI.
+   *
+   * @returns {boolean} Always returns false as it is incompatible.
+   */
   getIsCompatible() {
     const self = this;
     return false;
@@ -1923,15 +1958,16 @@ class IncompatibleCommand {
 }
 
 /**
- * Visitor which compiles a QubecTalk program to JS objects describing the analysis.
+ * Visitor compiling a QubecTalk program to JS objects describing the analysis.
  *
- * Visitor which attempts to compile a QubecTalk program to JS objects describing the anlaysis or
- * indication that the anlaysis cannot use the simplified JS object format.
+ * Visitor which attempts to compile a QubecTalk program to JS objects
+ * describing the anlaysis or indication that the anlaysis cannot use the
+ * simplified JS object format.
  */
 class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   /**
-   * Visits a number node and converts it to a numeric value.
-   * 
+   * Visit a number node and converts it to a numeric value.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {number} The parsed number value, accounting for sign.
    */
@@ -1947,8 +1983,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a string node and removes surrounding quotes.
-   * 
+   * Visit a string node and removes surrounding quotes.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The string value without quotes.
    */
@@ -1958,8 +1994,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a unit or ratio node and formats it appropriately.
-   * 
+   * Visit a unit or ratio node and formats it appropriately.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The formatted unit or ratio string.
    */
@@ -1975,8 +2011,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a unit value node and creates an EngineNumber.
-   * 
+   * Visit a unit value node and creates an EngineNumber.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {EngineNumber} The value with its associated units.
    */
@@ -1990,8 +2026,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a simple expression node and processes its single child.
-   * 
+   * Visit a simple expression node and processes its single child.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {*} The result of visiting the child expression.
    */
@@ -2001,8 +2037,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a condition expression node and formats it.
-   * 
+   * Visit a condition expression node and format it.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The formatted condition expression.
    */
@@ -2017,8 +2053,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a conditional expression node and formats it.
-   * 
+   * Visit a conditional expression node and format it.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The formatted conditional expression.
    */
@@ -2033,8 +2069,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Builds an arithmetic expression from child nodes.
-   * 
+   * Build an arithmetic expression.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {string} op - The operator to use.
    * @returns {string} The formatted arithmetic expression.
@@ -2049,8 +2085,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an addition expression node.
-   * 
+   * Visit an addition expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The formatted addition expression.
    */
@@ -2060,8 +2096,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a multiplication expression node.
-   * 
+   * Visit a multiplication expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The formatted multiplication expression.
    */
@@ -2071,8 +2107,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a power expression node.
-   * 
+   * Visit a power expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The formatted power expression.
    */
@@ -2082,8 +2118,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a stream access expression node.
-   * 
+   * Visit a stream access expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The stream access text.
    */
@@ -2093,8 +2129,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an indirect stream access expression node.
-   * 
+   * Visit an indirect stream access expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The indirect stream access text.
    */
@@ -2104,8 +2140,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a stream conversion expression node.
-   * 
+   * Visit a stream conversion expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The stream conversion text.
    */
@@ -2115,8 +2151,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a substance/application units stream access node.
-   * 
+   * Visit a substance/application units stream access node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The stream access text.
    */
@@ -2126,8 +2162,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a minimum limit expression node.
-   * 
+   * Visit a minimum limit expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The minimum limit expression text.
    */
@@ -2137,8 +2173,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a maximum limit expression node.
-   * 
+   * Visit a maximum limit expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The maximum limit expression text.
    */
@@ -2148,8 +2184,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a bounded limit expression node.
-   * 
+   * Visit a bounded limit expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The bounded limit expression text.
    */
@@ -2159,8 +2195,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a parenthesized expression node.
-   * 
+   * Visit a parenthesized expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The parenthesized expression text.
    */
@@ -2170,8 +2206,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a normal distribution expression node.
-   * 
+   * Visit a normal distribution expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The normal distribution expression text.
    */
@@ -2181,8 +2217,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a uniform distribution expression node.
-   * 
+   * Visit a uniform distribution expression node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The uniform distribution expression text.
    */
@@ -2192,8 +2228,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a simple identifier node.
-   * 
+   * Visit a simple identifier node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {string} The identifier text.
    */
@@ -2204,8 +2240,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Builds a YearMatcher for a duration.
-   * 
+   * Build a YearMatcher for a duration.
+   *
    * @param {number|null} minYear - Start year or null for unbounded
    * @param {number|null} maxYear - End year or null for unbounded
    * @returns {YearMatcher} The year matcher object
@@ -2216,8 +2252,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a single year duration node.
-   * 
+   * Visit a single year duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {YearMatcher} Year matcher for single year.
    */
@@ -2228,8 +2264,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a start year duration node.
-   * 
+   * Visit a start year duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {YearMatcher} Year matcher starting from engine start.
    */
@@ -2240,8 +2276,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a year range duration node.
-   * 
+   * Visit a year range duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {YearMatcher} Year matcher for range.
    */
@@ -2253,8 +2289,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a minimum year duration node.
-   * 
+   * Visit a minimum year duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {YearMatcher} Year matcher with min bound only.
    */
@@ -2266,8 +2302,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a maximum year duration node.
-   * 
+   * Visit a maximum year duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {YearMatcher} Year matcher with max bound only.
    */
@@ -2279,8 +2315,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an "all years" duration node.
-   * 
+   * Visit an "all years" duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Function} Function that returns null for unbounded.
    */
@@ -2290,8 +2326,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an about stanza node.
-   * 
+   * Visit an about stanza node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {AboutStanza} New about stanza instance.
    */
@@ -2301,8 +2337,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a default stanza node.
-   * 
+   * Visit a default stanza node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {DefinitionalStanza} New default stanza instance.
    */
@@ -2321,8 +2357,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a policy stanza node.
-   * 
+   * Visit a policy stanza node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {DefinitionalStanza} New policy stanza instance.
    */
@@ -2342,8 +2378,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a simulations stanza node.
-   * 
+   * Visit a simulations stanza node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {SimulationStanza} New simulations stanza instance.
    */
@@ -2362,8 +2398,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an application definition node.
-   * 
+   * Visit an application definition node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {boolean} isModification - Whether this is a modification.
    * @returns {Application} New application instance.
@@ -2374,8 +2410,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a substance definition node.
-   * 
+   * Visit a substance definition node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {boolean} isModification - Whether this is a modification.
    * @returns {Substance} New substance instance.
@@ -2386,8 +2422,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an application modification node.
-   * 
+   * Visit an application modification node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {boolean} isModification - Whether this is a modification.
    * @returns {Application} New application instance.
@@ -2398,8 +2434,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a substance modification node.
-   * 
+   * Visit a substance modification node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {boolean} isModification - Whether this is a modification.
    * @returns {Substance} New substance instance.
@@ -2410,8 +2446,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a limit command with all years duration node.
-   * 
+   * Visit a limit command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {LimitCommand} New limit command instance.
    */
@@ -2421,8 +2457,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a limit command with displacement and all years duration node.
-   * 
+   * Visit a limit command with displacement and all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {LimitCommand} New limit command instance.
    */
@@ -2433,8 +2469,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a limit command with duration node.
-   * 
+   * Visit a limit command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {LimitCommand} New limit command instance.
    */
@@ -2445,8 +2481,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a limit command with displacement and duration node.
-   * 
+   * Visit a limit command with displacement and duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {LimitCommand} New limit command instance.
    */
@@ -2458,8 +2494,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a change command with all years duration node.
-   * 
+   * Visit a change command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New change command instance.
    */
@@ -2469,8 +2505,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a change command with duration node.
-   * 
+   * Visit a change command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New change command instance.
    */
@@ -2481,8 +2517,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a define var statement node.
-   * 
+   * Visit a define var statement (user-defined variable) node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {IncompatibleCommand} Incompatibility marker for define var.
    */
@@ -2492,8 +2528,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an initial charge command with all years duration node.
-   * 
+   * Visit an initial charge command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New initial charge command instance.
    */
@@ -2503,8 +2539,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an initial charge command with duration node.
-   * 
+   * Visit an initial charge command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New initial charge command instance.
    */
@@ -2515,8 +2551,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a recharge command with all years duration node.
-   * 
+   * Visit a recharge command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New recharge command instance.
    */
@@ -2528,8 +2564,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a recharge command with duration node.
-   * 
+   * Visit a recharge command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New recharge command instance.
    */
@@ -2542,8 +2578,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a recover command with all years duration node.
-   * 
+   * Visit a recover command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New recover command instance.
    */
@@ -2555,8 +2591,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a recover command with duration node.
-   * 
+   * Visit a recover command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New recover command instance.
    */
@@ -2569,8 +2605,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a recover command with displacement and all years duration node.
-   * 
+   * Visit a recover command with displacement and all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {IncompatibleCommand} Incompatibility marker for recover with displace.
    */
@@ -2580,8 +2616,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a recover command with displacement and duration node.
-   * 
+   * Visit a recover command with displacement and duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {IncompatibleCommand} Incompatibility marker for recover with displace.
    */
@@ -2591,8 +2627,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a replace command with all years duration node.
-   * 
+   * Visit a replace command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {ReplaceCommand} New replace command instance.
    */
@@ -2605,8 +2641,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a replace command with duration node.
-   * 
+   * Visit a replace command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {ReplaceCommand} New replace command instance.
    */
@@ -2620,8 +2656,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a retire command with all years duration node.
-   * 
+   * Visit a retire command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New retire command instance.
    */
@@ -2633,8 +2669,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a retire command with duration node.
-   * 
+   * Visit a retire command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New retire command instance.
    */
@@ -2647,8 +2683,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a set command with all years duration node.
-   * 
+   * Visit a set command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New set command instance.
    */
@@ -2658,8 +2694,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a set command with duration node.
-   * 
+   * Visit a set command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New set command instance.
    */
@@ -2670,8 +2706,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an equals command with all years duration node.
-   * 
+   * Visit an equals command with all years duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New equals command instance.
    */
@@ -2682,8 +2718,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits an equals command with duration node.
-   * 
+   * Visit an equals command with duration node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Command} New equals command instance.
    */
@@ -2695,8 +2731,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a base simulation node.
-   * 
+   * Visit a base simulation node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {SimulationScenario} New simulation scenario instance.
    */
@@ -2709,8 +2745,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a policy simulation node.
-   * 
+   * Visit a policy simulation node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {SimulationScenario} New simulation scenario instance.
    */
@@ -2732,8 +2768,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a base simulation with trials node.
-   * 
+   * Visit a base simulation with trials node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {IncompatibleCommand} Incompatibility marker for simulate with trials.
    */
@@ -2743,8 +2779,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a policy simulation with trials node.
-   * 
+   * Visit a policy simulation with trials node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {IncompatibleCommand} Incompatibility marker for simulate with trials.
    */
@@ -2754,8 +2790,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a program node.
-   * 
+   * Visit a program node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {Program} New program instance.
    */
@@ -2797,8 +2833,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a global statement node.
-   * 
+   * Visit a global statement node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {*} The result of visiting the child node.
    */
@@ -2808,8 +2844,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Visits a substance statement node.
-   * 
+   * Visit a substance statement node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @returns {*} The result of visiting the child node.
    */
@@ -2819,8 +2855,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Extracts string value from a quoted string node, removing quotes.
-   * 
+   * Extract string value from a quoted string node, removing quotes.
+   *
    * @param {string} target - The quoted string.
    * @returns {string} The string without quotes.
    * @private
@@ -2831,8 +2867,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Checks compatibility of children nodes.
-   * 
+   * Check compatibility of children nodes.
+   *
    * @param {Array} children - Array of nodes to check.
    * @returns {boolean} True if all children are compatible, false otherwise.
    * @private
@@ -2843,8 +2879,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Parses an application node.
-   * 
+   * Parse an application node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {boolean} isModification - Whether this is a modification.
    * @returns {Application} New application instance.
@@ -2867,8 +2903,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Parses a substance node.
-   * 
+   * Parse a substance node.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {boolean} isModification - Whether this is a modification.
    * @returns {Substance} New substance instance.
@@ -2900,8 +2936,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Builds an operation command.
-   * 
+   * Build an operation command.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {string} typeName - Type name of the command.
    * @param {YearMatcher} duration - Duration of the command.
@@ -2926,8 +2962,8 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Builds a limit command.
-   * 
+   * Build a limit command.
+   *
    * @param {Object} ctx - The parse tree node context.
    * @param {YearMatcher} duration - Duration of the command.
    * @param {string} displaceTarget - Displacing target.
@@ -2955,13 +2991,14 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
 }
 
 /**
- * Structure contianing the result of attempting to translate from QubecTalk script.
+ * Result of translating from QubecTalk script to UI editor objects.
  */
 class TranslationResult {
   /**
    * Create a new record of a translation attempt.
    *
-   * @param program The translated program as a lambda if successful or null if unsuccessful.
+   * @param program The translated program as a lambda if successful or null if
+   *     unsuccessful.
    * @param errors Any errors enountered or empty list if no errors.
    */
   constructor(program, errors) {
@@ -2993,19 +3030,20 @@ class TranslationResult {
 
 /**
  * Compiler that translates QubecTalk code into object representation.
- * 
- * Handles parsing QubecTalk scripts and converting them into JavaScript objects
- * that represent the program structure. Detects and reports syntax errors.
+ *
+ * Facade which parses QubecTalk scripts and converts them into objects which
+ * represent the program structure for UI editor-compatiable objects. Detects
+ * and reports syntax errors.
  */
 class UiTranslatorCompiler {
   /**
    * Compiles QubecTalk code into an object representation.
-   * 
-   * Parses the input code using ANTLR and translates it into JavaScript objects
+   *
+   * Parses the input code using ANTLR and translates it into objects
    * representing the program structure. Reports any syntax errors encountered.
    *
    * @param {string} input - The QubecTalk code to compile.
-   * @returns {TranslationResult} Result containing either the compiled program 
+   * @returns {TranslationResult} Result containing either the compiled program
    *     object or any encountered errors.
    */
   compile(input) {
@@ -3030,6 +3068,7 @@ class UiTranslatorCompiler {
     const tokens = new toolkit.antlr4.CommonTokenStream(lexer);
     const parser = new toolkit.QubecTalkParser(tokens);
 
+    // TODO: Leftover from base.
     parser.buildParsePlastics = true;
     parser.removeErrorListeners();
     parser.addErrorListener({

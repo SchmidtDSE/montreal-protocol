@@ -431,7 +431,8 @@ class ConsumptionListPresenter {
    *
    * @param {HTMLElement} root - The root DOM element for the consumption list.
    * @param {Function} getCodeObj - Callback to get the current code object.
-   * @param {Function} onCodeObjUpdate - Callback when the code object is updated.
+   * @param {Function} onCodeObjUpdate - Callback when the code object is
+   *     updated.
    */
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
@@ -576,7 +577,8 @@ class ConsumptionListPresenter {
   /**
    * Shows the dialog for editing a consumption record.
    *
-   * @param {string|null} name - Name of consumption to edit, or null for new record.
+   * @param {string|null} name - Name of consumption to edit. Pass null for a
+   *     new record.
    * @private
    */
   _showDialogFor(name) {
@@ -710,9 +712,9 @@ class ConsumptionListPresenter {
   }
 
   /**
-   * Gets list of all consumption names.
+   * Gets list of all consuming substances.
    *
-   * @returns {string[]} Array of consumption names.
+   * @returns {string[]} Array of substances.
    * @private
    */
   _getConsumptionNames() {
@@ -761,7 +763,7 @@ class ConsumptionListPresenter {
   /**
    * Parses the dialog form data into a substance object.
    *
-   * @returns {Object} The parsed substance object
+   * @returns {Object} The parsed substance object.
    * @private
    */
   _parseObj() {
@@ -1172,10 +1174,10 @@ class PolicyListPresenter {
 }
 
 /**
- * Manages the UI for listing and editing simulations.
+ * Manages the UI for listing and editing simulation situations.
  *
- * Manages the UI for listing and editing simulations, including their names,
- * start and end years, and the policies they include.
+ * Manages the UI for listing and editing simulations. These are individual
+ * situations which include their names, start and end years, and policies.
  */
 class SimulationListPresenter {
   /**
@@ -1277,6 +1279,9 @@ class SimulationListPresenter {
   /**
    * Sets up the dialog for adding/editing simulations.
    *
+   * Sets up the dialog for adding/editing simulation situations which are
+   * named combinations of stackable scenarios (policies) on top the baseline.
+   *
    * @private
    */
   _setupDialog() {
@@ -1305,7 +1310,8 @@ class SimulationListPresenter {
   /**
    * Shows the dialog for adding or editing a simulation.
    *
-   * @param {string|null} name - Name of simulation to edit, or null for new simulation.
+   * @param {string|null} name - Name of simulation to edit. Pass null for new
+   *     simulation.
    * @private
    */
   _showDialogFor(name) {
@@ -1413,8 +1419,9 @@ class SimulationListPresenter {
 /**
  * Manages the UI editor interface.
  *
- * Coordinates between code editing and visual editing interfaces, managing
- * tabs and content display.
+ * Central presenter which coordinates between code editing and visual editing
+ * interfaces, managing tabs and content display with their respective
+ * sub-presenters.
  */
 class UiEditorPresenter {
   /**
@@ -1701,7 +1708,7 @@ function readChangeCommandUi(root) {
 }
 
 /**
- * Initializes a limit command UI element.
+ * Initializes a limit command UI widget.
  *
  * @param {Object} itemObj - The command object to initialize from.
  * @param {HTMLElement} root - The root element containing the UI.
@@ -1736,7 +1743,7 @@ function initLimitCommandUi(itemObj, root, codeObj) {
 }
 
 /**
- * Reads values from a limit command UI element.
+ * Reads values from a limit command UI widget.
  *
  * @param {HTMLElement} root - The root element containing the UI.
  * @returns {LimitCommand} A new LimitCommand object with the UI values.
@@ -1755,7 +1762,7 @@ function readLimitCommandUi(root) {
 }
 
 /**
- * Initializes a recycle command UI element.
+ * Initializes a recycle command UI widget.
  *
  * @param {Object} itemObj - The command object to initialize from.
  * @param {HTMLElement} root - The root element containing the UI.
@@ -1779,7 +1786,7 @@ function initRecycleCommandUi(itemObj, root) {
 }
 
 /**
- * Reads values from a recycle command UI element.
+ * Reads values from a recycle command UI widget.
  *
  * @param {HTMLElement} root - The root element containing the UI.
  * @returns {Command} A new Command object with the UI values.
@@ -1798,7 +1805,7 @@ function readRecycleCommandUi(root) {
 }
 
 /**
- * Initializes a replace command UI element.
+ * Initializes a replace command UI widget.
  *
  * @param {Object} itemObj - The command object to initialize from.
  * @param {HTMLElement} root - The root element containing the UI.
@@ -1837,7 +1844,7 @@ function initReplaceCommandUi(itemObj, root, codeObj) {
 }
 
 /**
- * Reads values from a replace command UI element.
+ * Reads values from a replace command UI widget.
  *
  * @param {HTMLElement} root - The root element containing the UI.
  * @returns {ReplaceCommand} A new ReplaceCommand object with the UI values.
@@ -1855,7 +1862,7 @@ function readReplaceCommandUi(root) {
 }
 
 /**
- * Reads duration values from a duration UI element.
+ * Reads duration values from a duration UI widget.
  *
  * @param {HTMLElement} root - The root element containing the UI.
  * @returns {YearMatcher} A new YearMatcher object with the UI values.

@@ -1,5 +1,5 @@
 /**
- * Logic to interpret a plastics language script.
+ * Logic to interpret a QubecTalk script.
  *
  * @license BSD, see LICENSE.md.
  */
@@ -1450,6 +1450,7 @@ class Compiler {
     const tokens = new toolkit.antlr4.CommonTokenStream(lexer);
     const parser = new toolkit.QubecTalkParser(tokens);
 
+    // TODO: Leftover from base.
     parser.buildParsePlastics = true;
     parser.removeErrorListeners();
     parser.addErrorListener({
