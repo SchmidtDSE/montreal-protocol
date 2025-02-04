@@ -412,6 +412,7 @@ class StreamParameterization {
 
   /**
    * Set the greenhouse gas intensity.
+   * 
    * @param {EngineNumber} newValue - The new GHG intensity value.
    */
   setGhgIntensity(newValue) {
@@ -421,6 +422,7 @@ class StreamParameterization {
 
   /**
    * Get the greenhouse gas intensity.
+   * 
    * @returns {EngineNumber} The current GHG intensity value.
    */
   getGhgIntensity() {
@@ -430,6 +432,7 @@ class StreamParameterization {
 
   /**
    * Set the initial charge for a stream.
+   * 
    * @param {string} stream - The stream identifier ('manufacture' or 'import').
    * @param {EngineNumber} newValue - The new initial charge value.
    */
@@ -441,6 +444,7 @@ class StreamParameterization {
 
   /**
    * Get the initial charge for a stream.
+   * 
    * @param {string} stream - The stream identifier ('manufacture' or 'import').
    * @returns {EngineNumber} The initial charge value for the stream.
    */
@@ -452,6 +456,7 @@ class StreamParameterization {
 
   /**
    * Set the recharge population percentage.
+   * 
    * @param {EngineNumber} newValue - The new recharge population value.
    */
   setRechargePopulation(newValue) {
@@ -461,6 +466,7 @@ class StreamParameterization {
 
   /**
    * Get the recharge population percentage.
+   * 
    * @returns {EngineNumber} The current recharge population value.
    */
   getRechargePopulation() {
@@ -470,6 +476,7 @@ class StreamParameterization {
 
   /**
    * Set the recharge intensity.
+   * 
    * @param {EngineNumber} newValue - The new recharge intensity value.
    */
   setRechargeIntensity(newValue) {
@@ -479,6 +486,7 @@ class StreamParameterization {
 
   /**
    * Get the recharge intensity.
+   * 
    * @returns {EngineNumber} The current recharge intensity value.
    */
   getRechargeIntensity() {
@@ -488,6 +496,7 @@ class StreamParameterization {
 
   /**
    * Set the recovery rate percentage.
+   * 
    * @param {EngineNumber} newValue - The new recovery rate value.
    */
   setRecoveryRate(newValue) {
@@ -497,6 +506,7 @@ class StreamParameterization {
 
   /**
    * Get the recovery rate percentage.
+   * 
    * @returns {EngineNumber} The current recovery rate value.
    */
   getRecoveryRate() {
@@ -506,6 +516,7 @@ class StreamParameterization {
 
   /**
    * Set the yield rate percentage for recycling.
+   * 
    * @param {EngineNumber} newValue - The new yield rate value.
    */
   setYieldRate(newValue) {
@@ -515,6 +526,7 @@ class StreamParameterization {
 
   /**
    * Get the yield rate percentage for recycling.
+   * 
    * @returns {EngineNumber} The current yield rate value.
    */
   getYieldRate() {
@@ -524,6 +536,7 @@ class StreamParameterization {
 
   /**
    * Set the displacement rate percentage.
+   * 
    * @param {EngineNumber} newValue - The new displacement rate value.
    */
   setDisplacementRate(newValue) {
@@ -533,6 +546,7 @@ class StreamParameterization {
 
   /**
    * Get the displacement rate percentage.
+   * 
    * @returns {EngineNumber} The current displacement rate value.
    */
   getDisplacementRate() {
@@ -542,6 +556,7 @@ class StreamParameterization {
 
   /**
    * Set the retirement rate percentage.
+   * 
    * @param {EngineNumber} newValue - The new retirement rate value.
    */
   setRetirementRate(newValue) {
@@ -550,7 +565,8 @@ class StreamParameterization {
   }
 
   /**
-   * Get the retirement rate percentage.
+   * Get the retirement rate percentage
+   * .
    * @returns {EngineNumber} The current retirement rate value.
    */
   getRetirementRate() {
@@ -560,6 +576,7 @@ class StreamParameterization {
 
   /**
    * Validate that the given stream name is allowed for sales operations.
+   * 
    * @private
    * @param {string} name - The stream name to validate.
    * @throws {Error} If the stream name is not 'manufacture' or 'import'.
