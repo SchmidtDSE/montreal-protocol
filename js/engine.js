@@ -332,9 +332,11 @@ class Engine {
   }
 
   /**
-   * Define a variable in the current scope.
+   * Create a user-defined variable in the current scope.
+   * 
    * @param {string} name - The name of the variable to define.
-   * @throws {Error} When trying to define protected variables 'yearsElapsed' or 'yearAbsolute'.
+   * @throws {Error} When trying to define protected variables 'yearsElapsed'
+   *     or 'yearAbsolute'.
    */
   defineVariable(name) {
     const self = this;
@@ -345,9 +347,11 @@ class Engine {
   }
 
   /**
-   * Get the value of a variable in the current scope.
+   * Get the value of a user-defined variable in the current scope.
+   * 
    * @param {string} name - The name of the variable to retrieve.
-   * @returns {*} The value of the variable, or special values for 'yearsElapsed' and 'yearAbsolute'.
+   * @returns {*} The value of the variable, or special values for
+   *     'yearsElapsed' and 'yearAbsolute'.
    */
   getVariable(name) {
     const self = this;
@@ -362,9 +366,11 @@ class Engine {
 
   /**
    * Set the value of a variable in the current scope.
+   * 
    * @param {string} name - The name of the variable to set.
    * @param {*} value - The value to assign to the variable.
-   * @throws {Error} When trying to set protected variables 'yearsElapsed' or 'yearAbsolute'.
+   * @throws {Error} When trying to set protected variables
+   *     'yearsElapsed' or 'yearAbsolute'.
    */
   setVariable(name, value) {
     const self = this;
@@ -376,7 +382,9 @@ class Engine {
 
   /**
    * Get the initial charge value for a given stream.
-   * @param {string} stream - The stream identifier to get the initial charge for.
+   * 
+   * @param {string} stream - The stream identifier to get the initial charge
+   *     for.
    * @returns {EngineNumber} The initial charge value for the stream.
    */
   getInitialCharge(stream) {
@@ -419,9 +427,12 @@ class Engine {
 
   /**
    * Set the initial charge for a stream.
+   * 
    * @param {EngineNumber} value - The initial charge value to set.
-   * @param {string} stream - The stream identifier to set the initial charge for.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {string} stream - The stream identifier to set the initial charge
+   *     for.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    */
   setInitialCharge(value, stream, yearMatcher) {
     const self = this;
@@ -444,6 +455,7 @@ class Engine {
 
   /**
    * Get the recharge volume for the current application and substance.
+   * 
    * @returns {EngineNumber} The recharge volume value.
    */
   getRechargeVolume() {
@@ -455,6 +467,7 @@ class Engine {
 
   /**
    * Get the recharge intensity for the current application and substance.
+   * 
    * @returns {EngineNumber} The recharge intensity value.
    */
   getRechargeIntensity() {
@@ -466,9 +479,11 @@ class Engine {
 
   /**
    * Set recharge parameters for the current application and substance.
+   * 
    * @param {EngineNumber} volume - The recharge volume to set.
    * @param {EngineNumber} intensity - The recharge intensity to set.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    */
   recharge(volume, intensity, yearMatcher) {
     const self = this;
@@ -498,8 +513,10 @@ class Engine {
 
   /**
    * Set retirement rate for the current application and substance.
+   * 
    * @param {EngineNumber} amount - The retirement rate to set.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    */
   retire(amount, yearMatcher) {
     const self = this;
@@ -516,6 +533,7 @@ class Engine {
 
   /**
    * Get the retirement rate for the current application and substance.
+   * 
    * @returns {EngineNumber} The retirement rate value.
    */
   getRetirementRate() {
@@ -527,10 +545,12 @@ class Engine {
 
   /**
    * Set recycling parameters for the current application and substance.
+   * 
    * @param {EngineNumber} recoveryWithUnits - The recovery rate.
    * @param {EngineNumber} yieldWithUnits - The yield rate.
    * @param {EngineNumber} displaceLevel - The displacement level.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    */
   recycle(recoveryWithUnits, yieldWithUnits, displaceLevel, yearMatcher) {
     const self = this;
@@ -554,9 +574,11 @@ class Engine {
   }
 
   /**
-   * Set GHG intensity for the current application and substance.
+   * Set GHG equivalency for the current application and substance.
+   * 
    * @param {EngineNumber} amount - The GHG intensity value to set.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    */
   equals(amount, yearMatcher) {
     const self = this;
@@ -574,9 +596,11 @@ class Engine {
 
   /**
    * Change a stream value by a delta amount.
+   * 
    * @param {string} stream - The stream identifier to modify.
    * @param {EngineNumber} amount - The amount to change the stream by.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    * @param {Scope} scope - The scope in which to make the change.
    */
   changeStream(stream, amount, yearMatcher, scope) {
@@ -597,9 +621,11 @@ class Engine {
 
   /**
    * Cap a stream at a maximum value.
+   * 
    * @param {string} stream - The stream identifier to cap.
    * @param {EngineNumber} amount - The maximum value to cap at.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    * @param {string} displaceTarget - Optional target for displaced amount.
    */
   cap(stream, amount, yearMatcher, displaceTarget) {
@@ -636,9 +662,11 @@ class Engine {
 
   /**
    * Set a minimum floor value for a stream.
+   * 
    * @param {string} stream - The stream identifier to set floor for.
    * @param {EngineNumber} amount - The minimum value to set as floor.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    * @param {string} displaceTarget - Optional target for displaced amount.
    */
   floor(stream, amount, yearMatcher, displaceTarget) {
@@ -675,10 +703,12 @@ class Engine {
 
   /**
    * Replace an amount from one substance with another.
+   * 
    * @param {EngineNumber} amountRaw - The amount to replace.
    * @param {string} stream - The stream identifier to modify.
    * @param {string} destinationSubstance - The substance to replace with.
-   * @param {Object} yearMatcher - Matcher to determine if the change applies to current year.
+   * @param {Object} yearMatcher - Matcher to determine if the change applies
+   *     to current year.
    */
   replace(amountRaw, stream, destinationSubstance, yearMatcher) {
     const self = this;
@@ -699,6 +729,7 @@ class Engine {
 
   /**
    * Get the results for all registered substances.
+   * 
    * @returns {EngineResult[]} Array of results for each registered substance.
    */
   getResults() {
