@@ -11,14 +11,16 @@ import {YearMatcher} from "engine_state";
 const toolkit = QubecTalk.getToolkit();
 
 /**
- * A visitor class that compiles QubecTalk code into executable functions
+ * A visitor class that compiles QubecTalk code into executable functions.
+ *
  * @extends {toolkit.QubecTalkVisitor}
  */
 class CompileVisitor extends toolkit.QubecTalkVisitor {
   /**
-   * Visits a number node in the AST
-   * @param {Object} ctx - The parser context containing the number
-   * @returns {Function} A function that returns the parsed number
+   * Interpret a number from a string.
+   *
+   * @param {Object} ctx - The parser context containing the number.
+   * @returns {Function} A function that returns the parsed number.
    */
   visitNumber(ctx) {
     const self = this;
@@ -34,9 +36,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a string literal node in the AST
-   * @param {Object} ctx - The parser context containing the string
-   * @returns {Function} A function that returns the string without quotes
+   * Interpret a string.
+   *
+   * @param {Object} ctx - The parser context containing the string.
+   * @returns {Function} A function that returns the string without quotes.
    */
   visitString(ctx) {
     const self = this;
@@ -44,9 +47,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a unit or ratio node in the AST
-   * @param {Object} ctx - The parser context containing the unit or ratio
-   * @returns {string} The unit string or ratio expression
+   * Interpret the units associated with a number like tCO2e.
+   *
+   * @param {Object} ctx - The parser context containing the unit or ratio.
+   * @returns {string} The unit string or ratio expression.
    */
   visitUnitOrRatio(ctx) {
     const self = this;
@@ -60,9 +64,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a value with units node in the AST
-   * @param {Object} ctx - The parser context containing the value and unit
-   * @returns {Function} A function that returns an EngineNumber with the value and unit
+   * Parse a number with units included.
+   *
+   * @param {Object} ctx - The parser context containing the value and unit.
+   * @returns {Function} A function that returns an EngineNumber with the value
+   *     and unit.
    */
   visitUnitValue(ctx) {
     const self = this;
@@ -77,9 +83,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a simple expression node in the AST
-   * @param {Object} ctx - The parser context containing the expression
-   * @returns {Function} A function that evaluates the expression
+   * Process a simple expression.
+   *
+   * @param {Object} ctx - The parser context containing the expression.
+   * @returns {Function} A function that evaluates the expression.
    */
   visitSimpleExpression(ctx) {
     const self = this;
@@ -87,9 +94,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a conditional comparison expression
-   * @param {Object} ctx - The parser context containing the condition
-   * @returns {Function} A function that evaluates the condition and returns 1 (true) or 0 (false)
+   * Process a conditional expression which returns a bolean value.
+   *
+   * @param {Object} ctx - The parser context containing the condition.
+   * @returns {Function} A function that evaluates the condition and returns 1
+   *     (true) or 0 (false).
    */
   visitConditionExpression(ctx) {
     const self = this;
@@ -112,9 +121,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an if-then-else conditional expression
-   * @param {Object} ctx - The parser context containing the condition and branches
-   * @returns {Function} A function that evaluates the condition and returns the appropriate branch result
+   * Process a conditional expression with a turinary-like notation.
+   *
+   * @param {Object} ctx - The parser context containing the condition and
+   *     branches.
+   * @returns {Function} A function that evaluates the condition and returns
+   *     the appropriate branch result.
    */
   visitConditionalExpression(ctx) {
     const self = this;
@@ -133,10 +145,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Build an arithmetic expression function
-   * @param {Object} ctx - The parser context containing the expression
-   * @param {string} op - The operator to use (+, -, *, /, ^)
-   * @returns {Function} A function that evaluates the arithmetic expression
+   * Process an arithmetic expression.
+   *
+   * @param {Object} ctx - The parser context containing the expression.
+   * @param {string} op - The operator to use (+, -, *, /, ^).
+   * @returns {Function} A function that evaluates the arithmetic expression.
    */
   buildAirthmeticExpression(ctx, op) {
     const self = this;
@@ -157,9 +170,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an addition or subtraction expression
-   * @param {Object} ctx - The parser context containing the expression
-   * @returns {Function} A function that evaluates the addition/subtraction
+   * Process an addition expression.
+   *
+   * @param {Object} ctx - The parser context containing the expression.
+   * @returns {Function} A function that evaluates the addition/subtraction.
    */
   visitAdditionExpression(ctx) {
     const self = this;
@@ -167,9 +181,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a multiplication or division expression
-   * @param {Object} ctx - The parser context containing the expression
-   * @returns {Function} A function that evaluates the multiplication/division
+   * Process a multiply expression.
+   *
+   * @param {Object} ctx - The parser context containing the expression.
+   * @returns {Function} A function that evaluates the multiplication/division.
    */
   visitMultiplyExpression(ctx) {
     const self = this;
@@ -177,9 +192,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an exponentiation expression
-   * @param {Object} ctx - The parser context containing the expression
-   * @returns {Function} A function that evaluates the exponentiation
+   * Process an exponentiation expression.
+   *
+   * @param {Object} ctx - The parser context containing the expression.
+   * @returns {Function} A function that evaluates the exponentiation.
    */
   visitPowExpression(ctx) {
     const self = this;
@@ -187,11 +203,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Builds a function that retrieves a stream's value
-   * @param {string} target - The target stream identifier
-   * @param {Function|null} rescopeFuture - Function to handle rescoping or null
-   * @param {string|null} conversionMaybe - Optional conversion specification
-   * @returns {Function} A function that retrieves the stream value
+   * Process a get value command which inspects a stream like manufacture.
+   *
+   * @param {string} target - The target stream identifier like manufacture.
+   * @param {Function|null} rescopeFuture - Function to handle rescoping or null.
+   * @param {string|null} conversionMaybe - Optional conversion specification.
+   * @returns {Function} A function that retrieves the stream value.
    */
   buildStreamGetExpression(target, rescopeFuture, conversionMaybe) {
     const self = this;
@@ -203,9 +220,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a direct stream access
-   * @param {Object} ctx - The parser context for stream access
-   * @returns {Function} A function that gets the stream value
+   * Process a stream getter.
+   *
+   * @param {Object} ctx - The parser context for stream access.
+   * @returns {Function} A function that gets the stream value.
    */
   visitGetStream(ctx) {
     const self = this;
@@ -213,9 +231,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an indirect stream access with rescoping
-   * @param {Object} ctx - The parser context for indirect stream access
-   * @returns {Function} A function that gets the rescoped stream value
+   * Process an indirect stream access with rescoping.
+   *
+   * @param {Object} ctx - The parser context for indirect stream access.
+   * @returns {Function} A function that gets the rescoped stream value.
    */
   visitGetStreamIndirect(ctx) {
     const self = this;
@@ -223,9 +242,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a stream access with unit conversion
-   * @param {Object} ctx - The parser context for stream access with conversion
-   * @returns {Function} A function that gets the converted stream value
+   * Process a stream access with unit conversion.
+   *
+   * @param {Object} ctx - The parser context for stream access with
+   *     conversion.
+   * @returns {Function} A function that gets the converted stream value.
    */
   visitGetStreamConversion(ctx) {
     const self = this;
@@ -233,8 +254,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an indirect stream access with substance application units
-   * @param {Object} ctx - The parser context for substance-specific stream access
+   * Process an indirect stream with units.
+   *
+   * @param {Object} ctx - The parser context for substance-specific stream
+   *     access.
    */
   visitGetStreamIndirectSubstanceAppUnits(ctx) {
     const self = this;
@@ -246,9 +269,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a min limit expression that sets a minimum value
-   * @param {Object} ctx - The parser context containing the min expression
-   * @returns {Function} A function that evaluates and returns the limited value
+   * Process a min limit expression that sets a minimum value.
+   *
+   * @param {Object} ctx - The parser context containing the min expression.
+   * @returns {Function} A function that evaluates and returns the limited
+   *     value.
    */
   visitLimitMinExpression(ctx) {
     const self = this;
@@ -264,9 +289,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a max limit expression that sets a maximum value
+   * Process a max limit expression that sets a maximum value.
+   *
    * @param {Object} ctx - The parser context containing the max expression
-   * @returns {Function} A function that evaluates and returns the limited value
+   * @returns {Function} A function that evaluates and returns the limited
+   *     value.
    */
   visitLimitMaxExpression(ctx) {
     const self = this;
@@ -282,9 +309,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a bound expression that sets both minimum and maximum values
-   * @param {Object} ctx - The parser context containing the bound expression
-   * @returns {Function} A function that evaluates and returns the bounded value
+   * Process a bound expression that sets both minimum and maximum values.
+   *
+   * @param {Object} ctx - The parser context containing the bound expression.
+   * @returns {Function} A function that evaluates and returns the bounded
+   *     value.
    */
   visitLimitBoundExpression(ctx) {
     const self = this;
@@ -308,9 +337,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a parenthetical expression
-   * @param {Object} ctx - The parser context containing the parenthetical expression
-   * @returns {Function} A function that evaluates the expression inside parentheses
+   * Process a parenthetical expression.
+   *
+   * @param {Object} ctx - The parser context containing the parenthetical
+   *     expression.
+   * @returns {Function} A function that evaluates the expression inside
+   *     parentheses.
    */
   visitParenExpression(ctx) {
     const self = this;
@@ -318,9 +350,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an expression for drawing from a normal distribution
-   * @param {Object} ctx - The parser context containing the normal distribution parameters
-   * @returns {Function} A function that generates normally distributed random values
+   * Process an expression for drawing from a normal distribution.
+   *
+   * @param {Object} ctx - The parser context containing the normal
+   *     distribution parameters.
+   * @returns {Function} A function that generates normally distributed
+   *     random values.
    */
   visitDrawNormalExpression(ctx) {
     const self = this;
@@ -336,9 +371,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an expression for drawing from a uniform distribution
-   * @param {Object} ctx - The parser context containing the uniform distribution parameters
-   * @returns {Function} A function that generates uniformly distributed random values
+   * Process an expression for drawing from a uniform distribution.
+   *
+   * @param {Object} ctx - The parser context containing the uniform
+   *     distribution parameters.
+   * @returns {Function} A function that generates uniformly distributed
+   *     random values.
    */
   visitDrawUniformExpression(ctx) {
     const self = this;
@@ -354,9 +392,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a simple identifier node in the AST
-   * @param {Object} ctx - The parser context containing the identifier
-   * @returns {Function} A function that retrieves the variable value from the engine
+   * Get a simple variable user-defined variable.
+   *
+   * @param {Object} ctx - The parser context containing the identifier.
+   * @returns {Function} A function that retrieves the variable value from the
+   *     engine.
    */
   visitSimpleIdentifier(ctx) {
     const self = this;
@@ -368,10 +408,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Build a function that creates a year duration matcher
-   * @param {Function|null} minYearMaybe - Function to get minimum year or null
-   * @param {Function|null} maxYearMaybe - Function to get maximum year or null
-   * @returns {Function} A function that returns a YearMatcher object
+   * Build a function that creates a year duration matcher.
+   *
+   * @param {Function|null} minYearMaybe - Function to get minimum year or
+   *     null if not given.
+   * @param {Function|null} maxYearMaybe - Function to get maximum year or
+   *     null if not given.
+   * @returns {Function} A function that returns a YearMatcher object.
    */
   buildDuring(minYearMaybe, maxYearMaybe) {
     const self = this;
@@ -383,9 +426,14 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a single year duration node
-   * @param {Object} ctx - The parser context containing the year
-   * @returns {Function} A function that creates a matcher for the specific year
+   * Process a duration that contains a single year.
+   *
+   * Process a duration that contains a single year or, in other words, a
+   * duration which starts and ends in the same year.
+   *
+   * @param {Object} ctx - The parser context containing the year.
+   * @returns {Function} A function that creates a matcher for the specific
+   *     year.
    */
   visitDuringSingleYear(ctx) {
     const self = this;
@@ -394,9 +442,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a start year duration node
-   * @param {Object} ctx - The parser context for the start year
-   * @returns {Function} A function that creates a matcher for the start year
+   * Process a duration that only runs for the first year of the simulation.
+   *
+   * @param {Object} ctx - The parser context for the start year.
+   * @returns {Function} A function that creates a matcher for the start year.
    */
   visitDuringStart(ctx) {
     const self = this;
@@ -405,9 +454,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a date range duration node
-   * @param {Object} ctx - The parser context containing the range
-   * @returns {Function} A function that creates a matcher for the date range
+   * Process a duration that has separately defined start and and years.
+   *
+   * @param {Object} ctx - The parser context containing the range.
+   * @returns {Function} A function that creates a matcher for the date range.
    */
   visitDuringRange(ctx) {
     const self = this;
@@ -417,9 +467,14 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a duration with minimum year
-   * @param {Object} ctx - The parser context containing the minimum year
-   * @returns {Function} A function that creates a matcher from min year to end
+   * Process a duration with only a minimum year.
+   *
+   * Process a duration with only a minimum year or, in other words, that runs
+   * from a specific start year to the end of the simulation.
+   *
+   * @param {Object} ctx - The parser context containing the minimum year.
+   * @returns {Function} A function that creates a matcher from min year to
+   *     end.
    */
   visitDuringWithMin(ctx) {
     const self = this;
@@ -429,9 +484,14 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a duration with maximum year
-   * @param {Object} ctx - The parser context containing the maximum year
-   * @returns {Function} A function that creates a matcher from start to max year
+   * Process a duration with maximum year.
+   *
+   * Process a duration with maximum year or, in other words, only runs from
+   * the start of the simulation to a defined end year.
+   *
+   * @param {Object} ctx - The parser context containing the maximum year.
+   * @returns {Function} A function that creates a matcher from start to max
+   *     year.
    */
   visitDuringWithMax(ctx) {
     const self = this;
@@ -441,9 +501,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a duration covering all years
-   * @param {Object} ctx - The parser context
-   * @returns {Function} A function that creates a matcher for all years
+   * Process a duration covering all years.
+   *
+   * Process a duration covering all years or, in other words, running from the
+   * starting year of the simulation to its final year.
+   *
+   * @param {Object} ctx - The parser context.
+   * @returns {Function} A function that creates a matcher for all years.
    */
   visitDuringAll(ctx) {
     const self = this;
@@ -451,9 +515,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an about stanza node in the AST
-   * @param {Object} ctx - The parser context for the about stanza
-   * @returns {Object} A stanza descriptor object
+   * Ignore an about stanza.
+   *
+   * @param {Object} ctx - The parser context for the about stanza.
+   * @returns {Object} A stanza descriptor object which is empty.
    */
   visitAboutStanza(ctx) {
     const self = this;
@@ -461,11 +526,18 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a default stanza node in the AST
-   * @param {Object} ctx - The parser context for the default stanza
+   * Process the default scenario stanza.
+   *
+   * Process the default scenario stanza, creating a foundation which can be
+   * modidified by policy stanzas.
+   *
+   * @param {Object} ctx - The parser context for the default stanza.
    * @returns {Object} A stanza descriptor object with executable function
+   *     describing the baseline scenario. In most cases, this will be busines
+   *     as usual.
    */
   visitDefaultStanza(ctx) {
+    unesi;
     const self = this;
     const numApplications = ctx.getChildCount() - 4;
 
@@ -483,9 +555,14 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a policy stanza node in the AST
+   * Process a policy stanza.
+   *
+   * Process a policy stanza, giving a scenario a name which can be combined
+   * or "stacked" with other in a simulation.
+   *
    * @param {Object} ctx - The parser context for the policy stanza
    * @returns {Object} A stanza descriptor object with executable function
+   *     desribing a policy scenario which may combine multiple interventions.
    */
   visitPolicyStanza(ctx) {
     const self = this;
@@ -506,9 +583,14 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a simulations stanza node in the AST
-   * @param {Object} ctx - The parser context for the simulations stanza
-   * @returns {Object} A stanza descriptor object with simulations and executable
+   * Process a simulation stanza.
+   *
+   * Process a simulation stanza defining which policy scenarios should be
+   * stacked on the default stanza.
+   *
+   * @param {Object} ctx - The parser context for the simulations stanza.
+   * @returns {Object} A stanza descriptor object with simulations and
+   *     executable.
    */
   visitSimulationsStanza(ctx) {
     const self = this;
@@ -528,10 +610,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Build a definition processing function
-   * @param {Object} ctx - The parser context for the definition
-   * @param {Function} scopeSetter - Function to set the scope in the engine
-   * @returns {Function} An executable function that processes the definition
+   * Scaffold a definition for an application or substance.
+   *
+   * @param {Object} ctx - The parser context for the definition.
+   * @param {Function} scopeSetter - Function to set the scope in the engine.
+   * @returns {Function} An executable function that processes the definition.
    */
   buildDef(ctx, scopeSetter) {
     const self = this;
@@ -552,9 +635,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an application definition node in the AST
-   * @param {Object} ctx - The parser context for the application definition
-   * @returns {Function} An executable function that processes the application
+   * Process the definition of an application like commerical refrigerant.
+   *
+   * Process the definition of an application like commerical refrigerant such
+   * that multiple substances may be used for an application.
+   *
+   * @param {Object} ctx - The parser context for the application definition.
+   * @returns {Function} An executable function that processes the application.
    */
   visitApplicationDef(ctx) {
     const self = this;
@@ -562,9 +649,13 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a substance definition node
-   * @param {Object} ctx - The parser context for the substance definition
-   * @returns {Function} A function that processes the substance definition
+   * Process the definition of a substance.
+   *
+   * Process the definition of a substance within an application such that an
+   * substance may appear in multiple applications.
+   *
+   * @param {Object} ctx - The parser context for the substance definition.
+   * @returns {Function} A function that processes the substance definition.
    */
   visitSubstanceDef(ctx) {
     const self = this;
@@ -572,9 +663,14 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an application modification node
-   * @param {Object} ctx - The parser context for the application modification
-   * @returns {Function} A function that processes the application modification
+   * Process an application modification.
+   *
+   * Process an application modification, indicating how an applicatoin is
+   * changed under a policy.
+   *
+   * @param {Object} ctx - The parser context for the application modification.
+   * @returns {Function} A function that processes the application
+   *     modification.
    */
   visitApplicationMod(ctx) {
     const self = this;
@@ -582,7 +678,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a substance modification node
+   * Process a substance modification.
+   *
+   * Process a substance modification, indicating how a substance within an
+   * applicatoin is changed under a policy.
+   *
    * @param {Object} ctx - The parser context for the substance modification
    * @returns {Function} A function that processes the substance modification
    */
@@ -592,11 +692,15 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Build a stream modification function
-   * @param {Function} callback - The modification callback to execute
-   * @param {Object} ctx - The parser context for the stream modification
-   * @param {Function} durationFuture - Function to determine the duration
-   * @returns {Function} A function that executes the stream modification
+   * Scaffold a stream modification like for setting the value of a stream.
+   *
+   * Scaffold a stream modification like for setting the value of a stream as
+   * used in change and cap commands.
+   *
+   * @param {Function} callback - The modification callback to execute.
+   * @param {Object} ctx - The parser context for the stream modification.
+   * @param {Function} durationFuture - Function to determine the duration.
+   * @returns {Function} A function that executes the stream modification.
    */
   buildStreamMod(callback, ctx, durationFuture) {
     const self = this;
@@ -611,7 +715,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Build a cap or floor function for stream values
+   * Build a cap or floor stream modification.
+   *
    * @param {Object} ctx - The parser context for the cap/floor operation
    * @param {Function} durationFuture - Function to determine the duration
    * @param {string|null} displace - The displacement target if any
@@ -628,7 +733,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a limit command applying to all years
+   * Process a limit stream command.
+   *
    * @param {Object} ctx - The parser context for the limit command
    * @returns {Function} A function that applies the limit for all years
    */
@@ -638,8 +744,9 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a displacing limit command for all years
-   * @param {Object} ctx - The parser context for the displacing limit
+   * Process a limit stream which displaces offsets into other streams.
+   *
+   * @param {Object} ctx - The parser context for the displacing limit.
    * @returns {Function} A function that applies the displacing limit
    */
   visitLimitCommandDisplacingAllYears(ctx) {
@@ -649,7 +756,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a limit command for a specific duration
+   * Process a limit stream command for a specific duration.
+   *
    * @param {Object} ctx - The parser context for the duration limit
    * @returns {Function} A function that applies the limit for the duration
    */
@@ -660,9 +768,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a displacing limit command for a duration
-   * @param {Object} ctx - The parser context for the displacing duration limit
-   * @returns {Function} A function that applies the displacing limit for the duration
+   * Process a displacing limit stream command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the displacing duration
+   *     limit.
+   * @returns {Function} A function that applies the displacing limit for the
+   *     duration.
    */
   visitLimitCommandDisplacingDuration(ctx) {
     const self = this;
@@ -672,7 +783,8 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Build a stream change function
+   * Scaffold a stream change command.
+   *
    * @param {Object} ctx - The parser context for the change
    * @param {Function} durationFuture - Function to determine the duration
    * @returns {Function} A function that executes the stream change
@@ -687,9 +799,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a change command for all years
-   * @param {Object} ctx - The parser context for the change
-   * @returns {Function} A function that applies the change for all years
+   * Process a stream change command for all years.
+   *
+   * @param {Object} ctx - The parser context for the change.
+   * @returns {Function} A function that applies the change for all years.
    */
   visitChangeAllYears(ctx) {
     const self = this;
@@ -697,9 +810,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a change command for a specific duration
-   * @param {Object} ctx - The parser context for the duration change
-   * @returns {Function} A function that applies the change for the duration
+   * Process a stream change command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the duration change.
+   * @returns {Function} A function that applies the change for the duration.
    */
   visitChangeDuration(ctx) {
     const self = this;
@@ -708,9 +822,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a variable definition statement
-   * @param {Object} ctx - The parser context for the variable definition
-   * @returns {Function} A function that defines and initializes the variable
+   * Process a user-defined variable definition statement.
+   *
+   * @param {Object} ctx - The parser context for the variable definition.
+   * @returns {Function} A function that defines and initializes the variable.
    */
   visitDefineVarStatement(ctx) {
     const self = this;
@@ -725,9 +840,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an initial charge command for all years
-   * @param {Object} ctx - The parser context for the initial charge
-   * @returns {Function} A function that sets the initial charge
+   * Process an initial charge command for all years.
+   *
+   * @param {Object} ctx - The parser context for the initial charge.
+   * @returns {Function} A function that sets the initial charge.
    */
   visitInitialChargeAllYears(ctx) {
     const self = this;
@@ -741,9 +857,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an initial charge command for a specific duration
-   * @param {Object} ctx - The parser context for the duration-specific charge
-   * @returns {Function} A function that sets the initial charge for the duration
+   * Process an initial charge command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the duration-specific charge.
+   * @returns {Function} A function that sets the initial charge for the
+   *     duration.
    */
   visitInitialChargeDuration(ctx) {
     const self = this;
@@ -759,9 +877,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a recharge command for all years
-   * @param {Object} ctx - The parser context for the recharge command
-   * @returns {Function} A function that executes the recharge operation
+   * Process a recharge command for all years.
+   *
+   * @param {Object} ctx - The parser context for the recharge command.
+   * @returns {Function} A function that executes the recharge operation.
    */
   visitRechargeAllYears(ctx) {
     const self = this;
@@ -776,9 +895,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a recharge command for a specific duration
-   * @param {Object} ctx - The parser context for the duration-specific recharge
-   * @returns {Function} A function that executes the recharge for the duration
+   * Process a recharge command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the duration-specific
+   *     recharge.
+   * @returns {Function} A function that executes the recharge for the
+   *     duration.
    */
   visitRechargeDuration(ctx) {
     const self = this;
@@ -795,11 +917,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Build a recovery operation function
-   * @param {Object} ctx - The parser context for the recovery
-   * @param {Function} displacementFuture - Function to determine displacement
-   * @param {Function} durationFuture - Function to determine duration
-   * @returns {Function} A function that executes the recovery operation
+   * Scaffold a recovery command.
+   *
+   * @param {Object} ctx - The parser context for the recovery.
+   * @param {Function} displacementFuture - Function to determine displacement.
+   * @param {Function} durationFuture - Function to determine duration.
+   * @returns {Function} A function that executes the recovery operation.
    */
   buildRecover(ctx, displacementFuture, durationFuture) {
     const self = this;
@@ -816,9 +939,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a recovery command for all years
-   * @param {Object} ctx - The parser context for the recovery
-   * @returns {Function} A function that executes the recovery for all years
+   * Process a recovery command for all years.
+   *
+   * @param {Object} ctx - The parser context for the recovery.
+   * @returns {Function} A function that executes the recovery for all years.
    */
   visitRecoverAllYears(ctx) {
     const self = this;
@@ -830,9 +954,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a recovery command for a specific duration
-   * @param {Object} ctx - The parser context for the duration-specific recovery
-   * @returns {Function} A function that executes the recovery for the duration
+   * Process a recovery command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the duration-specific
+   *     recovery.
+   * @returns {Function} A function that executes the recovery for the
+   *     duration.
    */
   visitRecoverDuration(ctx) {
     const self = this;
@@ -841,9 +968,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a recovery command with displacement for all years
-   * @param {Object} ctx - The parser context for the recovery with displacement
-   * @returns {Function} A function that executes the recovery with displacement
+   * Process a recovery command with displacement for all years.
+   *
+   * @param {Object} ctx - The parser context for the recovery with
+   *     displacement.
+   * @returns {Function} A function that executes the recovery with
+   *     displacement.
    */
   visitRecoverDisplacementAllYears(ctx) {
     const self = this;
@@ -852,9 +982,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a recovery command with displacement for a specific duration
-   * @param {Object} ctx - The parser context for the duration-specific recovery with displacement
-   * @returns {Function} A function that executes the recovery with displacement for the duration
+   * Process a recovery command with displacement for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the duration-specific
+   *     recovery with displacement.
+   * @returns {Function} A function that executes the recovery with
+   *     displacement for the duration.
    */
   visitRecoverDisplacementDuration(ctx) {
     const self = this;
@@ -864,9 +997,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a replace command for all years
-   * @param {Object} ctx - The parser context for the replace command
-   * @returns {Function} A function that executes the replacement
+   * Process a replace command for all years.
+   *
+   * @param {Object} ctx - The parser context for the replace command.
+   * @returns {Function} A function that executes the replacement.
    */
   visitReplaceAllYears(ctx) {
     const self = this;
@@ -881,9 +1015,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a replace command for a specific duration
-   * @param {Object} ctx - The parser context for the duration-specific replace
-   * @returns {Function} A function that executes the replacement for the duration
+   * Process a replace command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the duration-specific replace.
+   * @returns {Function} A function that executes the replacement for the
+   *     duration.
    */
   visitReplaceDuration(ctx) {
     const self = this;
@@ -900,9 +1036,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a retire command applying to all simulation years
-   * @param {Object} ctx - The parser context for the retire command
-   * @returns {Function} A function that executes the retirement
+   * Process a retire command applying to all simulation years.
+   *
+   * @param {Object} ctx - The parser context for the retire command.
+   * @returns {Function} A function that executes the retirement.
    */
   visitRetireAllYears(ctx) {
     const self = this;
@@ -915,9 +1052,11 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a retire command for a specific duration
-   * @param {Object} ctx - The parser context for the retire command
-   * @returns {Function} A function that executes the retirement for the specified duration
+   * Process a retire command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the retire command.
+   * @returns {Function} A function that executes the retirement for the
+   *     specified duration.
    */
   visitRetireDuration(ctx) {
     const self = this;
@@ -932,9 +1071,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a set command for all simulation years
-   * @param {Object} ctx - The parser context containing the set command
-   * @returns {Function} A function that executes the set operation
+   * Process a set command for all simulation years.
+   *
+   * @param {Object} ctx - The parser context containing the set command.
+   * @returns {Function} A function that executes the set operation.
    */
   visitSetAllYears(ctx) {
     const self = this;
@@ -948,9 +1088,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process a set command for a specific duration
-   * @param {Object} ctx - The parser context containing the set command with duration
-   * @returns {Function} A function that executes the set operation for the duration
+   * Process a set command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context containing the set command with
+   *     duration.
+   * @returns {Function} A function that executes the set operation for the
+   *      duration.
    */
   visitSetDuration(ctx) {
     const self = this;
@@ -966,9 +1109,10 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an equals command for all simulation years
-   * @param {Object} ctx - The parser context containing the equals command
-   * @returns {Function} A function that executes the equals operation
+   * Process an equals command for all simulation years.
+   *
+   * @param {Object} ctx - The parser context containing the equals command.
+   * @returns {Function} A function that executes the equals operation.
    */
   visitEqualsAllYears(ctx) {
     const self = this;
@@ -981,9 +1125,12 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
-   * Process an equals command for a specific duration
-   * @param {Object} ctx - The parser context containing the equals command with duration
-   * @returns {Function} A function that executes the equals operation for the duration
+   * Process an equals command for a specific duration.
+   *
+   * @param {Object} ctx - The parser context containing the equals command
+   *     with duration.
+   * @returns {Function} A function that executes the equals operation for
+   *     the duration.
    */
   visitEqualsDuration(ctx) {
     const self = this;

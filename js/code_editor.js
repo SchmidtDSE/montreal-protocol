@@ -9,7 +9,8 @@ class CodeEditorPresenter {
    * Creates a new CodeEditorPresenter instance
    *
    * @param {HTMLElement} root - The root element containing the editor.
-   * @param {Function} onChange - Callback function triggered when editor content changes.
+   * @param {Function} onChange - Callback function triggered when editor
+   *     content changes.
    */
   constructor(root, onChange) {
     const self = this;
