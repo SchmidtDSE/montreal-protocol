@@ -377,12 +377,23 @@ class Scope {
   }
 }
 
+/**
+ * Class for managing stream-specific parameters and settings.
+ * Handles configuration of GHG intensity, initial charge, recharge rates,
+ * recovery rates, and other stream-specific values.
+ */
 class StreamParameterization {
+  /**
+   * Create a new stream parameterization instance.
+   */
   constructor() {
     const self = this;
     self.resetInternals();
   }
 
+  /**
+   * Reset all internal parameters to their default values.
+   */
   resetInternals() {
     const self = this;
     const createZero = (x) => new EngineNumber(0, x);
@@ -399,88 +410,160 @@ class StreamParameterization {
     self._displacementRate = new EngineNumber(100, "%");
   }
 
+  /**
+   * Set the greenhouse gas intensity.
+   * @param {EngineNumber} newValue - The new GHG intensity value.
+   */
   setGhgIntensity(newValue) {
     const self = this;
     self._ghgIntensity = newValue;
   }
 
+  /**
+   * Get the greenhouse gas intensity.
+   * @returns {EngineNumber} The current GHG intensity value.
+   */
   getGhgIntensity() {
     const self = this;
     return self._ghgIntensity;
   }
 
+  /**
+   * Set the initial charge for a stream.
+   * @param {string} stream - The stream identifier ('manufacture' or 'import').
+   * @param {EngineNumber} newValue - The new initial charge value.
+   */
   setInitialCharge(stream, newValue) {
     const self = this;
     self._ensureSalesStreamAllowed(stream);
     self._initialCharge[stream] = newValue;
   }
 
+  /**
+   * Get the initial charge for a stream.
+   * @param {string} stream - The stream identifier ('manufacture' or 'import').
+   * @returns {EngineNumber} The initial charge value for the stream.
+   */
   getInitialCharge(stream) {
     const self = this;
     self._ensureSalesStreamAllowed(stream);
     return self._initialCharge[stream];
   }
 
+  /**
+   * Set the recharge population percentage.
+   * @param {EngineNumber} newValue - The new recharge population value.
+   */
   setRechargePopulation(newValue) {
     const self = this;
     self._rechargePopulation = newValue;
   }
 
+  /**
+   * Get the recharge population percentage.
+   * @returns {EngineNumber} The current recharge population value.
+   */
   getRechargePopulation() {
     const self = this;
     return self._rechargePopulation;
   }
 
+  /**
+   * Set the recharge intensity.
+   * @param {EngineNumber} newValue - The new recharge intensity value.
+   */
   setRechargeIntensity(newValue) {
     const self = this;
     self._rechargeIntensity = newValue;
   }
 
+  /**
+   * Get the recharge intensity.
+   * @returns {EngineNumber} The current recharge intensity value.
+   */
   getRechargeIntensity() {
     const self = this;
     return self._rechargeIntensity;
   }
 
+  /**
+   * Set the recovery rate percentage.
+   * @param {EngineNumber} newValue - The new recovery rate value.
+   */
   setRecoveryRate(newValue) {
     const self = this;
     self._recoveryRate = newValue;
   }
 
+  /**
+   * Get the recovery rate percentage.
+   * @returns {EngineNumber} The current recovery rate value.
+   */
   getRecoveryRate() {
     const self = this;
     return self._recoveryRate;
   }
 
+  /**
+   * Set the yield rate percentage for recycling.
+   * @param {EngineNumber} newValue - The new yield rate value.
+   */
   setYieldRate(newValue) {
     const self = this;
     self._yieldRate = newValue;
   }
 
+  /**
+   * Get the yield rate percentage for recycling.
+   * @returns {EngineNumber} The current yield rate value.
+   */
   getYieldRate() {
     const self = this;
     return self._yieldRate;
   }
 
+  /**
+   * Set the displacement rate percentage.
+   * @param {EngineNumber} newValue - The new displacement rate value.
+   */
   setDisplacementRate(newValue) {
     const self = this;
     self._displacementRate = newValue;
   }
 
+  /**
+   * Get the displacement rate percentage.
+   * @returns {EngineNumber} The current displacement rate value.
+   */
   getDisplacementRate() {
     const self = this;
     return self._displacementRate;
   }
 
+  /**
+   * Set the retirement rate percentage.
+   * @param {EngineNumber} newValue - The new retirement rate value.
+   */
   setRetirementRate(newValue) {
     const self = this;
     self._retirementRate = newValue;
   }
 
+  /**
+   * Get the retirement rate percentage.
+   * @returns {EngineNumber} The current retirement rate value.
+   */
   getRetirementRate() {
     const self = this;
     return self._retirementRate;
   }
 
+  /**
+   * Validate that the given stream name is allowed for sales operations.
+   * @private
+   * @param {string} name - The stream name to validate.
+   * @throws {Error} If the stream name is not 'manufacture' or 'import'.
+   */
   _ensureSalesStreamAllowed(name) {
     const self = this;
     if (name !== "manufacture" && name !== "import") {
