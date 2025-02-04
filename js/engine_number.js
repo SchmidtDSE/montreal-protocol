@@ -610,7 +610,16 @@ class ConverterStateGetter {
   }
 }
 
+/**
+ * State getter that allows overriding values from an inner state getter.
+ * Useful for testing and simulation scenarios where specific values need to be overridden.
+ */
 class OverridingConverterStateGetter {
+  /**
+   * Create a new overriding converter state getter.
+   * 
+   * @param {ConverterStateGetter} innerGetter - The base state getter to wrap.
+   */
   constructor(innerGetter) {
     const self = this;
     self._innerGetter = innerGetter;
@@ -624,6 +633,12 @@ class OverridingConverterStateGetter {
     self._populationChange = null;
   }
 
+  /**
+   * Set total values for different stream types.
+   * 
+   * @param {string} streamName - The name of the stream (sales, manufacture, import, etc.).
+   * @param {EngineNumber} value - The value to set for the stream.
+   */
   setTotal(streamName, value) {
     const self = this;
     const strategy = {
@@ -637,11 +652,21 @@ class OverridingConverterStateGetter {
     strategy(value);
   }
 
+  /**
+   * Set the substance consumption value.
+   * 
+   * @param {EngineNumber} newValue - The new consumption value.
+   */
   setSubstanceConsumption(newValue) {
     const self = this;
     self._substanceConsumption = newValue;
   }
 
+  /**
+   * Get the substance consumption value.
+   * 
+   * @returns {EngineNumber} The substance consumption value.
+   */
   getSubstanceConsumption() {
     const self = this;
     if (self._substanceConsumption === null) {
@@ -651,11 +676,21 @@ class OverridingConverterStateGetter {
     }
   }
 
+  /**
+   * Set the amortized unit volume.
+   * 
+   * @param {EngineNumber} newValue - The new amortized unit volume.
+   */
   setAmortizedUnitVolume(newValue) {
     const self = this;
     self._amortizedUnitVolume = newValue;
   }
 
+  /**
+   * Get the amortized unit volume.
+   * 
+   * @returns {EngineNumber} The amortized unit volume.
+   */
   getAmortizedUnitVolume() {
     const self = this;
     if (self._amortizedUnitVolume === null) {
@@ -665,11 +700,21 @@ class OverridingConverterStateGetter {
     }
   }
 
+  /**
+   * Set the population value.
+   * 
+   * @param {EngineNumber} newValue - The new population value.
+   */
   setPopulation(newValue) {
     const self = this;
     self._population = newValue;
   }
 
+  /**
+   * Get the population value.
+   * 
+   * @returns {EngineNumber} The population value.
+   */
   getPopulation() {
     const self = this;
     if (self._population === null) {
@@ -679,11 +724,21 @@ class OverridingConverterStateGetter {
     }
   }
 
+  /**
+   * Set the number of years elapsed.
+   * 
+   * @param {EngineNumber} newValue - The new years elapsed value.
+   */
   setYearsElapsed(newValue) {
     const self = this;
     self._yearsElapsed = newValue;
   }
 
+  /**
+   * Get the number of years elapsed.
+   * 
+   * @returns {EngineNumber} The years elapsed value.
+   */
   getYearsElapsed() {
     const self = this;
     if (self._yearsElapsed === null) {
@@ -693,11 +748,21 @@ class OverridingConverterStateGetter {
     }
   }
 
+  /**
+   * Set the consumption value.
+   * 
+   * @param {EngineNumber} newValue - The new consumption value.
+   */
   setConsumption(newValue) {
     const self = this;
     self._totalConsumption = newValue;
   }
 
+  /**
+   * Get the consumption value.
+   * 
+   * @returns {EngineNumber} The consumption value.
+   */
   getConsumption() {
     const self = this;
     if (self._totalConsumption === null) {
@@ -707,11 +772,21 @@ class OverridingConverterStateGetter {
     }
   }
 
+  /**
+   * Set the volume value.
+   * 
+   * @param {EngineNumber} newValue - The new volume value.
+   */
   setVolume(newValue) {
     const self = this;
     self._volume = newValue;
   }
 
+  /**
+   * Get the volume value.
+   * 
+   * @returns {EngineNumber} The volume value.
+   */
   getVolume() {
     const self = this;
     if (self._volume === null) {
@@ -721,11 +796,21 @@ class OverridingConverterStateGetter {
     }
   }
 
+  /**
+   * Set the amortized unit consumption.
+   * 
+   * @param {EngineNumber} newValue - The new amortized unit consumption value.
+   */
   setAmortizedUnitConsumption(newValue) {
     const self = this;
     self._amortizedUnitConsumption = newValue;
   }
 
+  /**
+   * Get the amortized unit consumption.
+   * 
+   * @returns {EngineNumber} The amortized unit consumption value.
+   */
   getAmortizedUnitConsumption() {
     const self = this;
     if (self._amortizedUnitConsumption === null) {
@@ -735,11 +820,22 @@ class OverridingConverterStateGetter {
     }
   }
 
+  /**
+   * Set the population change value.
+   * 
+   * @param {EngineNumber} newValue - The new population change value.
+   */
   setPopulationChange(newValue) {
     const self = this;
     self._populationChange = newValue;
   }
 
+  /**
+   * Get the population change value.
+   * 
+   * @param {UnitConverter} unitConverter - Converter for ensuring consistent units.
+   * @returns {EngineNumber} The population change value.
+   */
   getPopulationChange(unitConverter) {
     const self = this;
     if (self._populationChange === null) {
