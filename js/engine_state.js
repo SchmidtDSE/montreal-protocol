@@ -592,7 +592,6 @@ class StreamParameterization {
 
 /**
  * Class representing a unique identifier for a substance within a specific application.
- * This class helps track and identify substances that may appear in multiple applications.
  */
 class SubstanceInApplicationId {
   /**
@@ -629,15 +628,17 @@ class SubstanceInApplicationId {
 }
 
 /**
- * Class responsible for managing and tracking substance streams and their parameters.
- * Handles storage and retrieval of substance data, stream values, and associated
- * parameterizations.
+ * Class responsible for managing / tracking substance streams.
+ * 
+ * State management object for storage and retrieval of substance data, stream
+ * values, and associated parameterizations.
  */
 class StreamKeeper {
   /**
    * Create a new StreamKeeper instance.
    * 
-   * @param {UnitConverter} unitConverter - Converter for handling unit transformations.
+   * @param {UnitConverter} unitConverter - Converter for handling unit
+   *     transformations.
    */
   constructor(unitConverter) {
     const self = this;
@@ -676,10 +677,11 @@ class StreamKeeper {
 
   /**
    * Ensure a substance exists for an application, creating it if needed.
-   * Initializes all required streams with zero values.
+   * 
    * 
    * @param {string} application - The application name.
-   * @param {string} substance - The substance name.
+   * @param {string} substance - The substance name to initialize with zero
+   *     values.
    */
   ensureSubstance(application, substance) {
     const self = this;
@@ -787,7 +789,7 @@ class StreamKeeper {
   }
 
   /**
-   * Increment the year, updating populations and resetting internal parameters.
+   * Increment the year, updating populations and resetting internal params.
    */
   incrementYear() {
     const self = this;
