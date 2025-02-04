@@ -809,96 +809,210 @@ class StreamKeeper {
     });
   }
 
+  /**
+   * Set the greenhouse gas intensity for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {EngineNumber} newValue - The new GHG intensity value.
+   */
   setGhgIntensity(application, substance, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     parameterization.setGhgIntensity(newValue);
   }
 
+  /**
+   * Get the greenhouse gas intensity for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @returns {EngineNumber} The current GHG intensity value.
+   */
   getGhgIntensity(application, substance) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     return parameterization.getGhgIntensity();
   }
 
+  /**
+   * Set the initial charge for a substance in an application's stream.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {string} substream - The stream identifier ('manufacture' or 'import').
+   * @param {EngineNumber} newValue - The new initial charge value.
+   */
   setInitialCharge(application, substance, substream, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     parameterization.setInitialCharge(substream, newValue);
   }
 
+  /**
+   * Get the initial charge for a substance in an application's stream.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {string} substream - The stream identifier ('manufacture' or 'import').
+   * @returns {EngineNumber} The current initial charge value.
+   */
   getInitialCharge(application, substance, substream) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     return parameterization.getInitialCharge(substream);
   }
 
+  /**
+   * Set the recharge population percentage for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {EngineNumber} newValue - The new recharge population value.
+   */
   setRechargePopulation(application, substance, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     parameterization.setRechargePopulation(newValue);
   }
 
+  /**
+   * Get the recharge population percentage for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @returns {EngineNumber} The current recharge population value.
+   */
   getRechargePopulation(application, substance) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     return parameterization.getRechargePopulation();
   }
 
+  /**
+   * Set the recharge intensity for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {EngineNumber} newValue - The new recharge intensity value.
+   */
   setRechargeIntensity(application, substance, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     parameterization.setRechargeIntensity(newValue);
   }
 
+  /**
+   * Get the recharge intensity for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @returns {EngineNumber} The current recharge intensity value.
+   */
   getRechargeIntensity(application, substance) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     return parameterization.getRechargeIntensity();
   }
 
+  /**
+   * Set the recovery rate percentage for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {EngineNumber} newValue - The new recovery rate value.
+   */
   setRecoveryRate(application, substance, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     parameterization.setRecoveryRate(newValue);
   }
 
+  /**
+   * Get the recovery rate percentage for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @returns {EngineNumber} The current recovery rate value.
+   */
   getRecoveryRate(application, substance) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     return parameterization.getRecoveryRate();
   }
 
+  /**
+   * Set the displacement rate percentage for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {EngineNumber} newValue - The new displacement rate value.
+   */
   setDisplacementRate(application, substance, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     parameterization.setDisplacementRate(newValue);
   }
 
+  /**
+   * Get the displacement rate percentage for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @returns {EngineNumber} The current displacement rate value.
+   */
   getDisplacementRate(application, substance) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     return parameterization.getDisplacementRate();
   }
 
+  /**
+   * Set the yield rate percentage for recycling a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {EngineNumber} newValue - The new yield rate value.
+   */
   setYieldRate(application, substance, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     parameterization.setYieldRate(newValue);
   }
 
+  /**
+   * Get the yield rate percentage for recycling a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @returns {EngineNumber} The current yield rate value.
+   */
   getYieldRate(application, substance) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     return parameterization.getYieldRate();
   }
 
+  /**
+   * Set the retirement rate percentage for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @param {EngineNumber} newValue - The new retirement rate value.
+   */
   setRetirementRate(application, substance, newValue) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
     parameterization.setRetirementRate(newValue);
   }
 
+  /**
+   * Get the retirement rate percentage for a substance in an application.
+   * 
+   * @param {string} application - The application name.
+   * @param {string} substance - The substance name.
+   * @returns {EngineNumber} The current retirement rate value.
+   */
   getRetirementRate(application, substance) {
     const self = this;
     const parameterization = self._getParameterization(application, substance);
