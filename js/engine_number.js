@@ -488,6 +488,12 @@ class ConverterStateGetter {
     self._engine = engine;
   }
 
+  /**
+   * Get the consumption ratio per unit volume of substance.
+   * 
+   * @returns {EngineNumber} The consumption per volume ratio in tCO2e/kg or tCO2e/mt.
+   * @throws {string} If consumption or volume units are not as expected.
+   */
   getSubstanceConsumption() {
     const self = this;
     const consumption = self.getConsumption();
@@ -507,33 +513,64 @@ class ConverterStateGetter {
     return new EngineNumber(ratioValue, ratioUnits);
   }
 
+  /**
+   * Get the initial charge volume per unit for sales.
+   * 
+   * @returns {EngineNumber} The initial charge volume in kg or mt per unit.
+   */
   getAmortizedUnitVolume() {
     const self = this;
     return self._engine.getInitialCharge("sales");
   }
 
+  /**
+   * Get the current equipment population.
+   * 
+   * @returns {EngineNumber} The equipment count in units.
+   */
   getPopulation() {
     const self = this;
     return self._engine.getStream("equipment");
   }
 
+  /**
+   * Get the number of years elapsed in the simulation.
+   * 
+   * @returns {EngineNumber} The elapsed time in years (0 for first year, 1 otherwise).
+   */
   getYearsElapsed() {
     const self = this;
     const firstYear = self._engine.getStartYear() == self._engine.getYear();
     return new EngineNumber(firstYear ? 0 : 1, "year");
   }
 
+  /**
+   * Get the total consumption for the current state.
+   * 
+   * @returns {EngineNumber} The consumption value in tCO2e.
+   */
   getConsumption() {
     const self = this;
     return self._engine.getStream("consumption");
   }
 
+  /**
+   * Get the total volume from sales for the current state.
+   * 
+   * @returns {EngineNumber} The volume in kg or mt.
+   */
   getVolume() {
     const self = this;
     const sales = self._engine.getStream("sales");
     return sales;
   }
 
+  /**
+   * Get the consumption ratio per unit of population.
+   * 
+   * @returns {EngineNumber} The consumption per unit ratio in tCO2e/unit.
+   * @throws {string} If population or volume units are not as expected.
+   */
   getAmortizedUnitConsumption() {
     const self = this;
     const consumption = self.getConsumption();
@@ -553,6 +590,12 @@ class ConverterStateGetter {
     return new EngineNumber(ratioValue, ratioUnits);
   }
 
+  /**
+   * Calculate the change in population between prior and current equipment.
+   * 
+   * @param {UnitConverter} unitConverter - Converter for ensuring consistent units.
+   * @returns {EngineNumber} The population change in units.
+   */
   getPopulationChange(unitConverter) {
     const self = this;
 
