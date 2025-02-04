@@ -362,7 +362,7 @@ class ReportDataWrapper {
 }
 
 /**
- *Filters to apply in creating a visualization.
+ * Filters to apply in creating a visualization.
  *
  * Class representing a set of filters to apply in identifying a subset of data
  * to visualize.
