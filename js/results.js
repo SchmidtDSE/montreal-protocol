@@ -1,4 +1,3 @@
-
 /**
  * Presenters and logic to visualize engine result.
  *
@@ -22,15 +21,18 @@ const COLORS = [
 ];
 
 /**
- * Flag to allow redundant "All" options in filters
+ * Flag to allow an "All" option in filters to make it easy to return to a
+ * default state.
+ *
  * @type {boolean}
  */
 const ALLOW_REDUNDANT_ALL = true;
 
 /**
- * Get a color from the predefined color palette
- * @param {number} i - Index into color array
- * @returns {string} Color hex code
+ * Get a color from the predefined color palette.
+ *
+ * @param {number} i - Index into color array.
+ * @returns {string} Color hex code.
  */
 function getColor(i) {
   if (i >= COLORS.length) {
@@ -41,11 +43,12 @@ function getColor(i) {
 }
 
 /**
- * Main presenter class for displaying simulation results
+ * Main presenter class for displaying simulation results.
  */
 class ResultsPresenter {
   /**
-   * Create a new ResultsPresenter
+   * Create a new ResultsPresenter.
+   *
    * @param {HTMLElement} root - Root DOM element for results display
    */
   constructor(root) {
@@ -70,7 +73,7 @@ class ResultsPresenter {
   }
 
   /**
-   * Hide the results display
+   * Hide the results display.
    */
   hide() {
     const self = this;
@@ -78,8 +81,9 @@ class ResultsPresenter {
   }
 
   /**
-   * Show simulation results
-   * @param {Object} results - Results data to display
+   * Show simulation results.
+   *
+   * @param {Object} results - Results data to display.
    */
   showResults(results) {
     const self = this;
@@ -89,8 +93,9 @@ class ResultsPresenter {
   }
 
   /**
-   * Handle filter set updates
-   * @param {FilterSet} newFilterSet - Updated filter settings
+   * Handle filter set updates.
+   *
+   * @param {FilterSet} newFilterSet - Updated filter settings.
    * @private
    */
   _onUpdateFilterSet(newFilterSet) {
@@ -100,7 +105,8 @@ class ResultsPresenter {
   }
 
   /**
-   * Update all sub-presenters with current data
+   * Update all sub-presenters with current data.
+   *
    * @private
    */
   _updateInternally() {
@@ -118,12 +124,13 @@ class ResultsPresenter {
 }
 
 /**
- * Presenter for exporting results data
+ * Presenter for configuring and executing results exports.
  */
 class ExportPresenter {
   /**
-   * Create a new ExportPresenter
-   * @param {HTMLElement} root - Root DOM element
+   * Create a new ExportPresenter.
+   *
+   * @param {HTMLElement} root - Root DOM element.
    */
   constructor(root) {
     const self = this;
@@ -131,8 +138,9 @@ class ExportPresenter {
   }
 
   /**
-   * Update export data with new results
-   * @param {Object} results - Results data to export
+   * Update export data with new results.
+   *
+   * @param {Object} results - Results data to export.
    */
   showResults(results) {
     const self = this;
@@ -213,13 +221,17 @@ class ExportPresenter {
 }
 
 /**
- * Presenter for scorecard metrics display
+ * Presenter for scorecard metrics display.
+ *
+ * Presenter for scorecard metrics display that, in additoin to optionally
+ * showing a high level metric, also allows for changing filter values.
  */
 class ScorecardPresenter {
   /**
-   * Create a new ScorecardPresenter
-   * @param {HTMLElement} root - Root DOM element
-   * @param {Function} onUpdateFilterSet - Callback for filter updates
+   * Create a new ScorecardPresenter.
+   *
+   * @param {HTMLElement} root - Root DOM element.
+   * @param {Function} onUpdateFilterSet - Callback for filter updates.
    */
   constructor(root, onUpdateFilterSet) {
     const self = this;
@@ -230,9 +242,10 @@ class ScorecardPresenter {
   }
 
   /**
-   * Update scorecards with new results data
-   * @param {Object} results - Results data to display
-   * @param {FilterSet} filterSet - Current filter settings
+   * Update scorecards with new results data.
+   *
+   * @param {Object} results - Results data to display.
+   * @param {FilterSet} filterSet - Current filter settings.
    */
   showResults(results, filterSet) {
     const self = this;
@@ -272,12 +285,15 @@ class ScorecardPresenter {
   }
 
   /**
-   * Update an individual scorecard
-   * @param {HTMLElement} scorecard - Scorecard DOM element
-   * @param {string|number} value - Value to display
-   * @param {number} currentYear - Current year
-   * @param {boolean} selected - Whether card is selected
-   * @param {boolean} hideVal - Whether to hide the value
+   * Update an individual scorecard.
+   *
+   * @param {HTMLElement} scorecard - Scorecard DOM element.
+   * @param {string|number} value - Value to display.
+   * @param {number} currentYear - Current year.
+   * @param {boolean} selected - Flag indicating if the card is selected.
+   * @param {boolean} hideVal - Flag indicating if the value display should be
+   *     hidden. True if a value should be displayed and false otherwise which
+   *     may be appropriate if a single summary value cannot be generated.
    * @private
    */
   _updateCard(scorecard, value, currentYear, selected, hideVal) {
@@ -306,9 +322,10 @@ class ScorecardPresenter {
   }
 
   /**
-   * Set text content of an element
-   * @param {HTMLElement} selection - Element to update
-   * @param {string} value - New text value
+   * Set text content of an element.
+   *
+   * @param {HTMLElement} selection - Element to update.
+   * @param {string} value - New text value.
    * @private
    */
   _setText(selection, value) {
@@ -319,7 +336,8 @@ class ScorecardPresenter {
   }
 
   /**
-   * Register event listeners for scorecard interactions
+   * Register event listeners for scorecard interactions.
+   *
    * @private
    */
   _registerEventListeners() {
@@ -344,13 +362,17 @@ class ScorecardPresenter {
 }
 
 /**
- * Presenter for dimension cards display
+ * Presenter for dimension cards display.
+ *
+ * Presenter which shows the dimensions selectors with embedded bar charts that
+ * allow for changing of filters.
  */
 class DimensionCardPresenter {
   /**
-   * Create a new DimensionCardPresenter
-   * @param {HTMLElement} root - Root DOM element
-   * @param {Function} onUpdateFilterSet - Callback for filter updates
+   * Create a new DimensionCardPresenter.
+   *
+   * @param {HTMLElement} root - Root DOM element.
+   * @param {Function} onUpdateFilterSet - Callback for filter updates.
    */
   constructor(root, onUpdateFilterSet) {
     const self = this;
@@ -448,17 +470,19 @@ class DimensionCardPresenter {
   }
 
   /**
-   * Update an individual dimension card
-   * @param {string} label - Card identifier
-   * @param {HTMLElement} card - Card DOM element
-   * @param {Set<string>} identifiers - Set of dimension values
-   * @param {boolean} selected - Whether card is selected
-   * @param {string} subSelection - Currently selected value
-   * @param {Function} subFilterSetBuilder - Filter builder function
-   * @param {boolean} addAll - Whether to add "All" option
-   * @param {Function} valueGetter - Function to get display value
-   * @param {string} suffix - Value suffix
-   * @param {Set<string>} scenarios - Available scenarios
+   * Update an individual dimension card.
+   *
+   * @param {string} label - Card identifier.
+   * @param {HTMLElement} card - Card DOM element.
+   * @param {Set<string>} identifiers - Set of dimension values.
+   * @param {boolean} selected - Whether card is selected.
+   * @param {string} subSelection - Currently selected value.
+   * @param {Function} subFilterSetBuilder - Filter builder function.
+   * @param {boolean} addAll - Whether to add "All" option. True if should be
+   *     added and false otherwise.
+   * @param {Function} valueGetter - Function to get display value.
+   * @param {string} suffix - Value suffix like for units.
+   * @param {Set<string>} scenarios - Available scenarios.
    * @private
    */
   _updateCard(
@@ -557,7 +581,8 @@ class DimensionCardPresenter {
   }
 
   /**
-   * Register event listeners for dimension card interactions
+   * Register event listeners for dimension card interactions.
+   *
    * @private
    */
   _registerEventListeners() {
@@ -582,11 +607,15 @@ class DimensionCardPresenter {
 }
 
 /**
- * Presenter for center chart visualization
+ * Presenter for the central chart visualization.
+ *
+ * Presenter for the central chart visualization which is currently backed by
+ * Chartjs.
  */
 class CenterChartPresenter {
   /**
-   * Create a new CenterChartPresenter
+   * Create a new CenterChartPresenter.
+   *
    * @param {HTMLElement} root - Root DOM element
    */
   constructor(root) {
@@ -596,9 +625,10 @@ class CenterChartPresenter {
   }
 
   /**
-   * Update chart with new results
-   * @param {Object} results - Results data to display
-   * @param {FilterSet} filterSet - Current filter settings
+   * Update chart with new results.
+   *
+   * @param {Object} results - Results data to display.
+   * @param {FilterSet} filterSet - Current filter settings.
    */
   showResults(results, filterSet) {
     const self = this;
@@ -690,13 +720,17 @@ class CenterChartPresenter {
 }
 
 /**
- * Presenter for selector title display
+ * Presenter for selector title display.
+ *
+ * Presenter for selector title display using a fill in the blank-like
+ * approach.
  */
 class SelectorTitlePresenter {
   /**
-   * Create a new SelectorTitlePresenter
-   * @param {HTMLElement} root - Root DOM element
-   * @param {Function} changeCallback - Callback for selection changes
+   * Create a new SelectorTitlePresenter.
+   *
+   * @param {HTMLElement} root - Root DOM element.
+   * @param {Function} changeCallback - Callback for selection changes.
    */
   constructor(root, changeCallback) {
     const self = this;
@@ -707,9 +741,10 @@ class SelectorTitlePresenter {
   }
 
   /**
-   * Update selector title with new results
-   * @param {Object} results - Results data to display
-   * @param {FilterSet} filterSet - Current filter settings
+   * Update selector title with new results.
+   *
+   * @param {Object} results - Results data to display.
+   * @param {FilterSet} filterSet - Current filter settings.
    */
   showResults(results, filterSet) {
     const self = this;
@@ -745,9 +780,10 @@ class SelectorTitlePresenter {
   }
 
   /**
-   * Update a simple dropdown with fixed options
-   * @param {HTMLElement} selection - Dropdown element
-   * @param {string} value - Selected value
+   * Update a simple dropdown with fixed options.
+   *
+   * @param {HTMLElement} selection - Dropdown element.
+   * @param {string} value - Selected value.
    * @private
    */
   _updateSimpleDropdown(selection, value) {
@@ -756,11 +792,12 @@ class SelectorTitlePresenter {
   }
 
   /**
-   * Update a dynamic dropdown with variable options
-   * @param {HTMLElement} selection - Dropdown element
-   * @param {Set<string>} allValues - Available values
-   * @param {string} selectedValue - Currently selected value
-   * @param {string} allText - Text for "All" option
+   * Update a dynamic dropdown with variable options.
+   *
+   * @param {HTMLElement} selection - Dropdown element.
+   * @param {Set<string>} allValues - Available values.
+   * @param {string} selectedValue - Currently selected value.
+   * @param {string} allText - Text for "All" option.
    * @private
    */
   _updateDynamicDropdown(selection, allValues, selectedValue, allText) {
@@ -787,7 +824,8 @@ class SelectorTitlePresenter {
   }
 
   /**
-   * Set up event listeners for selector dropdowns
+   * Set up event listeners for selector dropdowns.
+   *
    * @private
    */
   _setupEventListeners() {
