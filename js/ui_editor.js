@@ -1171,7 +1171,20 @@ class PolicyListPresenter {
   }
 }
 
+/**
+ * Manages the UI for listing and editing simulations.
+ *
+ * Manages the UI for listing and editing simulations, including their names,
+ * start and end years, and the policies they include.
+ */
 class SimulationListPresenter {
+  /**
+   * Creates a new SimulationListPresenter.
+   *
+   * @param {HTMLElement} root - The root DOM element for the simulation list.
+   * @param {Function} getCodeObj - Callback to get the current code object.
+   * @param {Function} onCodeObjUpdate - Callback when the code object is updated.
+   */
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
     self._root = root;
@@ -1183,21 +1196,38 @@ class SimulationListPresenter {
     self.refresh();
   }
 
+  /**
+   * Visually and functionally enables the simulation list interface.
+   */
   enable() {
     const self = this;
     self._root.classList.remove("inactive");
   }
 
+  /**
+   * Visually and functionally disables the simulation list interface.
+   */
   disable() {
     const self = this;
     self._root.classList.add("inactive");
   }
 
+  /**
+   * Refreshes the simulation list display.
+   *
+   * @param {Object} codeObj - Current code object to display.
+   */
   refresh(codeObj) {
     const self = this;
     self._refreshList(codeObj);
   }
 
+  /**
+   * Refreshes the simulation list display.
+   *
+   * @param {Object} codeObj - The current code object.
+   * @private
+   */
   _refreshList(codeObj) {
     const self = this;
     const simulationNames = self._getSimulationNames();
@@ -1244,6 +1274,11 @@ class SimulationListPresenter {
       .attr("aria-label", (x) => "delete " + x);
   }
 
+  /**
+   * Sets up the dialog for adding/editing simulations.
+   *
+   * @private
+   */
   _setupDialog() {
     const self = this;
 
@@ -1267,6 +1302,12 @@ class SimulationListPresenter {
     });
   }
 
+  /**
+   * Shows the dialog for adding or editing a simulation.
+   *
+   * @param {string|null} name - Name of simulation to edit, or null for new simulation.
+   * @private
+   */
   _showDialogFor(name) {
     const self = this;
     self._editingName = name;
@@ -1320,6 +1361,12 @@ class SimulationListPresenter {
     self._dialog.showModal();
   }
 
+  /**
+   * Gets list of all simulation names.
+   *
+   * @returns {string[]} Array of simulation names.
+   * @private
+   */
   _getSimulationNames() {
     const self = this;
     const codeObj = self._getCodeObj();
@@ -1327,6 +1374,11 @@ class SimulationListPresenter {
     return scenarios.map((x) => x.getName());
   }
 
+  /**
+   * Saves the current simulation data.
+   *
+   * @private
+   */
   _save() {
     const self = this;
     const scenario = self._parseObj();
@@ -1335,6 +1387,12 @@ class SimulationListPresenter {
     self._onCodeObjUpdate(codeObj);
   }
 
+  /**
+   * Parses the dialog form data into a simulation scenario object.
+   *
+   * @returns {Object} The parsed simulation scenario object.
+   * @private
+   */
   _parseObj() {
     const self = this;
 
