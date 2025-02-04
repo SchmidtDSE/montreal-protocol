@@ -1617,6 +1617,12 @@ class UiEditorPresenter {
   }
 }
 
+/**
+ * Initializes a set command UI element.
+ * 
+ * @param {Object} itemObj - The command object to initialize from.
+ * @param {HTMLElement} root - The root element containing the UI.
+ */
 function initSetCommandUi(itemObj, root) {
   setFieldValue(root.querySelector(".set-target-input"), itemObj, "manufacture", (x) =>
     x.getTarget(),
@@ -1631,6 +1637,12 @@ function initSetCommandUi(itemObj, root) {
   setDuring(root.querySelector(".duration-subcomponent"), itemObj, new YearMatcher(1, 1));
 }
 
+/**
+ * Reads values from a set command UI element.
+ *
+ * @param {HTMLElement} root - The root element containing the UI.
+ * @returns {Command} A new Command object with the UI values.
+ */
 function readSetCommandUi(root) {
   const target = getFieldValue(root.querySelector(".set-target-input"));
   const amount = getEngineNumberValue(
@@ -1641,6 +1653,12 @@ function readSetCommandUi(root) {
   return new Command("setVal", target, amount, duration);
 }
 
+/**
+ * Initializes a change command UI element.
+ *
+ * @param {Object} itemObj - The command object to initialize from.
+ * @param {HTMLElement} root - The root element containing the UI.
+ */
 function initChangeCommandUi(itemObj, root) {
   setFieldValue(root.querySelector(".change-target-input"), itemObj, "manufacture", (x) =>
     x.getTarget(),
@@ -1665,6 +1683,12 @@ function initChangeCommandUi(itemObj, root) {
   setDuring(root.querySelector(".duration-subcomponent"), itemObj, new YearMatcher(2, 10));
 }
 
+/**
+ * Reads values from a change command UI element.
+ *
+ * @param {HTMLElement} root - The root element containing the UI.
+ * @returns {Command} A new Command object with the UI values.
+ */
 function readChangeCommandUi(root) {
   const target = getFieldValue(root.querySelector(".change-target-input"));
   const invert = getFieldValue(root.querySelector(".change-sign-input")) === "-";
@@ -1676,6 +1700,13 @@ function readChangeCommandUi(root) {
   return new Command("change", target, amountWithUnits, duration);
 }
 
+/**
+ * Initializes a limit command UI element.
+ *
+ * @param {Object} itemObj - The command object to initialize from.
+ * @param {HTMLElement} root - The root element containing the UI.
+ * @param {Object} codeObj - The code object containing available substances.
+ */
 function initLimitCommandUi(itemObj, root, codeObj) {
   const substances = codeObj.getSubstances();
   const substanceNames = substances.map((x) => x.getName());
@@ -1704,6 +1735,12 @@ function initLimitCommandUi(itemObj, root, codeObj) {
   setDuring(root.querySelector(".duration-subcomponent"), itemObj, new YearMatcher(2, 10));
 }
 
+/**
+ * Reads values from a limit command UI element.
+ *
+ * @param {HTMLElement} root - The root element containing the UI.
+ * @returns {LimitCommand} A new LimitCommand object with the UI values.
+ */
 function readLimitCommandUi(root) {
   const limitType = getFieldValue(root.querySelector(".limit-type-input"));
   const target = getFieldValue(root.querySelector(".limit-target-input"));
@@ -1717,6 +1754,12 @@ function readLimitCommandUi(root) {
   return new LimitCommand(limitType, target, amount, duration, displacing);
 }
 
+/**
+ * Initializes a recycle command UI element.
+ *
+ * @param {Object} itemObj - The command object to initialize from.
+ * @param {HTMLElement} root - The root element containing the UI.
+ */
 function initRecycleCommandUi(itemObj, root) {
   setEngineNumberValue(
     root.querySelector(".recycle-amount-input"),
@@ -1735,6 +1778,12 @@ function initRecycleCommandUi(itemObj, root) {
   setDuring(root.querySelector(".duration-subcomponent"), itemObj, new YearMatcher(2, 10));
 }
 
+/**
+ * Reads values from a recycle command UI element.
+ *
+ * @param {HTMLElement} root - The root element containing the UI.
+ * @returns {Command} A new Command object with the UI values.
+ */
 function readRecycleCommandUi(root) {
   const collection = getEngineNumberValue(
     root.querySelector(".recycle-amount-input"),
@@ -1748,6 +1797,13 @@ function readRecycleCommandUi(root) {
   return new Command("recycle", collection, reuse, duration);
 }
 
+/**
+ * Initializes a replace command UI element.
+ *
+ * @param {Object} itemObj - The command object to initialize from.
+ * @param {HTMLElement} root - The root element containing the UI.
+ * @param {Object} codeObj - The code object containing available substances.
+ */
 function initReplaceCommandUi(itemObj, root, codeObj) {
   const substances = codeObj.getSubstances();
   const substanceNames = substances.map((x) => x.getName());
@@ -1780,6 +1836,12 @@ function initReplaceCommandUi(itemObj, root, codeObj) {
   setDuring(root.querySelector(".duration-subcomponent"), itemObj, new YearMatcher(2, 10));
 }
 
+/**
+ * Reads values from a replace command UI element.
+ *
+ * @param {HTMLElement} root - The root element containing the UI.
+ * @returns {ReplaceCommand} A new ReplaceCommand object with the UI values.
+ */
 function readReplaceCommandUi(root) {
   const target = getFieldValue(root.querySelector(".replace-target-input"));
   const amount = getEngineNumberValue(
@@ -1792,6 +1854,12 @@ function readReplaceCommandUi(root) {
   return new ReplaceCommand(amount, target, replacement, duration);
 }
 
+/**
+ * Reads duration values from a duration UI element.
+ *
+ * @param {HTMLElement} root - The root element containing the UI.
+ * @returns {YearMatcher} A new YearMatcher object with the UI values.
+ */
 function readDurationUi(root) {
   const durationType = getFieldValue(root.querySelector(".duration-type-input"));
   const targets = {
