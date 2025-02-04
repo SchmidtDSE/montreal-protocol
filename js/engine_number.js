@@ -514,9 +514,9 @@ class ConverterStateGetter {
   }
 
   /**
-   * Get the initial charge volume per unit for sales.
+   * Get the charge volume per unit for sales.
    * 
-   * @returns {EngineNumber} The initial charge volume in kg or mt per unit.
+   * @returns {EngineNumber} The charge volume in kg or mt per unit.
    */
   getAmortizedUnitVolume() {
     const self = this;
@@ -534,7 +534,7 @@ class ConverterStateGetter {
   }
 
   /**
-   * Get the number of years elapsed in the simulation.
+   * Get the number of years currently elapsed in the simulation.
    * 
    * @returns {EngineNumber} The elapsed time in years (0 for first year, 1 otherwise).
    */
