@@ -472,7 +472,7 @@ class UnitConverter {
 
 /**
  * Class providing state information needed for unit conversions.
- * 
+ *
  * Interfaces with the engine to retrieve information about current
  * substance consumption, volumes, populations, time elapsed, and other
  * metrics needed to convert between different unit types in the model.
@@ -480,7 +480,7 @@ class UnitConverter {
 class ConverterStateGetter {
   /**
    * Create a new converter state getter.
-   * 
+   *
    * @param {Engine} engine - The engine instance to query for state information.
    */
   constructor(engine) {
