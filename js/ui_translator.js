@@ -1930,6 +1930,12 @@ class IncompatibleCommand {
  * indication that the anlaysis cannot use the simplified JS object format.
  */
 class TranslatorVisitor extends toolkit.QubecTalkVisitor {
+  /**
+   * Visits a number node and parses it into a numerical value.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {number} The parsed number value
+   */
   visitNumber(ctx) {
     const self = this;
 
@@ -1941,11 +1947,23 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return bodyParsed;
   }
 
+  /**
+   * Visits a string node and strips the quotes.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The string value without quotes
+   */
   visitString(ctx) {
     const self = this;
     return self._getStringWithoutQuotes(ctx.getText());
   }
 
+  /**
+   * Visits a unit or ratio node and formats it.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The formatted unit or ratio string
+   */
   visitUnitOrRatio(ctx) {
     const self = this;
     if (ctx.getChildCount() == 1) {
@@ -1957,6 +1975,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     }
   }
 
+  /**
+   * Visits a unit value node and creates an EngineNumber.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {EngineNumber} The value with units
+   */
   visitUnitValue(ctx) {
     const self = this;
 
@@ -1966,11 +1990,23 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return new EngineNumber(expressionContent, unitString);
   }
 
+  /**
+   * Visits a simple expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {*} The result of visiting the child expression
+   */
   visitSimpleExpression(ctx) {
     const self = this;
     return ctx.getChild(0).accept(self);
   }
 
+  /**
+   * Visits a condition expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The formatted condition expression
+   */
   visitConditionExpression(ctx) {
     const self = this;
 
@@ -1981,6 +2017,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return posExpression + " " + opFunc + " " + negExpression;
   }
 
+  /**
+   * Visits a conditional expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The formatted conditional expression
+   */
   visitConditionalExpression(ctx) {
     const self = this;
 
@@ -1991,6 +2033,13 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return positive + " if " + condition + " else " + negative + " endif";
   }
 
+  /**
+   * Builds an arithmetic expression from child nodes.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @param {string} op - The operator to use
+   * @returns {string} The formatted arithmetic expression
+   */
   buildAirthmeticExpression(ctx, op) {
     const self = this;
 
@@ -2000,94 +2049,203 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return priorExpression + " " + op + " " + afterExpression;
   }
 
+  /**
+   * Visits an addition expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The formatted addition expression
+   */
   visitAdditionExpression(ctx) {
     const self = this;
     return self.buildAirthmeticExpression(ctx, ctx.op.text);
   }
 
+  /**
+   * Visits a multiplication expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The formatted multiplication expression
+   */
   visitMultiplyExpression(ctx) {
     const self = this;
     return self.buildAirthmeticExpression(ctx, ctx.op.text);
   }
 
+  /**
+   * Visits a power expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The formatted power expression
+   */
   visitPowExpression(ctx) {
     const self = this;
     return self.buildAirthmeticExpression(ctx, "^");
   }
 
+  /**
+   * Visits a stream access expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The stream access text
+   */
   visitGetStream(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits an indirect stream access expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The indirect stream access text
+   */
   visitGetStreamIndirect(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a stream conversion expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The stream conversion text
+   */
   visitGetStreamConversion(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a substance/application units stream access node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The stream access text
+   */
   visitGetStreamIndirectSubstanceAppUnits(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a minimum limit expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The minimum limit expression text
+   */
   visitLimitMinExpression(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a maximum limit expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The maximum limit expression text
+   */
   visitLimitMaxExpression(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a bounded limit expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The bounded limit expression text
+   */
   visitLimitBoundExpression(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a parenthesized expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The parenthesized expression text
+   */
   visitParenExpression(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a normal distribution expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The normal distribution expression text
+   */
   visitDrawNormalExpression(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a uniform distribution expression node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The uniform distribution expression text
+   */
   visitDrawUniformExpression(ctx) {
     const self = this;
     return ctx.getText();
   }
 
+  /**
+   * Visits a simple identifier node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {string} The identifier text
+   */
   visitSimpleIdentifier(ctx) {
     const self = this;
     const identifier = ctx.getChild(0).getText();
     return identifier;
   }
 
+  /**
+   * Builds a YearMatcher for a duration.
+   * 
+   * @param {number|null} minYear - Start year or null for unbounded
+   * @param {number|null} maxYear - End year or null for unbounded
+   * @returns {YearMatcher} The year matcher object
+   */
   buildDuring(minYear, maxYear) {
     const self = this;
     return new YearMatcher(minYear, maxYear);
   }
 
+  /**
+   * Visits a single year duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {YearMatcher} Year matcher for single year
+   */
   visitDuringSingleYear(ctx) {
     const self = this;
     const year = ctx.target.accept(self);
     return self.buildDuring(year, year);
   }
 
+  /**
+   * Visits a start year duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {YearMatcher} Year matcher starting from engine start
+   */
   visitDuringStart(ctx) {
     const self = this;
     const startYear = engine.getStartYear();
     return self.buildDuring(startYear, startYear);
   }
 
+  /**
+   * Visits a year range duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {YearMatcher} Year matcher for range
+   */
   visitDuringRange(ctx) {
     const self = this;
     const lower = ctx.lower.accept(self);
@@ -2095,6 +2253,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self.buildDuring(lower, upper);
   }
 
+  /**
+   * Visits a minimum year duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {YearMatcher} Year matcher with min bound only
+   */
   visitDuringWithMin(ctx) {
     const self = this;
     const lower = ctx.lower.accept(self);
@@ -2102,6 +2266,12 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self.buildDuring(lower, upper);
   }
 
+  /**
+   * Visits a maximum year duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {YearMatcher} Year matcher with max bound only
+   */
   visitDuringWithMax(ctx) {
     const self = this;
     const lower = null;
@@ -2109,11 +2279,23 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
     return self.buildDuring(lower, upper);
   }
 
+  /**
+   * Visits an "all years" duration node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {Function} Function that returns null for unbounded
+   */
   visitDuringAll(ctx) {
     const self = this;
     return (engine) => null;
   }
 
+  /**
+   * Visits an about stanza node.
+   * 
+   * @param {Object} ctx - The parse tree node context
+   * @returns {AboutStanza} New about stanza instance
+   */
   visitAboutStanza(ctx) {
     const self = this;
     return new AboutStanza();
