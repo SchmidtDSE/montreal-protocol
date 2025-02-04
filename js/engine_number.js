@@ -490,7 +490,7 @@ class ConverterStateGetter {
 
   /**
    * Get the consumption ratio per unit volume of substance.
-   * 
+   *
    * @returns {EngineNumber} The consumption per volume ratio in tCO2e/kg or tCO2e/mt.
    * @throws {string} If consumption or volume units are not as expected.
    */
@@ -515,7 +515,7 @@ class ConverterStateGetter {
 
   /**
    * Get the charge volume per unit for sales.
-   * 
+   *
    * @returns {EngineNumber} The charge volume in kg or mt per unit.
    */
   getAmortizedUnitVolume() {
@@ -525,7 +525,7 @@ class ConverterStateGetter {
 
   /**
    * Get the current equipment population.
-   * 
+   *
    * @returns {EngineNumber} The equipment count in units.
    */
   getPopulation() {
@@ -535,7 +535,7 @@ class ConverterStateGetter {
 
   /**
    * Get the number of years currently elapsed in the simulation.
-   * 
+   *
    * @returns {EngineNumber} The elapsed time in years (0 for first year, 1 otherwise).
    */
   getYearsElapsed() {
@@ -546,7 +546,7 @@ class ConverterStateGetter {
 
   /**
    * Get the total consumption for the current state.
-   * 
+   *
    * @returns {EngineNumber} The consumption value in tCO2e.
    */
   getConsumption() {
@@ -556,7 +556,7 @@ class ConverterStateGetter {
 
   /**
    * Get the total volume from sales for the current state.
-   * 
+   *
    * @returns {EngineNumber} The volume in kg or mt.
    */
   getVolume() {
@@ -567,7 +567,7 @@ class ConverterStateGetter {
 
   /**
    * Get the consumption ratio per unit of population.
-   * 
+   *
    * @returns {EngineNumber} The consumption per unit ratio in tCO2e/unit.
    * @throws {string} If population or volume units are not as expected.
    */
@@ -592,7 +592,7 @@ class ConverterStateGetter {
 
   /**
    * Calculate the change in population between prior and current equipment.
-   * 
+   *
    * @param {UnitConverter} unitConverter - Converter for ensuring consistent units.
    * @returns {EngineNumber} The population change in units.
    */
@@ -612,12 +612,11 @@ class ConverterStateGetter {
 
 /**
  * State getter that allows overriding values from an inner state getter.
- * Useful for testing and simulation scenarios where specific values need to be overridden.
  */
 class OverridingConverterStateGetter {
   /**
    * Create a new overriding converter state getter.
-   * 
+   *
    * @param {ConverterStateGetter} innerGetter - The base state getter to wrap.
    */
   constructor(innerGetter) {
@@ -635,8 +634,9 @@ class OverridingConverterStateGetter {
 
   /**
    * Set total values for different stream types.
-   * 
-   * @param {string} streamName - The name of the stream (sales, manufacture, import, etc.).
+   *
+   * @param {string} streamName - The name of the stream (sales, manufacture,
+   *     import, etc.).
    * @param {EngineNumber} value - The value to set for the stream.
    */
   setTotal(streamName, value) {
@@ -654,7 +654,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Set the substance consumption value.
-   * 
+   *
    * @param {EngineNumber} newValue - The new consumption value.
    */
   setSubstanceConsumption(newValue) {
@@ -664,7 +664,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Get the substance consumption value.
-   * 
+   *
    * @returns {EngineNumber} The substance consumption value.
    */
   getSubstanceConsumption() {
@@ -678,7 +678,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Set the amortized unit volume.
-   * 
+   *
    * @param {EngineNumber} newValue - The new amortized unit volume.
    */
   setAmortizedUnitVolume(newValue) {
@@ -688,7 +688,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Get the amortized unit volume.
-   * 
+   *
    * @returns {EngineNumber} The amortized unit volume.
    */
   getAmortizedUnitVolume() {
@@ -702,7 +702,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Set the population value.
-   * 
+   *
    * @param {EngineNumber} newValue - The new population value.
    */
   setPopulation(newValue) {
@@ -712,7 +712,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Get the population value.
-   * 
+   *
    * @returns {EngineNumber} The population value.
    */
   getPopulation() {
@@ -726,7 +726,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Set the number of years elapsed.
-   * 
+   *
    * @param {EngineNumber} newValue - The new years elapsed value.
    */
   setYearsElapsed(newValue) {
@@ -736,7 +736,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Get the number of years elapsed.
-   * 
+   *
    * @returns {EngineNumber} The years elapsed value.
    */
   getYearsElapsed() {
@@ -750,7 +750,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Set the consumption value.
-   * 
+   *
    * @param {EngineNumber} newValue - The new consumption value.
    */
   setConsumption(newValue) {
@@ -760,7 +760,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Get the consumption value.
-   * 
+   *
    * @returns {EngineNumber} The consumption value.
    */
   getConsumption() {
@@ -774,7 +774,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Set the volume value.
-   * 
+   *
    * @param {EngineNumber} newValue - The new volume value.
    */
   setVolume(newValue) {
@@ -784,7 +784,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Get the volume value.
-   * 
+   *
    * @returns {EngineNumber} The volume value.
    */
   getVolume() {
@@ -798,7 +798,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Set the amortized unit consumption.
-   * 
+   *
    * @param {EngineNumber} newValue - The new amortized unit consumption value.
    */
   setAmortizedUnitConsumption(newValue) {
@@ -808,7 +808,7 @@ class OverridingConverterStateGetter {
 
   /**
    * Get the amortized unit consumption.
-   * 
+   *
    * @returns {EngineNumber} The amortized unit consumption value.
    */
   getAmortizedUnitConsumption() {
@@ -822,7 +822,10 @@ class OverridingConverterStateGetter {
 
   /**
    * Set the population change value.
-   * 
+   *
+   * Set the population change value, in other words the change between prior
+   * and new equipment.
+   *
    * @param {EngineNumber} newValue - The new population change value.
    */
   setPopulationChange(newValue) {
@@ -832,8 +835,12 @@ class OverridingConverterStateGetter {
 
   /**
    * Get the population change value.
-   * 
-   * @param {UnitConverter} unitConverter - Converter for ensuring consistent units.
+   *
+   * Get the population change value, in other words the change between prior
+   * and new equipment.
+   *
+   * @param {UnitConverter} unitConverter - Converter for ensuring consistent
+   *     units.
    * @returns {EngineNumber} The population change value.
    */
   getPopulationChange(unitConverter) {
