@@ -1,3 +1,8 @@
+/**
+ * Presenters and logic for the UI-based authoring experience.
+ *
+ * @license BSD, see LICENSE.md.
+ */
 import {EngineNumber} from "engine_number";
 
 import {YearMatcher} from "engine_state";
@@ -14,8 +19,9 @@ import {
 } from "ui_translator";
 
 /**
- * Updates the visibility of duration selector elements based on selected type
- * @param {HTMLElement} dateSelector - The date selector element to update
+ * Updates the visibility of selector elements based on selected duration type.
+ *
+ * @param {HTMLElement} dateSelector - The date selector element to update.
  */
 function updateDurationSelector(dateSelector) {
   const makeVisibilityCallback = (showStart, showEnd) => {
@@ -50,8 +56,9 @@ function updateDurationSelector(dateSelector) {
 }
 
 /**
- * Initializes duration selector functionality for new elements
- * @param {HTMLElement} newDiv - The new element to set up duration selector for
+ * Initializes a duration selector.
+ *
+ * @param {HTMLElement} newDiv - The new element to set up duration selector for.
  */
 function setupDurationSelector(newDiv) {
   const dateSelectors = Array.of(...newDiv.querySelectorAll(".duration-subcomponent"));
@@ -64,11 +71,12 @@ function setupDurationSelector(newDiv) {
 }
 
 /**
- * Sets up a list button with add/delete functionality
- * @param {HTMLElement} button - Button element to set up
- * @param {HTMLElement} targetList - List element to add items to 
- * @param {string} templateId - ID of template to use for new items
- * @param {Function} initUiCallback - Callback to initialize new item UI
+ * Sets up a list button with add/delete functionality.
+ *
+ * @param {HTMLElement} button - Button element to set up.
+ * @param {HTMLElement} targetList - List element to add items to.
+ * @param {string} templateId - ID of template to use for new items.
+ * @param {Function} initUiCallback - Callback to invoke when item added.
  */
 function setupListButton(button, targetList, templateId, initUiCallback) {
   button.addEventListener("click", (event) => {
@@ -92,11 +100,12 @@ function setupListButton(button, targetList, templateId, initUiCallback) {
 }
 
 /**
- * Sets a form field value with fallback to default
- * @param {HTMLElement} selection - Form field element
- * @param {Object} source - Source object to get value from
- * @param {*} defaultValue - Default value if source is null
- * @param {Function} strategy - Function to extract value from source
+ * Sets a form field value with fallback to default.
+ * 
+ * @param {HTMLElement} selection - Form field element.
+ * @param {Object} source - Source object to get value from.
+ * @param {*} defaultValue - Default value if source is null.
+ * @param {Function} strategy - Function to extract value from source.
  */
 function setFieldValue(selection, source, defaultValue, strategy) {
   const newValue = source === null ? null : strategy(source);
@@ -105,18 +114,20 @@ function setFieldValue(selection, source, defaultValue, strategy) {
 }
 
 /**
- * Gets raw value from a form field
- * @param {HTMLElement} selection - Form field to get value from
- * @returns {string} The field's value
+ * Gets raw value from a form field.
+ * 
+ * @param {HTMLElement} selection - Form field to get value from.
+ * @returns {string} The field's value.
  */
 function getFieldValue(selection) {
   return selection.value;
 }
 
 /**
- * Gets sanitized value from a form field, removing quotes and commas
- * @param {HTMLElement} selection - Form field to get sanitized value from
- * @returns {string} Sanitized field value
+ * Gets sanitized value from a form field, removing quotes and commas.
+ * 
+ * @param {HTMLElement} selection - Form field to get sanitized value from.
+ * @returns {string} Sanitized field value.
  */
 function getSanitizedFieldValue(selection) {
   const valueRaw = getFieldValue(selection);
@@ -124,11 +135,12 @@ function getSanitizedFieldValue(selection) {
 }
 
 /**
- * Sets up a list input with template-based items
- * @param {HTMLElement} listSelection - Container element for list
- * @param {string} itemTemplate - HTML template for list items
- * @param {Array} items - Array of items to populate list
- * @param {Function} uiInit - Callback to initialize each item's UI
+ * Sets up a list input with template-based items.
+ * 
+ * @param {HTMLElement} listSelection - Container element for list.
+ * @param {string} itemTemplate - HTML template for list items.
+ * @param {Array} items - Array of items to populate list.
+ * @param {Function} uiInit - Callback to initialize each item's UI.
  */
 function setListInput(listSelection, itemTemplate, items, uiInit) {
   listSelection.innerHTML = "";
@@ -148,18 +160,26 @@ function setListInput(listSelection, itemTemplate, items, uiInit) {
   items.forEach(addItem);
 }
 
+/**
+ * Read the current items in a list.
+ *
+ * @param {HTMLElement} selection - The HTML element containing list items.
+ * @param {Function} itemReadStrategy - A function to process each list item.
+ * @returns {Array} An array of processed items returned by the strategy.
+ */
 function getListInput(selection, itemReadStrategy) {
   const dialogListItems = Array.of(...selection.querySelectorAll(".dialog-list-item"));
   return dialogListItems.map(itemReadStrategy);
 }
 
 /**
- * Sets a value/units pair for engine number inputs
- * @param {HTMLElement} valSelection - Value input element
- * @param {HTMLElement} unitsSelection - Units select element 
- * @param {Object} source - Source object for values
- * @param {EngineNumber} defaultValue - Default engine number
- * @param {Function} strategy - Function to extract engine number from source
+ * Sets a value/units pair for engine number inputs.
+ * 
+ * @param {HTMLElement} valSelection - Value input element.
+ * @param {HTMLElement} unitsSelection - Units select element.
+ * @param {Object} source - Source object for values.
+ * @param {EngineNumber} defaultValue - Default engine number.
+ * @param {Function} strategy - Function to extract engine number from source.
  */
 function setEngineNumberValue(valSelection, unitsSelection, source, defaultValue, strategy) {
   const newValue = source === null ? null : strategy(source);
@@ -169,10 +189,11 @@ function setEngineNumberValue(valSelection, unitsSelection, source, defaultValue
 }
 
 /**
- * Gets an engine number from value/units form fields
- * @param {HTMLElement} valSelection - Value input element
- * @param {HTMLElement} unitsSelection - Units select element
- * @returns {EngineNumber} Combined engine number object
+ * Gets an engine number from value/units form fields.
+ * 
+ * @param {HTMLElement} valSelection - Value input element.
+ * @param {HTMLElement} unitsSelection - Units select element.
+ * @returns {EngineNumber} Combined engine number object.
  */
 function getEngineNumberValue(valSelection, unitsSelection) {
   const value = valSelection.value;
@@ -180,6 +201,16 @@ function getEngineNumberValue(valSelection, unitsSelection) {
   return new EngineNumber(value, units);
 }
 
+/**
+ * Sets the state of a duration selection UI widget.
+ *
+ * Set the duration for shown within a duration selection UI widget to match
+ * that of a given command. If the command is null, it uses the default value.
+ *
+ * @param {HTMLElement} selection - The selection element containing duration-related inputs.
+ * @param {Object} command - The command object from which the duration is extracted.
+ * @param {YearMatcher} defaultVal - The default duration value if the command is null.
+ */
 function setDuring(selection, command, defaultVal) {
   const effectiveVal = command === null ? defaultVal : command.getDuration();
   const durationTypeInput = selection.querySelector(".duration-type-input");
@@ -217,14 +248,15 @@ function setDuring(selection, command, defaultVal) {
 }
 
 /**
- * Manages the UI for listing and editing applications
+ * Manages the UI for listing and editing applications.
  */
 class ApplicationsListPresenter {
   /**
-   * Creates a new applications list presenter
-   * @param {HTMLElement} root - Root element for this component
-   * @param {Function} getCodeObj - Callback to get current code object
-   * @param {Function} onCodeObjUpdate - Callback when code object changes
+   * Creates a new applications list presenter.
+   * 
+   * @param {HTMLElement} root - Root element for this component.
+   * @param {Function} getCodeObj - Callback to get current code object.
+   * @param {Function} onCodeObjUpdate - Callback when code object changes.
    */
   constructor(root, getCodeObj, onCodeObjUpdate) {
     const self = this;
@@ -978,7 +1010,7 @@ class PolicyListPresenter {
   _save() {
     const self = this;
     const policy = self._parseObj();
-const codeObj = self._getCodeObj();
+    const codeObj = self._getCodeObj();
     codeObj.insertPolicy(self._editingName, policy);
     self._onCodeObjUpdate(codeObj);
   }
