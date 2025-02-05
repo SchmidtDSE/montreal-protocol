@@ -55,15 +55,15 @@ The deployment process is automated through GitHub Actions as defined in `.githu
 
 ## Open Source Technologies Used
 
-- **ANTLR4**: For parsing the QubecTalk domain-specific language
-- **D3.js**: For data visualization
-- **Chart.js**: For rendering charts and graphs
-- **ACE Editor**: For the code editing interface
-- **QUnit**: For unit testing
-- **Webpack**: For bundling JavaScript modules
-- **ESLint**: For code style enforcement
-- **Public Sans**: Font family for UI elements
-- **Tabby**: For tab interface management
+- **ANTLR4** ([BSD-3](https://www.antlr.org/license.html) - [Homepage](https://www.antlr.org/)): For parsing the QubecTalk domain-specific language
+- **D3.js** ([ISC](https://github.com/d3/d3/blob/main/LICENSE) - [Homepage](https://d3js.org/)): For data visualization
+- **Chart.js** ([MIT](https://github.com/chartjs/Chart.js/blob/master/LICENSE.md) - [Homepage](https://www.chartjs.org/)): For rendering charts and graphs
+- **ACE Editor** ([BSD-3](https://github.com/ajaxorg/ace/blob/master/LICENSE) - [Homepage](https://ace.c9.io/)): For the code editing interface
+- **QUnit** ([MIT](https://github.com/qunitjs/qunit/blob/main/LICENSE.txt) - [Homepage](https://qunitjs.com/)): For unit testing
+- **Webpack** ([MIT](https://github.com/webpack/webpack/blob/main/LICENSE) - [Homepage](https://webpack.js.org/)): For bundling JavaScript modules
+- **ESLint** ([MIT](https://github.com/eslint/eslint/blob/main/LICENSE) - [Homepage](https://eslint.org/)): For code style enforcement
+- **Public Sans** ([OFL-1.1](https://github.com/uswds/public-sans/blob/master/LICENSE.md) - [Homepage](https://public-sans.digital.gov/)): Font family for UI elements 
+- **Tabby** ([MIT](https://github.com/cferdinandi/tabby/blob/master/LICENSE.md) - [Homepage](https://github.com/cferdinandi/tabby)): For tab interface management
 
 ## License
 
