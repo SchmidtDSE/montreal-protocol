@@ -182,11 +182,11 @@ function buildUiTranslatorTests() {
         const scenarioOther = scenarios[1];
         assert.deepEqual(scenarioOther.getName(), "policy scenario");
         assert.deepEqual(scenarioOther.getYearStart(), 1);
-        assert.deepEqual(scenarioOther.getYearEnd(), 1);
+        assert.deepEqual(scenarioOther.getYearEnd(), 5);
       },
     ]);
 
-    buildTest("includes additional sim with reverse range", "/test/qta/ui/sim.qta", [
+    buildTest("includes additional sim with reverse range", "/test/qta/ui/sim_reverse.qta", [
       (result, assert) => {
         assert.ok(result.getIsCompatible());
       },
@@ -200,7 +200,7 @@ function buildUiTranslatorTests() {
         const scenarioOther = scenarios[1];
         assert.deepEqual(scenarioOther.getName(), "policy scenario");
         assert.deepEqual(scenarioOther.getYearStart(), 1);
-        assert.deepEqual(scenarioOther.getYearEnd(), 1);
+        assert.deepEqual(scenarioOther.getYearEnd(), 5);
       },
     ]);
 
