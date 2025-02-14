@@ -419,8 +419,16 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   buildDuring(minYearMaybe, maxYearMaybe) {
     const self = this;
     return (engine) => {
-      const minYear = minYearMaybe === null ? null : minYearMaybe(engine);
-      const maxYear = maxYearMaybe === null ? null : maxYearMaybe(engine);
+      const minYearResolved = minYearMaybe === null ? null : minYearMaybe(engine);
+      const maxYearResolved = maxYearMaybe === null ? null : maxYearMaybe(engine);
+
+      if (minYearResolved === null || maxYearResolved === null) {
+        return new YearMatcher(minYearResolved, maxYearResolved);
+      }
+
+      const minYear = Math.min(minYearResolved, maxYearResolved);
+      const maxYear = Math.max(minYearResolved, maxYearResolved);
+
       return new YearMatcher(minYear, maxYear);
     };
   }

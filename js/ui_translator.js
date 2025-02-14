@@ -2253,7 +2253,15 @@ class TranslatorVisitor extends toolkit.QubecTalkVisitor {
    */
   buildDuring(minYear, maxYear) {
     const self = this;
-    return new YearMatcher(minYear, maxYear);
+
+    if (minYear === null || maxYear === null) {
+      return new YearMatcher(minYear, maxYear);
+    }
+
+    const minYearRearrange = Math.min(minYear, maxYear);
+    const maxYearRearrange = Math.max(minYear, maxYear);
+
+    return new YearMatcher(minYearRearrange, maxYearRearrange);
   }
 
   /**
