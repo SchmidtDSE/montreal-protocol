@@ -171,6 +171,21 @@ function buildCompilerTests() {
       },
     ]);
 
+    buildTest("interprets a recharge command in a reverse sim range", "/test/qta/recharge.qta", [
+      (result, assert) => {
+        const record = getResult(result, BAU_NAME, 1, 0, "test", "test");
+        const equipment = record.getPopulation();
+        assert.closeTo(equipment.getValue(), 100000, 0.0001);
+        assert.deepEqual(equipment.getUnits(), "units");
+      },
+      (result, assert) => {
+        const record = getResult(result, BAU_NAME, 2, 0, "test", "test");
+        const equipment = record.getPopulation();
+        assert.closeTo(equipment.getValue(), 190000, 0.0001);
+        assert.deepEqual(equipment.getUnits(), "units");
+      },
+    ]);
+
     buildTest("handles multiple consumption", "/test/qta/multiple.qta", [
       (result, assert) => {
         const record = getResult(result, BAU_NAME, 1, 0, "test", "a");
