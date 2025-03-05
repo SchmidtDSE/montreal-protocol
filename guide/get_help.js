@@ -8,6 +8,16 @@ const POST_URL = "https://uyppqr75wwrl3uejzvbm5c3qh40aoncr.lambda-url.us-east-2.
 const FAIL_MESSAGE = "Sorry we ran into an issue. Please email hello@mlf-policy-explorer.org.";
 
 /**
+ * Check if a given string is empty.
+ * 
+ * @param {string} testInput - The string to check.
+ * @returns {boolean} True if the string is empty after removing starting / ending whitespace
+ *    and false otherwise.
+ */
+function isEmpty(testInput) {
+}
+
+/**
  * Validates the email and description inputs from the help form.
  *
  * @param {string} email - Email address provided by the user.
