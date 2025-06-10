@@ -33,7 +33,8 @@
                 "test_engine": "./test_engine.js?v=EPOCH",
                 "test_report_data": "./test_report_data.js?v=EPOCH",
                 "test_ui_translator": "./test_ui_translator.js?v=EPOCH",
-                "test_ui_translator_reverse": "./test_ui_translator_reverse.js?v=EPOCH"
+                "test_ui_translator_reverse": "./test_ui_translator_reverse.js?v=EPOCH",
+                "test_user_config": "./test_user_config.js?v=EPOCH"
             }
         }
     </script>
@@ -50,6 +51,7 @@
         import {buildReportDataTests} from "test_report_data";
         import {buildUiTranslatorTests} from "test_ui_translator";
         import {buildUiTranslatorReverseTests} from "test_ui_translator_reverse";
+        import {buildUserConfigTests} from "test_user_config";
 
         buildCompilerTests();
         buildEngineNumberTests();
@@ -58,5 +60,6 @@
         buildReportDataTests();
         buildUiTranslatorTests();
         buildUiTranslatorReverseTests();
+        buildUserConfigTests();
     </script>
 </body>
