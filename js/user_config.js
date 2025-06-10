@@ -23,7 +23,7 @@ class FilterSet {
    *     that this is the full metric names like sales or sales:import.
    * @param {string|null} dimension - Dimension type for which to filter.
    * @param {string|null} baseline - Baseline scenario for comparison.
-   * @param {boolean|null} attributeImporter - Whether to attribute imported
+   * @param {boolean} attributeImporter - Whether to attribute imported
    *     equipment initial charge to importer (true) or exporter (false).
    */
   constructor(
@@ -328,8 +328,8 @@ class FilterSet {
   /**
    * Get the attribute importer setting.
    *
-   * @returns {boolean|null} Whether to attribute imported equipment initial
-   *     charge to importer (true) or exporter (false), or null if not set.
+   * @returns {boolean} Whether to attribute imported equipment initial charge
+   *     to importer (true) or exporter (false), or null if not set.
    */
   getAttributeImporter() {
     const self = this;

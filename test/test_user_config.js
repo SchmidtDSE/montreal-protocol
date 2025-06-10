@@ -22,7 +22,7 @@ function buildUserConfigTests() {
     };
 
     const makeNullExample = () => {
-      return new FilterSet(null, null, null, null, null, null, null, null);
+      return new FilterSet(null, null, null, null, null, null, null, false);
     };
 
     QUnit.test("initializes with all parameters", function (assert) {
