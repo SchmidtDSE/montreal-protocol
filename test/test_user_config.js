@@ -203,7 +203,7 @@ function buildUserConfigTests() {
       const newFilterSet = originalFilterSet.getWithMetric("emissions:all:tCO2e / yr");
 
       assert.deepEqual(newFilterSet.getFullMetricName(), "emissions:all:tCO2e / yr");
-      assert.deepEqual(originalFilterSet.getFullMetricName(), "sales:import:mt / yr"); // Original unchanged
+      assert.deepEqual(originalFilterSet.getFullMetricName(), "sales:import:mt / yr");
       assert.deepEqual(newFilterSet.getYear(), originalFilterSet.getYear());
       assert.deepEqual(newFilterSet.getScenario(), originalFilterSet.getScenario());
     });
