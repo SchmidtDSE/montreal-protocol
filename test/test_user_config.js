@@ -100,9 +100,9 @@ function buildUserConfigTests() {
       assert.deepEqual(filterSet.getAttributeImporter(), true);
     });
 
-    QUnit.test("getAttributeImporter returns null when not set", function (assert) {
+    QUnit.test("getAttributeImporter returns false when not set", function (assert) {
       const filterSet = makeNullExample();
-      assert.deepEqual(filterSet.getAttributeImporter(), null);
+      assert.notOk(filterSet.getAttributeImporter());
     });
 
     QUnit.test("getFullMetricName returns full metric", function (assert) {
@@ -175,7 +175,8 @@ function buildUserConfigTests() {
       assert.deepEqual(newFilterSet.getApplication(), originalFilterSet.getApplication());
     });
 
-    QUnit.test("getWithApplication creates new instance with updated application",
+    QUnit.test(
+      "getWithApplication creates new instance with updated application",
       function (assert) {
         const originalFilterSet = makeBasicExample();
         const newFilterSet = originalFilterSet.getWithApplication("industrial");
@@ -184,26 +185,25 @@ function buildUserConfigTests() {
         assert.deepEqual(originalFilterSet.getApplication(), "commercial"); // Original unchanged
         assert.deepEqual(newFilterSet.getYear(), originalFilterSet.getYear());
         assert.deepEqual(newFilterSet.getScenario(), originalFilterSet.getScenario());
-      });
+      },
+    );
 
-    QUnit.test("getWithSubstance creates new instance with updated substance",
-      function (assert) {
-        const originalFilterSet = makeBasicExample();
-        const newFilterSet = originalFilterSet.getWithSubstance("HFC-32");
+    QUnit.test("getWithSubstance creates new instance with updated substance", function (assert) {
+      const originalFilterSet = makeBasicExample();
+      const newFilterSet = originalFilterSet.getWithSubstance("HFC-32");
 
-        assert.deepEqual(newFilterSet.getSubstance(), "HFC-32");
-        assert.deepEqual(originalFilterSet.getSubstance(), "HFC-134a"); // Original unchanged
-        assert.deepEqual(newFilterSet.getYear(), originalFilterSet.getYear());
-        assert.deepEqual(newFilterSet.getScenario(), originalFilterSet.getScenario());
-      });
+      assert.deepEqual(newFilterSet.getSubstance(), "HFC-32");
+      assert.deepEqual(originalFilterSet.getSubstance(), "HFC-134a"); // Original unchanged
+      assert.deepEqual(newFilterSet.getYear(), originalFilterSet.getYear());
+      assert.deepEqual(newFilterSet.getScenario(), originalFilterSet.getScenario());
+    });
 
     QUnit.test("getWithMetric creates new instance with updated metric", function (assert) {
       const originalFilterSet = makeBasicExample();
       const newFilterSet = originalFilterSet.getWithMetric("emissions:all:tCO2e / yr");
 
       assert.deepEqual(newFilterSet.getFullMetricName(), "emissions:all:tCO2e / yr");
-      assert.deepEqual(originalFilterSet.getFullMetricName(),
-        "sales:import:mt / yr"); // Original unchanged
+      assert.deepEqual(originalFilterSet.getFullMetricName(), "sales:import:mt / yr"); // Original unchanged
       assert.deepEqual(newFilterSet.getYear(), originalFilterSet.getYear());
       assert.deepEqual(newFilterSet.getScenario(), originalFilterSet.getScenario());
     });
@@ -228,7 +228,8 @@ function buildUserConfigTests() {
       assert.deepEqual(newFilterSet.getScenario(), originalFilterSet.getScenario());
     });
 
-    QUnit.test("getWithAttributeImporter creates new instance with updated attribute importer",
+    QUnit.test(
+      "getWithAttributeImporter creates new instance with updated attribute importer",
       function (assert) {
         const originalFilterSet = makeBasicExample();
         const newFilterSet = originalFilterSet.getWithAttributeImporter(false);
@@ -237,62 +238,95 @@ function buildUserConfigTests() {
         assert.deepEqual(originalFilterSet.getAttributeImporter(), true); // Original unchanged
         assert.deepEqual(newFilterSet.getYear(), originalFilterSet.getYear());
         assert.deepEqual(newFilterSet.getScenario(), originalFilterSet.getScenario());
-      });
+      },
+    );
 
-    QUnit.test("getWithDimensionValue updates scenario for simulations dimension",
+    QUnit.test(
+      "getWithDimensionValue updates scenario for simulations dimension",
       function (assert) {
-        const originalFilterSet = new FilterSet(null, "oldScenario", null, null, null,
-          "simulations", null, null);
+        const originalFilterSet = new FilterSet(
+          null,
+          "oldScenario",
+          null,
+          null,
+          null,
+          "simulations",
+          null,
+          null,
+        );
         const newFilterSet = originalFilterSet.getWithDimensionValue("newScenario");
 
         assert.deepEqual(newFilterSet.getScenario(), "newScenario");
         assert.deepEqual(originalFilterSet.getScenario(), "oldScenario"); // Original unchanged
-      });
+      },
+    );
 
-    QUnit.test("getWithDimensionValue updates application for applications dimension",
+    QUnit.test(
+      "getWithDimensionValue updates application for applications dimension",
       function (assert) {
-        const originalFilterSet = new FilterSet(null, null, "oldApp", null, null,
-          "applications", null, null);
+        const originalFilterSet = new FilterSet(
+          null,
+          null,
+          "oldApp",
+          null,
+          null,
+          "applications",
+          null,
+          null,
+        );
         const newFilterSet = originalFilterSet.getWithDimensionValue("newApp");
 
         assert.deepEqual(newFilterSet.getApplication(), "newApp");
         assert.deepEqual(originalFilterSet.getApplication(), "oldApp"); // Original unchanged
-      });
+      },
+    );
 
-    QUnit.test("getWithDimensionValue updates substance for substances dimension",
+    QUnit.test(
+      "getWithDimensionValue updates substance for substances dimension",
       function (assert) {
-        const originalFilterSet = new FilterSet(null, null, null, "oldSubstance", null,
-          "substances", null, null);
+        const originalFilterSet = new FilterSet(
+          null,
+          null,
+          null,
+          "oldSubstance",
+          null,
+          "substances",
+          null,
+          null,
+        );
         const newFilterSet = originalFilterSet.getWithDimensionValue("newSubstance");
 
         assert.deepEqual(newFilterSet.getSubstance(), "newSubstance");
         assert.deepEqual(originalFilterSet.getSubstance(), "oldSubstance"); // Original unchanged
-      });
+      },
+    );
 
-    QUnit.test("hasSingleScenario returns true when scenario is selected",
-      function (assert) {
-        const filterSet = new FilterSet(null, "selectedScenario", null, null, null,
-          null, null, null);
-        const scenarios = new Set(["scenario1", "scenario2", "scenario3"]);
+    QUnit.test("hasSingleScenario returns true when scenario is selected", function (assert) {
+      const filterSet = new FilterSet(null, "selectedScenario", null, null, null, null, null, null);
+      const scenarios = new Set(["scenario1", "scenario2", "scenario3"]);
 
-        assert.ok(filterSet.hasSingleScenario(scenarios));
-      });
+      assert.ok(filterSet.hasSingleScenario(scenarios));
+    });
 
-    QUnit.test("hasSingleScenario returns true when only one scenario available",
+    QUnit.test(
+      "hasSingleScenario returns true when only one scenario available",
       function (assert) {
         const filterSet = new FilterSet(null, null, null, null, null, null, null, null);
         const scenarios = new Set(["onlyScenario"]);
 
         assert.ok(filterSet.hasSingleScenario(scenarios));
-      });
+      },
+    );
 
-    QUnit.test("hasSingleScenario returns false when no scenario selected and multiple available",
+    QUnit.test(
+      "hasSingleScenario returns false when no scenario selected and multiple available",
       function (assert) {
         const filterSet = new FilterSet(null, null, null, null, null, null, null, null);
         const scenarios = new Set(["scenario1", "scenario2", "scenario3"]);
 
         assert.notOk(filterSet.hasSingleScenario(scenarios));
-      });
+      },
+    );
   });
 }
 
