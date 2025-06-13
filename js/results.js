@@ -143,12 +143,12 @@ class ResultsPresenter {
   }
 
   /**
-   * Get the full metric name currently selected for a metric family.
+   * Get the full metric name to use for a metric family.
    * 
-   * Get the full metric name currently selected for a metric family even if a different metric is
-   * currently active in the visualization. This allows identifying the substream of interest from
-   * the user even if they are currently using the visualization panel to center something else in
-   * their moment to moment analysis.
+   * Determine which full metric with family, submetric, and units that should be used for a metric
+   * family. This will either use the user's current selection if the metric is currently active in
+   * the visualization or it will report the most recent selection for the family if the user has
+   * currently centered another metric for visualization.
    * 
    * @param {string} family The metric family like emissions, sales, or population.
    * @returns {string} Metric full name like sales:manufacture:mt.
