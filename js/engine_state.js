@@ -732,6 +732,7 @@ class StreamKeeper {
     self._substances.set(key, new StreamParameterization());
 
     const makeZero = (units) => new EngineNumber(0, units);
+    const makeNominal = (units) => new EngineNumber(1, units);
 
     // Sales: manufacture, import, recycle
     self._streams.set(self._getKey(application, substance, "manufacture"), makeZero("kg"));
@@ -747,8 +748,8 @@ class StreamKeeper {
     self._streams.set(self._getKey(application, substance, "newEquipment"), makeZero("units"));
 
     // Emissions
-    self._streams.set(self._getKey(application, substance, "rechargeEmissions"), makeZero("tCO2e"));
-    self._streams.set(self._getKey(application, substance, "eolEmissions"), makeZero("tCO2e"));
+    self._streams.set(self._getKey(application, substance, "rechargeEmissions"), makeNominal("tCO2e"));
+    self._streams.set(self._getKey(application, substance, "eolEmissions"), makeNominal("tCO2e"));
   }
 
   /**
