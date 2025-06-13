@@ -160,7 +160,6 @@ start default
   
   end application
 
-  
 
   define application "Chiller"
   
@@ -226,76 +225,76 @@ end default</pre
         <details>
           <summary>Code for R-404A starting conditions</summary>
           <pre>
-  define application "Transport Refrigeration"
+define application "Transport Refrigeration"
 
-    uses substance "R-404A"
-      set priorEquipment to 90000 units during year beginning
-      initial charge with 2.00 kg / unit for sales
-      retire 2 % each year
-      recharge 10% each year with 2.00 kg / unit
-      set import to 900 units / year during year beginning
-      equals 3921.6 tCO2e / kg
-    end substance
-  
-  end application
+  uses substance "R-404A"
+    set priorEquipment to 90000 units during year beginning
+    initial charge with 2.00 kg / unit for sales
+    retire 2 % each year
+    recharge 10% each year with 2.00 kg / unit
+    set import to 900 units / year during year beginning
+    equals 3921.6 tCO2e / kg
+  end substance
 
-
-  define application "Domestic Refrigeration"
-
-    # ... HFC-134a ...
-
-    uses substance "R-404A"
-      initial charge with 0.08 kg / unit for sales
-      retire 2 % each year
-      recharge 10% each year with 0.08 kg / unit
-      equals 3921.6 tCO2e / kg
-    end substance
-
-  end application
+end application
 
 
-  define application "Commercial Refrigeration"
+define application "Domestic Refrigeration"
 
-    # ... HFC-134a ...
-  
-    uses substance "R-404A"
-      set priorEquipment to 20000 units during year beginning
-      initial charge with 10.00 kg / unit for sales
-      retire 3 % each year
-      recharge 30% each year with 10.00 kg / unit
-      equals 3921.6 tCO2e / kg
-      set import to 200 units / year during year beginning
-    end substance
-  
-  end application
+  # ... HFC-134a ...
+
+  uses substance "R-404A"
+    initial charge with 0.08 kg / unit for sales
+    retire 2 % each year
+    recharge 10% each year with 0.08 kg / unit
+    equals 3921.6 tCO2e / kg
+  end substance
+
+end application
 
 
-  define application "MAC"
+define application "Commercial Refrigeration"
 
-    # ... HFC-134a ...
-  
-    uses substance "R-404A"
-      initial charge with 0.50 kg / unit for sales
-      retire 2 % each year
-      recharge 20% each year with 0.50 kg / unit
-      equals 3921.6 tCO2e / kg
-    end substance
-  
-  end application
+  # ... HFC-134a ...
+
+  uses substance "R-404A"
+    set priorEquipment to 20000 units during year beginning
+    initial charge with 10.00 kg / unit for sales
+    retire 3 % each year
+    recharge 30% each year with 10.00 kg / unit
+    equals 3921.6 tCO2e / kg
+    set import to 200 units / year during year beginning
+  end substance
+
+end application
 
 
-  define application "Chiller"
+define application "MAC"
 
-    # ... HFC-134a ...
-  
-    uses substance "R-404A"
-      initial charge with 2.50 kg / unit for sales
-      retire 2 % each year
-      recharge 25% each year with 2.50 kg / unit
-      equals 3921.6 tCO2e / kg
-    end substance
-  
-  end application</pre
+  # ... HFC-134a ...
+
+  uses substance "R-404A"
+    initial charge with 0.50 kg / unit for sales
+    retire 2 % each year
+    recharge 20% each year with 0.50 kg / unit
+    equals 3921.6 tCO2e / kg
+  end substance
+
+end application
+
+
+define application "Chiller"
+
+  # ... HFC-134a ...
+
+  uses substance "R-404A"
+    initial charge with 2.50 kg / unit for sales
+    retire 2 % each year
+    recharge 25% each year with 2.50 kg / unit
+    equals 3921.6 tCO2e / kg
+  end substance
+
+end application</pre
           >
         </details>
 
@@ -337,31 +336,31 @@ end default</pre
         <details>
           <summary>Code for HFC-32 starting conditions</summary>
           <pre>
-  define application "Domestic AC"
+define application "Domestic AC"
 
-    uses substance "HFC-32"
-      set priorEquipment to 20000 units during year beginning
-      initial charge with 0.85 kg / unit for sales
-      retire 1 % each year
-      recharge 10% each year with 0.85 kg / unit
-      set import to (1000 * (20000 / 25000)) units / year during year beginning
-      equals 675.0 tCO2e / kg
-    end substance
+  uses substance "HFC-32"
+    set priorEquipment to 20000 units during year beginning
+    initial charge with 0.85 kg / unit for sales
+    retire 1 % each year
+    recharge 10% each year with 0.85 kg / unit
+    set import to (1000 * (20000 / 25000)) units / year during year beginning
+    equals 675.0 tCO2e / kg
+  end substance
 
-  end application
+end application
 
-  define application "Commercial AC"
+define application "Commercial AC"
 
-    uses substance "HFC-32"
-      set priorEquipment to 5000 units during year beginning
-      initial charge with 4.00 kg / unit for sales
-      retire 1 % each year
-      recharge 10% each year with 4.00 kg / unit
-      set import to (1000 * (5000 / 25000)) units / year during year beginning
-      equals 675.0 tCO2e / kg
-    end substance
+  uses substance "HFC-32"
+    set priorEquipment to 5000 units during year beginning
+    initial charge with 4.00 kg / unit for sales
+    retire 1 % each year
+    recharge 10% each year with 4.00 kg / unit
+    set import to (1000 * (5000 / 25000)) units / year during year beginning
+    equals 675.0 tCO2e / kg
+  end substance
 
-  end application</pre
+end application</pre
           >
         </details>
 
@@ -404,36 +403,36 @@ end default</pre
         <details>
           <summary>Code for R-410A starting conditions</summary>
           <pre>
-  define application "Domestic AC"
+define application "Domestic AC"
 
-    # ... HFC-32 ...
+  # ... HFC-32 ...
 
-    uses substance "R-410A"
-      set priorEquipment to 400000 units during year beginning
-      initial charge with 1.00 kg / unit for sales
-      retire 1 % each year
-      recharge 10% each year with 1.00 kg / unit
-      set import to 100 units / year during year beginning
-      set manufacture to 40000 units / year during year beginning
-      equals 2087.5 tCO2e / kg
-    end substance
+  uses substance "R-410A"
+    set priorEquipment to 400000 units during year beginning
+    initial charge with 1.00 kg / unit for sales
+    retire 1 % each year
+    recharge 10% each year with 1.00 kg / unit
+    set import to 100 units / year during year beginning
+    set manufacture to 40000 units / year during year beginning
+    equals 2087.5 tCO2e / kg
+  end substance
 
-  end application
+end application
 
-  define application "Commercial AC"
+define application "Commercial AC"
 
-    # ... HFC-32 ...
+  # ... HFC-32 ...
 
-    uses substance "R-410A"
-      set priorEquipment to 30000 units during year beginning
-      initial charge with 5.00 kg / unit for sales
-      retire 1 % each year
-      recharge 10% each year with 5.00 kg / unit
-      set import to 3000 units / year during year beginning
-      equals 2087.5 tCO2e / kg
-    end substance
+  uses substance "R-410A"
+    set priorEquipment to 30000 units during year beginning
+    initial charge with 5.00 kg / unit for sales
+    retire 1 % each year
+    recharge 10% each year with 5.00 kg / unit
+    set import to 3000 units / year during year beginning
+    equals 2087.5 tCO2e / kg
+  end substance
 
-  end application</pre
+end application</pre
           >
         </details>
       </section>
@@ -489,51 +488,51 @@ end default</pre
         <details>
           <summary>Code for general business as usual trends</summary>
           <pre>
-  define application "Domestic Refrigeration"
+define application "Domestic Refrigeration"
 
-    uses substance "HFC-134a"
-      # ... existing code ...
-      change equipment by +5 % each year from year 2025 to 2033
-      change equipment by +3 % each year from year 2034 to 2035
-    end substance
+  uses substance "HFC-134a"
+    # ... existing code ...
+    change equipment by +5 % each year from year 2025 to 2033
+    change equipment by +3 % each year from year 2034 to 2035
+  end substance
 
-    # ... R-404A ...
+  # ... R-404A ...
 
-  end application
-
-
-  define application "Commercial Refrigeration"
-
-    uses substance "HFC-134a"
-      # ... existing code ...
-      change equipment by +8 % each year from year 2025 to 2033
-      change equipment by +5 % each year from year 2034 to 2035
-    end substance
-
-    uses substance "R-404A"
-      # ... existing code ...
-      change equipment by +8 % each year from year 2025 to 2033
-      change equipment by +5 % each year from year 2034 to 2035
-    end substance
-
-  end application
+end application
 
 
-  define application "Commercial AC"
+define application "Commercial Refrigeration"
 
-    uses substance "HFC-32"
-      # ... existing code ...
-      change equipment by +8 % each year from year 2025 to 2033
-      change equipment by +5 % each year from year 2034 to 2035
-    end substance
+  uses substance "HFC-134a"
+    # ... existing code ...
+    change equipment by +8 % each year from year 2025 to 2033
+    change equipment by +5 % each year from year 2034 to 2035
+  end substance
 
-    uses substance "R-410A"
-      # ... existing code ...
-      change equipment by +8 % each year from year 2025 to 2033
-      change equipment by +5 % each year from year 2034 to 2035
-    end substance
+  uses substance "R-404A"
+    # ... existing code ...
+    change equipment by +8 % each year from year 2025 to 2033
+    change equipment by +5 % each year from year 2034 to 2035
+  end substance
 
-  end application</pre
+end application
+
+
+define application "Commercial AC"
+
+  uses substance "HFC-32"
+    # ... existing code ...
+    change equipment by +8 % each year from year 2025 to 2033
+    change equipment by +5 % each year from year 2034 to 2035
+  end substance
+
+  uses substance "R-410A"
+    # ... existing code ...
+    change equipment by +8 % each year from year 2025 to 2033
+    change equipment by +5 % each year from year 2034 to 2035
+  end substance
+
+end application</pre
           >
         </details>
 
@@ -559,108 +558,109 @@ end default</pre
         <details>
           <summary>Code for HFC-32 substance-specific adjustments</summary>
           <pre>
-  define application "Domestic AC"
+define application "Domestic AC"
 
-    uses substance "HFC-32"
-      initial charge with 0.90 kg / unit for sales
-      # ... other code ...
-      change equipment by +7.18 % each year from year 2025 to 2035
-    end substance
+uses substance "HFC-32"
+  initial charge with 0.90 kg / unit for sales
+  # ... other code ...
+  change equipment by +7.18 % each year from year 2025 to 2035
+end substance
 
-    # ... R-410A ...
+# ... R-410A ...
 
-  end application
-
-
-  define application "Commercial AC"
-
-    uses substance "HFC-32"
-      initial charge with 4.50 kg / unit for sales
-      # ... other code ...
-      change equipment by +7.18 % each year from year 2025 to 2035
-    end substance
-
-    # ... R-410A ...
-
-  end application</pre
-          >
-        </details>
-
-        <p>
-          Next, moving forward, we will assume that HFC consumption will be a bit higher than
-          historic values. Specifically, we will assume a 20% increase over the historic averages in
-          HFC consumption. This should be reflected in starting conditions used in the first year of
-          simulation. This is used to represent HCFC component of baseline.
-        </p>
-
-        <details>
-          <summary>Code for 20% HFC consumption increase</summary>
-          <pre>
-  define application "Domestic Refrigeration"
-  
-    uses substance "HFC-134a"
-      set priorEquipment to 1000000 * 120 % units during year beginning
-      # ... other code ...
-    end substance
-  
-  end application
+end application
 
 
-  define application "Commercial Refrigeration"
-  
-    uses substance "HFC-134a"
-      set priorEquipment to 200000 * 120 % units during year beginning
-      # ... other code ...
-    end substance
-  
-  end application
+define application "Commercial AC"
+
+uses substance "HFC-32"
+  initial charge with 4.50 kg / unit for sales
+  # ... other code ...
+  change equipment by +7.18 % each year from year 2025 to 2035
+end substance
+
+# ... R-410A ...
+
+end application</pre
+        >
+      </details>
+
+      <p>
+        Next, moving forward, we will assume that HFC consumption will be a bit higher than
+        historic values. Specifically, we will assume a 20% increase over the historic averages in
+        HFC consumption. This should be reflected in starting conditions used in the first year of
+        simulation. This is used to represent HCFC component of baseline.
+      </p>
+
+      <details>
+        <summary>Code for 20% HFC consumption increase</summary>
+        <pre>
+define application "Domestic Refrigeration"
+
+  uses substance "HFC-134a"
+    set priorEquipment to 1000000 * 120 % units during year beginning
+    # ... other code ...
+  end substance
+
+end application
 
 
-  define application "Mobile AC"
-  
-    uses substance "HFC-134a"
-      set priorEquipment to 500000 * 120 % units during year beginning
-      # ... other code ...
-    end substance
-  
-  end application
+define application "Commercial Refrigeration"
+
+  uses substance "HFC-134a"
+    set priorEquipment to 200000 * 120 % units during year beginning
+    # ... other code ...
+  end substance
+
+end application
 
 
-  define application "Chillers"
-  
-    uses substance "HFC-134a"
-      set priorEquipment to 50000 * 120 % units during year beginning
-      # ... other code ...
-    end substance
-  
-  end application
+define application "Mobile AC"
+
+  uses substance "HFC-134a"
+    set priorEquipment to 500000 * 120 % units during year beginning
+    # ... other code ...
+  end substance
+
+end application
 
 
-  define application "Domestic AC"
+define application "Chillers"
 
-    uses substance "HFC-32"
-      set priorEquipment to 20000 * 120 % units during year beginning
-      initial charge with 0.85 kg / unit for sales
-      retire 1 % each year
-      recharge 10% each year with 0.85 kg / unit
-      set import to (1000 * (20000 / 25000)) units / year during year beginning
-      equals 675.0 tCO2e / kg
-    end substance
+  uses substance "HFC-134a"
+    set priorEquipment to 50000 * 120 % units during year beginning
+    # ... other code ...
+  end substance
 
-  end application
+end application
 
-  define application "Commercial AC"
 
-    uses substance "HFC-32"
-      set priorEquipment to 5000 * 120 % units during year beginning
-      initial charge with 4.00 kg / unit for sales
-      retire 1 % each year
-      recharge 10% each year with 4.00 kg / unit
-      set import to (1000 * (5000 / 25000)) units / year during year beginning
-      equals 675.0 tCO2e / kg
-    end substance
+define application "Domestic AC"
 
-  end application</pre
+  uses substance "HFC-32"
+    set priorEquipment to 20000 * 120 % units during year beginning
+    initial charge with 0.85 kg / unit for sales
+    retire 1 % each year
+    recharge 10% each year with 0.85 kg / unit
+    set import to (1000 * (20000 / 25000)) units / year during year beginning
+    equals 675.0 tCO2e / kg
+  end substance
+
+end application
+
+
+define application "Commercial AC"
+
+  uses substance "HFC-32"
+    set priorEquipment to 5000 * 120 % units during year beginning
+    initial charge with 4.00 kg / unit for sales
+    retire 1 % each year
+    recharge 10% each year with 4.00 kg / unit
+    set import to (1000 * (5000 / 25000)) units / year during year beginning
+    equals 675.0 tCO2e / kg
+  end substance
+
+end application</pre
           >
         </details>
 
@@ -816,7 +816,6 @@ start policy "Recovery and Recycling"
   
   end application
 
-
   modify application "Commercial Refrigeration"
   
     modify substance "HFC-134a"
@@ -837,7 +836,6 @@ start policy "Recovery and Recycling"
   
   end application
 
-
   modify application "Mobile AC"
   
     modify substance "HFC-134a"
@@ -857,7 +855,6 @@ start policy "Recovery and Recycling"
     end substance
   
   end application
-
 
   modify application "Chillers"
   
