@@ -96,7 +96,7 @@ class ResultsPresenter {
     self._exportPresenter = new ExportPresenter(self._root);
     self._optionsPresenter = new OptionsPanelPresenter(self._root, onUpdateFilterSet);
 
-    self._titlePreseter = new SelectorTitlePresenter(
+    self._titlePresenter = new SelectorTitlePresenter(
       centerChartHolderContainer,
       onUpdateFilterSet,
       (family) => self.getSelectedFullName(family),
@@ -205,7 +205,7 @@ class ResultsPresenter {
     self._scorecardPresenter.showResults(self._results, self._filterSet);
     self._dimensionPresenter.showResults(self._results, self._filterSet);
     self._centerChartPresenter.showResults(self._results, self._filterSet);
-    self._titlePreseter.showResults(self._results, self._filterSet);
+    self._titlePresenter.showResults(self._results, self._filterSet);
     self._exportPresenter.showResults(self._results, self._filterSet);
     self._optionsPresenter.showResults(self._results, self._filterSet);
   }
