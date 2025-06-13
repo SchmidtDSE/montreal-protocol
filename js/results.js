@@ -99,7 +99,7 @@ class ResultsPresenter {
     self._titlePreseter = new SelectorTitlePresenter(
       centerChartHolderContainer,
       onUpdateFilterSet,
-      (family) => self.getSelectedFullName(family)
+      (family) => self.getSelectedFullName(family),
     );
 
     self.hide();
@@ -144,12 +144,12 @@ class ResultsPresenter {
 
   /**
    * Get the full metric name to use for a metric family.
-   * 
+   *
    * Determine which full metric with family, submetric, and units that should be used for a metric
    * family. This will either use the user's current selection if the metric is currently active in
    * the visualization or it will report the most recent selection for the family if the user has
    * currently centered another metric for visualization.
-   * 
+   *
    * @param {string} family The metric family like emissions, sales, or population.
    * @returns {string} Metric full name like sales:manufacture:mt.
    */
@@ -389,25 +389,25 @@ class ScorecardPresenter {
 
   /**
    * Get the full metric name currently selected for a metric family.
-   * 
+   *
    * Get the full metric name currently selected for a metric family even if a different metric is
    * currently active in the visualization. This allows identifying the substream of interest from
    * the user even if they are currently using the visualization panel to center something else in
    * their moment to moment analysis.
-   * 
+   *
    * @param {string} family The metric family like emissions, sales, or population.
    * @returns {string} Metric full name like sales:manufacture:mt.
    */
   getSelectedFullName(family) {
     const self = this;
     const card = self._cards.get(family);
-    
+
     const subMetricDropdown = card.querySelector(".submetric-input");
     const unitsDropdown = card.querySelector(".units-input");
-    
+
     const subMetric = subMetricDropdown.value;
     const units = unitsDropdown.value;
-    
+
     return family + ":" + subMetric + ":" + units;
   }
 
@@ -469,7 +469,6 @@ class ScorecardPresenter {
     const equipmentScorecard = self._root.querySelector("#equipment-scorecard");
 
     const registerListener = (scorecard, family) => {
-
       const callback = () => {
         const fullName = self.getSelectedFullName(family);
         const newFilterSet = self._filterSet.getWithMetric(fullName);
