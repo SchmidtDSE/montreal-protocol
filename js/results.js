@@ -93,9 +93,14 @@ class ResultsPresenter {
     self._scorecardPresenter = new ScorecardPresenter(scorecardContainer, onUpdateFilterSet);
     self._dimensionPresenter = new DimensionCardPresenter(dimensionsContainer, onUpdateFilterSet);
     self._centerChartPresenter = new CenterChartPresenter(centerChartContainer);
-    self._titlePreseter = new SelectorTitlePresenter(centerChartHolderContainer, onUpdateFilterSet);
     self._exportPresenter = new ExportPresenter(self._root);
     self._optionsPresenter = new OptionsPanelPresenter(self._root, onUpdateFilterSet);
+
+    self._titlePresenter = new SelectorTitlePresenter(
+      centerChartHolderContainer,
+      onUpdateFilterSet,
+      (family) => self.getSelectedFullName(family),
+    );
 
     self.hide();
   }
@@ -135,6 +140,22 @@ class ResultsPresenter {
     self._root.style.display = "block";
     self._results = results;
     self._updateInternally();
+  }
+
+  /**
+   * Get the full metric name to use for a metric family.
+   *
+   * Determine which full metric with family, submetric, and units that should be used for a metric
+   * family. This will either use the user's current selection if the metric is currently active in
+   * the visualization or it will report the most recent selection for the family if the user has
+   * currently centered another metric for visualization.
+   *
+   * @param {string} family The metric family like emissions, sales, or population.
+   * @returns {string} Metric full name like sales:manufacture:mt.
+   */
+  getSelectedFullName(family) {
+    const self = this;
+    return self._scorecardPresenter.getSelectedFullName(family);
   }
 
   /**
@@ -184,7 +205,7 @@ class ResultsPresenter {
     self._scorecardPresenter.showResults(self._results, self._filterSet);
     self._dimensionPresenter.showResults(self._results, self._filterSet);
     self._centerChartPresenter.showResults(self._results, self._filterSet);
-    self._titlePreseter.showResults(self._results, self._filterSet);
+    self._titlePresenter.showResults(self._results, self._filterSet);
     self._exportPresenter.showResults(self._results, self._filterSet);
     self._optionsPresenter.showResults(self._results, self._filterSet);
   }
@@ -359,6 +380,35 @@ class ScorecardPresenter {
     self._updateCard(emissionsScorecard, emissionRounded, currentYear, emissionsSelected, hideVal);
     self._updateCard(salesScorecard, salesMt, currentYear, salesSelected, hideVal);
     self._updateCard(equipmentScorecard, millionEqipment, currentYear, equipmentSelected, hideVal);
+
+    self._cards = new Map();
+    self._cards.set("emissions", emissionsScorecard);
+    self._cards.set("sales", salesScorecard);
+    self._cards.set("population", equipmentScorecard);
+  }
+
+  /**
+   * Get the full metric name currently selected for a metric family.
+   *
+   * Get the full metric name currently selected for a metric family even if a different metric is
+   * currently active in the visualization. This allows identifying the substream of interest from
+   * the user even if they are currently using the visualization panel to center something else in
+   * their moment to moment analysis.
+   *
+   * @param {string} family The metric family like emissions, sales, or population.
+   * @returns {string} Metric full name like sales:manufacture:mt.
+   */
+  getSelectedFullName(family) {
+    const self = this;
+    const card = self._cards.get(family);
+
+    const subMetricDropdown = card.querySelector(".submetric-input");
+    const unitsDropdown = card.querySelector(".units-input");
+
+    const subMetric = subMetricDropdown.value;
+    const units = unitsDropdown.value;
+
+    return family + ":" + subMetric + ":" + units;
   }
 
   /**
@@ -419,13 +469,8 @@ class ScorecardPresenter {
     const equipmentScorecard = self._root.querySelector("#equipment-scorecard");
 
     const registerListener = (scorecard, family) => {
-      const subMetricDropdown = scorecard.querySelector(".submetric-input");
-      const unitsDropdown = scorecard.querySelector(".units-input");
-
       const callback = () => {
-        const subMetric = subMetricDropdown.value;
-        const units = unitsDropdown.value;
-        const fullName = family + ":" + subMetric + ":" + units;
+        const fullName = self.getSelectedFullName(family);
         const newFilterSet = self._filterSet.getWithMetric(fullName);
         self._onUpdateFilterSet(newFilterSet);
       };
@@ -433,6 +478,8 @@ class ScorecardPresenter {
       const radio = scorecard.querySelector(".metric-radio");
       radio.addEventListener("click", callback);
 
+      const subMetricDropdown = scorecard.querySelector(".submetric-input");
+      const unitsDropdown = scorecard.querySelector(".units-input");
       subMetricDropdown.addEventListener("change", callback);
       unitsDropdown.addEventListener("change", callback);
     };
@@ -869,8 +916,10 @@ class CenterChartPresenter {
 /**
  * Presenter for selector title display.
  *
- * Presenter for selector title display using a fill in the blank-like
- * approach.
+ * Presenter for selector title display using a fill in the blank-like approach which allows for
+ * selecting the metric, dimension, and baseline. It, however, does not allow for selecting the
+ * submetric (substream) which is required for the full metric so it queries the scorecards to get
+ * the user's most recent selection.
  */
 class SelectorTitlePresenter {
   /**
@@ -878,11 +927,14 @@ class SelectorTitlePresenter {
    *
    * @param {HTMLElement} root - Root DOM element.
    * @param {Function} changeCallback - Callback for selection changes.
+   * @param {Function} metricNameGetter - Function to call with a metric family to get the current
+   *    metric full name selected by the user for that metric family.
    */
-  constructor(root, changeCallback) {
+  constructor(root, changeCallback, metricNameGetter) {
     const self = this;
     self._selection = root;
     self._changeCallback = changeCallback;
+    self._metricNameGetter = metricNameGetter;
     self._filterSet = null;
     self._setupEventListeners();
   }
@@ -1003,7 +1055,10 @@ class SelectorTitlePresenter {
     };
 
     const metricDropdown = self._selection.querySelector(".metric-select");
-    addListener(metricDropdown, (filterSet, val) => filterSet.getWithMetric(val));
+    addListener(metricDropdown, (filterSet, val) => {
+      const fullName = self._metricNameGetter(val);
+      return filterSet.getWithMetric(fullName);
+    });
 
     const dimensionDropdown = self._selection.querySelector(".dimension-select");
     addListener(dimensionDropdown, (filterSet, val) => filterSet.getWithDimension(val));

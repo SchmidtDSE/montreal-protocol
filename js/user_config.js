@@ -190,7 +190,7 @@ class FilterSet {
    * Get the full name of the metric to display.
    *
    * @returns {string|null} The metric to display like sales. Note that this is
-   *     the full name like sales:manufacture or sales:all.
+   *     the full name like sales:manufacture:mt or sales:all:mt.
    */
   getFullMetricName() {
     const self = this;
