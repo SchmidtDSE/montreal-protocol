@@ -162,9 +162,79 @@ class MainPresenter {
    */
   _onAutoRefresh() {
     const self = this;
-    if (!self._hasCompilationErrors) {
+    if (!self._hasCompilationErrors && self._shouldAutoRun()) {
       self._onBuild(true, false, true);
     }
+  }
+
+  /**
+   * Checks if auto-run should be executed based on tab and checkbox state.
+   *
+   * @returns {boolean} True if auto-run should execute, false otherwise.
+   * @private
+   */
+  _shouldAutoRun() {
+    const self = this;
+    return self._isOnCodeEditorTab() && self._isAutoRunEnabled();
+  }
+
+  /**
+   * Checks if the user is currently on the code editor tab.
+   *
+   * @returns {boolean} True if on code editor tab, false otherwise.
+   * @private
+   */
+  _isOnCodeEditorTab() {
+    const codeEditorPane = document.getElementById("code-editor-pane");
+    return codeEditorPane && codeEditorPane.getAttribute("aria-hidden") !== "true";
+  }
+
+  /**
+   * Checks if the auto-run checkbox is checked.
+   *
+   * @returns {boolean} True if auto-run is enabled, false otherwise.
+   * @private
+   */
+  _isAutoRunEnabled() {
+    const autoRunCheck = document.getElementById("auto-run-check");
+    return autoRunCheck && autoRunCheck.checked;
+  }
+
+  /**
+   * Shows a message indicating no results were produced.
+   *
+   * @private
+   */
+  _showNoResultsMessage() {
+    const self = this;
+    const resultsSection = document.getElementById("results");
+    resultsSection.style.display = "block";
+
+    // Clear existing content
+    const existingMessage = resultsSection.querySelector(".no-results-message");
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+
+    // Create and insert no results message
+    const noResultsDiv = document.createElement("div");
+    noResultsDiv.className = "no-results-message";
+    noResultsDiv.style.textAlign = "center";
+    noResultsDiv.style.padding = "20px";
+    noResultsDiv.style.marginTop = "20px";
+    noResultsDiv.style.border = "1px solid #C0C0C0";
+    noResultsDiv.style.borderRadius = "3px";
+    noResultsDiv.style.backgroundColor = "#F9F9F9";
+
+    const messageText = document.createElement("p");
+    const messageTextContent = "No results to display. This likely means " +
+      "no simulations were defined in the code.";
+    messageText.textContent = messageTextContent;
+    messageText.style.margin = "0";
+    messageText.style.color = "#666";
+
+    noResultsDiv.appendChild(messageText);
+    resultsSection.appendChild(noResultsDiv);
   }
 
   /**
@@ -234,7 +304,7 @@ class MainPresenter {
           if (run) {
             const programResult = program();
             if (programResult.length == 0) {
-              self._resultsPresenter.hide();
+              self._showNoResultsMessage();
             } else {
               if (resetFilters) {
                 self._resultsPresenter.resetFilter();
@@ -293,6 +363,14 @@ class MainPresenter {
    */
   _onResult(results) {
     const self = this;
+
+    // Clear any existing no-results message
+    const resultsSection = document.getElementById("results");
+    const existingMessage = resultsSection.querySelector(".no-results-message");
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+
     const resultsWrapped = new ReportDataWrapper(results);
     self._resultsPresenter.showResults(resultsWrapped);
   }

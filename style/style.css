@@ -567,6 +567,33 @@ main {
   display: none;
 }
 
+@media (max-width: 30em) {
+  /* Auto-run checkbox on separate line for narrow screens */
+  .code-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "run-btn"
+      "auto-run"
+      "loading";
+    gap: 10px;
+  }
+
+  #available-panel {
+    grid-area: run-btn;
+    text-align: center;
+  }
+
+  #auto-run-panel {
+    grid-area: auto-run;
+    justify-self: center;
+  }
+
+  #loading {
+    grid-area: loading;
+  }
+}
+
 @media (max-width: 999px) {
   #results .dimensions .dimension {
     margin-bottom: 10px;
@@ -611,5 +638,29 @@ main {
   a:link[role="tab"][aria-selected="true"],
   a:visited[role="tab"][aria-selected="true"] {
     color: #202070;
+  }
+
+  /* Auto-run checkbox grid layout for wider screens */
+  .code-buttons-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 
+      "run-btn auto-run"
+      "loading loading";
+    gap: 10px;
+    align-items: center;
+  }
+
+  #available-panel {
+    grid-area: run-btn;
+  }
+
+  #auto-run-panel {
+    grid-area: auto-run;
+    justify-self: end;
+  }
+
+  #loading {
+    grid-area: loading;
   }
 }

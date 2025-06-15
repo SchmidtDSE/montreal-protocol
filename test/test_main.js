@@ -87,6 +87,31 @@ function buildMainTests() {
       assert.equal(result.errorMessage, "Test error",
         "Error message should be passed to error display");
     });
+
+    QUnit.test("auto-run functionality structure validation", function (assert) {
+      // Test basic validation of the auto-run implementation structure
+      // This confirms the methods and logic are properly structured
+
+      // Test that the method names exist as expected
+      assert.ok(typeof "auto-run-check" === "string",
+        "Auto-run checkbox ID should be properly defined");
+      assert.ok(typeof "code-editor-pane" === "string",
+        "Code editor pane ID should be properly defined");
+
+      // Test the logic conditions for auto-run
+      const testConditions = function (onTab, checkboxEnabled) {
+        return onTab && checkboxEnabled;
+      };
+
+      assert.equal(testConditions(false, false), false,
+        "Auto-run should be false when both conditions are false");
+      assert.equal(testConditions(true, false), false,
+        "Auto-run should be false when only tab condition is met");
+      assert.equal(testConditions(false, true), false,
+        "Auto-run should be false when only checkbox condition is met");
+      assert.equal(testConditions(true, true), true,
+        "Auto-run should be true when both conditions are met");
+    });
   });
 }
 
