@@ -47,7 +47,7 @@ jobs:
         run: cp -r ./guide ./deploy/guide
       - name: Update cache busters
         run: bash ./support/update_cache_busters.sh
-  buildJava:
+  buildEngine:
     environment: Build
     runs-on: ubuntu-latest
     name: Build Fat Jar
@@ -70,11 +70,11 @@ jobs:
         with:
           name: fatJar
           path: build/libs/joshsim-fat.jar
-  checkJava:
-    needs: buildJava
+  checkEngine:
+    needs: buildEngine
     environment: Build
     runs-on: ubuntu-latest
-    name: Static Checks
+    name: Static Engine Checks
     defaults:
       run:
         shell: bash
@@ -93,11 +93,11 @@ jobs:
         run: ./gradlew checkstyleMain
       - name: Check test style
         run: ./gradlew checkstyleTest
-  testJava:
-    needs: buildJava
+  testEngine:
+    needs: buildEngine
     environment: Build
     runs-on: ubuntu-latest
-    name: Test Java
+    name: Test Engine
     defaults:
       run:
         shell: bash
@@ -114,9 +114,9 @@ jobs:
         run: ./gradlew test
   buildWasm:
     environment: Build
-    needs: [ checkJava, buildJava, testJava ]
+    needs: [ checkEngine, buildEngine, testEngine ]
     runs-on: ubuntu-latest
-    name: Build WASM for Browser
+    name: Build WASM Engine
     defaults:
       run:
         shell: bash
