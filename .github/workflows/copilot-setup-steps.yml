@@ -25,15 +25,15 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
       - name: Build fat jar
-        run: ./gradlew fatJar
+        run: cd engine; ./gradlew fatJar
       - name: Check grammar
-        run: ./gradlew generateGrammarSource
+        run: cd engine; ./gradlew generateGrammarSource
       - name: Check main style
-        run: ./gradlew checkstyleMain
+        run: cd engine; ./gradlew checkstyleMain
       - name: Check test style
-        run: ./gradlew checkstyleTest
+        run: cd engine; ./gradlew checkstyleTest
       - name: Build war
-        run: ./gradlew war
+        run: cd engine; ./gradlew war
       - name: Install node deps
         run: npm install
       - name: Build
