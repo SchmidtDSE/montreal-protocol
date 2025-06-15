@@ -1,5 +1,5 @@
 {
-  "name": "Montreal Protocol Dev Container",
+  "name": "Kigali Sim Dev Container",
   "build": {
     "dockerfile": "Dockerfile"
   },
@@ -12,8 +12,7 @@
         "ms-vscode.vscode-eslint",
         "ms-vscode.vscode-json",
         "ms-vscode.vscode-npm",
-        "ms-vscode.vscode-js-debug",
-        "ms-vscode.vscode-typescript-next"
+        "ms-vscode.vscode-js-debug"
       ],
       "settings": {
         "java.configuration.runtimes": [
