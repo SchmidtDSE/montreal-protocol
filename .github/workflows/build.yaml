@@ -69,7 +69,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fatJar
-          path: engine/build/libs/joshsim-fat.jar
+          path: engine/build/libs/kigalisim-1.0-SNAPSHOT-fat.jar
   checkEngine:
     needs: buildEngine
     environment: Build
@@ -135,7 +135,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: war
-          path: engine/build/libs/JoshSim.war
+          path: engine/build/libs/KigaliSim-1.0-SNAPSHOT.war
   unitTestsBrowser:
     environment: build
     runs-on: ubuntu-latest
