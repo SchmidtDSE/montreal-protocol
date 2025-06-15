@@ -59,9 +59,23 @@ python -m http.server
 ## Deployment
 This project can be deployed using Github. Simply push your changes to the repository `deploy` branch. The deployment process is automated through GitHub Actions as defined in `.github/workflows/build.yaml`.
 
-<br>
+### Automated checks
 
-## Development Standards
+Various automated tests and checks are available to help those developing on the tool and engine.
+
+In the engine (`cd engine`):
+
+ - `./gradlew test`: Run unit tests for the engine.
+ - `./gradlew checkstyleMain`: Lint production Java code built into WASM engine.
+ - `./gradlew checkstyleTest`: Lint test Java code.
+
+In the project root (tool):
+
+ - `npx grunt`: Runs front-end unit tests and end-to-end integration tests.
+ - `npx eslint ./js/*.js`: Lint production JavaScript.
+ - `npx eslint ./test/*.js`: Lint test JavaScript.
+
+### Development Standards
 While contributing, please maintain existing styles defined in `.prettierrc` and `.eslintrc.yml`. Where ambiguous, follow [Google JavaScript / TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html) conventions. Unit tests through QUnit are encouraged but a specific test coverage target is not specified. Document code using JSDoc comments (required for all public members). Note that Replit AI was used to help with documentation and small trivial code changes but, for other purposes, please disclose use of generative AI before merging pull requests. We generally require that AI not used for architecture or large operations. At this time, we are not considering a change to TypeScript.
 
 <br>
