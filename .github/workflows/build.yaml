@@ -9,7 +9,7 @@ jobs:
   lintJs:
     environment: build
     runs-on: ubuntu-latest
-    name: Run Linter
+    name: Run JS Linter
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,6 +25,10 @@ jobs:
     environment: build
     runs-on: ubuntu-latest
     name: Check Cache Busters
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,6 +55,10 @@ jobs:
     environment: Build
     runs-on: ubuntu-latest
     name: Build Fat Jar
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -71,6 +79,10 @@ jobs:
     environment: Build
     runs-on: ubuntu-latest
     name: Static Checks
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -90,6 +102,10 @@ jobs:
     environment: Build
     runs-on: ubuntu-latest
     name: Test Java
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -104,7 +120,11 @@ jobs:
     environment: Build
     needs: [ checkJava, buildJava, testJava ]
     runs-on: ubuntu-latest
-    name: Build for Browser
+    name: Build WASM for Browser
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
     steps:
       - name: Checkout
         uses: actions/checkout@v3
