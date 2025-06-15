@@ -210,31 +210,11 @@ class MainPresenter {
     const resultsSection = document.getElementById("results");
     resultsSection.style.display = "block";
 
-    // Clear existing content
-    const existingMessage = resultsSection.querySelector(".no-results-message");
-    if (existingMessage) {
-      existingMessage.remove();
+    // Show the pre-existing no-results message
+    const noResultsMessage = document.getElementById("no-results-message");
+    if (noResultsMessage) {
+      noResultsMessage.style.display = "block";
     }
-
-    // Create and insert no results message
-    const noResultsDiv = document.createElement("div");
-    noResultsDiv.className = "no-results-message";
-    noResultsDiv.style.textAlign = "center";
-    noResultsDiv.style.padding = "20px";
-    noResultsDiv.style.marginTop = "20px";
-    noResultsDiv.style.border = "1px solid #C0C0C0";
-    noResultsDiv.style.borderRadius = "3px";
-    noResultsDiv.style.backgroundColor = "#F9F9F9";
-
-    const messageText = document.createElement("p");
-    const messageTextContent = "No results to display. This likely means " +
-      "no simulations were defined in the code.";
-    messageText.textContent = messageTextContent;
-    messageText.style.margin = "0";
-    messageText.style.color = "#666";
-
-    noResultsDiv.appendChild(messageText);
-    resultsSection.appendChild(noResultsDiv);
   }
 
   /**
@@ -364,11 +344,10 @@ class MainPresenter {
   _onResult(results) {
     const self = this;
 
-    // Clear any existing no-results message
-    const resultsSection = document.getElementById("results");
-    const existingMessage = resultsSection.querySelector(".no-results-message");
-    if (existingMessage) {
-      existingMessage.remove();
+    // Hide any existing no-results message
+    const noResultsMessage = document.getElementById("no-results-message");
+    if (noResultsMessage) {
+      noResultsMessage.style.display = "none";
     }
 
     const resultsWrapped = new ReportDataWrapper(results);
