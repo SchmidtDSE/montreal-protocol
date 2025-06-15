@@ -39,7 +39,7 @@ In the engine (`cd engine`):
  - `./gradlew checkstyleMain`: Lint production Java code built into WASM engine.
  - `./gradlew checkstyleTest`: Lint test Java code.
 
-In the project root (tool):
+In the project root:
 
  - `npx grunt`: Runs front-end unit tests and end-to-end integration tests.
  - `npx eslint ./js/*.js`: Lint production JavaScript.
