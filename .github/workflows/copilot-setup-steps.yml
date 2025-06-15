@@ -22,8 +22,8 @@ jobs:
       - name: Install Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '11'
+          distribution: 'temurin'
+          java-version: '21'
       - name: Build fat jar
         run: cd engine; ./gradlew fatJar
       - name: Check grammar
