@@ -13,11 +13,10 @@ RUN apt-get update && apt-get install -y \
     chromium-browser \
     ca-certificates \
     sudo \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates
-
-# Install Node.js using system package manager
-RUN apt-get update && apt-get install -y nodejs npm
 
 # Verify installations
 RUN java -version && node --version && npm --version
@@ -40,7 +39,7 @@ USER devuser
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-# Expose ports commonly used for development
+# Expose ports typically used for the development server or automated tests
 EXPOSE 8000 8080
 
 # Default command
