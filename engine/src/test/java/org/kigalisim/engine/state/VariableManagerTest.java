@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.kigalisim.engine.state.EngineConstants.APPLICATION_CONTEXT;
 import static org.kigalisim.engine.state.EngineConstants.GLOBAL_CONTEXT;
 import static org.kigalisim.engine.state.EngineConstants.STANZA_CONTEXT;
-import static org.kigalisim.engine.state.EngineConstants.SUBSTANCE_CONTEXT;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,10 +35,10 @@ public class VariableManagerTest {
   @Test
   public void testDefineAndAccessVariable() {
     VariableManager manager = new VariableManager(GLOBAL_CONTEXT);
-    
+
     manager.defineVariable("testVar");
     manager.setVariable("testVar", 123);
-    
+
     assertEquals(123, manager.getVariable("testVar"), "Should retrieve set variable value");
   }
 
@@ -49,9 +48,9 @@ public class VariableManagerTest {
   @Test
   public void testDefineVariableTwiceThrows() {
     VariableManager manager = new VariableManager(GLOBAL_CONTEXT);
-    
+
     manager.defineVariable("testVar");
-    
+
     assertThrows(IllegalStateException.class, () -> {
       manager.defineVariable("testVar");
     }, "Should throw when defining variable twice");
@@ -63,7 +62,7 @@ public class VariableManagerTest {
   @Test
   public void testSetUndefinedVariableThrows() {
     VariableManager manager = new VariableManager(GLOBAL_CONTEXT);
-    
+
     assertThrows(IllegalStateException.class, () -> {
       manager.setVariable("undefinedVar", 123);
     }, "Should throw when setting undefined variable");
@@ -75,7 +74,7 @@ public class VariableManagerTest {
   @Test
   public void testGetUndefinedVariableThrows() {
     VariableManager manager = new VariableManager(GLOBAL_CONTEXT);
-    
+
     assertThrows(IllegalStateException.class, () -> {
       manager.getVariable("undefinedVar");
     }, "Should throw when getting undefined variable");
@@ -91,15 +90,15 @@ public class VariableManagerTest {
     globalManager.setVariable("globalVar", "global");
 
     VariableManager stanzaManager = globalManager.getWithLevel(STANZA_CONTEXT);
-    
+
     // Should still be able to access global variable
-    assertEquals("global", stanzaManager.getVariable("globalVar"), 
+    assertEquals("global", stanzaManager.getVariable("globalVar"),
                  "Should access global variable from stanza level");
-    
+
     // Should be able to define stanza-level variable
     stanzaManager.defineVariable("stanzaVar");
     stanzaManager.setVariable("stanzaVar", "stanza");
-    assertEquals("stanza", stanzaManager.getVariable("stanzaVar"), 
+    assertEquals("stanza", stanzaManager.getVariable("stanzaVar"),
                  "Should access stanza variable");
   }
 
@@ -113,22 +112,22 @@ public class VariableManagerTest {
     globalManager.setVariable("testVar", "global");
 
     VariableManager stanzaManager = globalManager.getWithLevel(STANZA_CONTEXT);
-    assertEquals("global", stanzaManager.getVariable("testVar"), 
+    assertEquals("global", stanzaManager.getVariable("testVar"),
                  "Should read global variable from stanza level");
 
     // Define variable with same name at stanza level
     stanzaManager.defineVariable("testVar");
     stanzaManager.setVariable("testVar", "stanza");
-    assertEquals("stanza", stanzaManager.getVariable("testVar"), 
+    assertEquals("stanza", stanzaManager.getVariable("testVar"),
                  "Should read stanza variable when shadowing global");
 
     // Setting the variable should affect stanza level, not global
     stanzaManager.setVariable("testVar", "stanza_modified");
-    assertEquals("stanza_modified", stanzaManager.getVariable("testVar"), 
+    assertEquals("stanza_modified", stanzaManager.getVariable("testVar"),
                  "Should read modified stanza variable");
-    
+
     // Global should remain unchanged
-    assertEquals("global", globalManager.getVariable("testVar"), 
+    assertEquals("global", globalManager.getVariable("testVar"),
                  "Global variable should remain unchanged");
   }
 
@@ -138,11 +137,11 @@ public class VariableManagerTest {
   @Test
   public void testInvalidContextLevel() {
     VariableManager manager = new VariableManager(GLOBAL_CONTEXT);
-    
+
     assertThrows(IllegalArgumentException.class, () -> {
       manager.getWithLevel(-1);
     }, "Should throw for invalid negative context level");
-    
+
     assertThrows(IllegalArgumentException.class, () -> {
       manager.getWithLevel(4);
     }, "Should throw for invalid high context level");
@@ -162,17 +161,17 @@ public class VariableManagerTest {
     stanzaManager.setVariable("stanzaVar", "stanza");
 
     VariableManager appManager = stanzaManager.getWithLevel(APPLICATION_CONTEXT);
-    
+
     // Should access both global and stanza variables
-    assertEquals("global", appManager.getVariable("globalVar"), 
+    assertEquals("global", appManager.getVariable("globalVar"),
                  "Should access global variable from application level");
-    assertEquals("stanza", appManager.getVariable("stanzaVar"), 
+    assertEquals("stanza", appManager.getVariable("stanzaVar"),
                  "Should access stanza variable from application level");
-    
+
     // Should be able to define app-level variable
     appManager.defineVariable("appVar");
     appManager.setVariable("appVar", "application");
-    assertEquals("application", appManager.getVariable("appVar"), 
+    assertEquals("application", appManager.getVariable("appVar"),
                  "Should access application variable");
   }
 }

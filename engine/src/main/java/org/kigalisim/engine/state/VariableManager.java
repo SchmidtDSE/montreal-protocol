@@ -25,13 +25,13 @@ import java.util.Map;
  * supporting variable shadowing and scope traversal.</p>
  */
 public class VariableManager {
-  
+
   private final Map<String, Object> globalContext;
   private final Map<String, Object> stanzaContext;
   private final Map<String, Object> applicationContext;
   private final Map<String, Object> substanceContext;
   private final int contextLevel;
-  
+
   /**
    * Create a new variable manager.
    *
@@ -39,14 +39,14 @@ public class VariableManager {
    * @param globalContext Map from name of variable to value or null if no variables
    *     exist at that global level
    * @param stanzaContext Map from name of variable to value or null if no variables
-   *     exist at that stanza level  
+   *     exist at that stanza level
    * @param applicationContext Map from name of variable to value or null if no variables
    *     exist at that application level
    * @param substanceContext Map from name of variable to value or null if no variables
    *     exist at that substance level
    */
   public VariableManager(int contextLevel, Map<String, Object> globalContext,
-                        Map<String, Object> stanzaContext, 
+                        Map<String, Object> stanzaContext,
                         Map<String, Object> applicationContext,
                         Map<String, Object> substanceContext) {
     this.globalContext = ensureContext(globalContext);
@@ -55,7 +55,7 @@ public class VariableManager {
     this.substanceContext = ensureContext(substanceContext);
     this.contextLevel = contextLevel;
   }
-  
+
   /**
    * Convenience constructor for creating a new variable manager at a specific context level.
    *
@@ -64,7 +64,7 @@ public class VariableManager {
   public VariableManager(int contextLevel) {
     this(contextLevel, null, null, null, null);
   }
-  
+
   /**
    * Make a new variable manager occupying this namespace but at a different context level.
    *
@@ -76,22 +76,22 @@ public class VariableManager {
     if (contextLevel < GLOBAL_CONTEXT || contextLevel > SUBSTANCE_CONTEXT) {
       throw new IllegalArgumentException("Unexpected context level: " + contextLevel);
     }
-    
+
     Map<String, Object> newStanzaContext = this.stanzaContext;
     if (contextLevel <= STANZA_CONTEXT) {
       newStanzaContext = new HashMap<>();
     }
-    
+
     Map<String, Object> newApplicationContext = this.applicationContext;
     if (contextLevel <= APPLICATION_CONTEXT) {
       newApplicationContext = new HashMap<>();
     }
-    
+
     Map<String, Object> newSubstanceContext = this.substanceContext;
     if (contextLevel <= SUBSTANCE_CONTEXT) {
       newSubstanceContext = new HashMap<>();
     }
-    
+
     return new VariableManager(
         contextLevel,
         this.globalContext,
@@ -100,7 +100,7 @@ public class VariableManager {
         newSubstanceContext
     );
   }
-  
+
   /**
    * Define a new variable in the current context level.
    *
@@ -111,14 +111,14 @@ public class VariableManager {
    */
   public void defineVariable(String name) {
     Map<String, Object> context = getContextForLevel(contextLevel);
-    
+
     if (context.containsKey(name)) {
       throw new IllegalStateException("Variable already defined in this scope: " + name);
     }
-    
+
     context.put(name, null);
   }
-  
+
   /**
    * Set the value of a variable already defined.
    *
@@ -137,10 +137,10 @@ public class VariableManager {
         return;
       }
     }
-    
+
     throw new IllegalStateException("Unable to find variable to set: " + name);
   }
-  
+
   /**
    * Get the value of a variable already defined.
    *
@@ -158,10 +158,10 @@ public class VariableManager {
         return currentContext.get(name);
       }
     }
-    
+
     throw new IllegalStateException("Unable to find variable to read: " + name);
   }
-  
+
   /**
    * Get the variable map for a certain context level.
    *
@@ -182,7 +182,7 @@ public class VariableManager {
         throw new IllegalArgumentException("Invalid context level: " + level);
     }
   }
-  
+
   /**
    * Ensure a context map is not null.
    *

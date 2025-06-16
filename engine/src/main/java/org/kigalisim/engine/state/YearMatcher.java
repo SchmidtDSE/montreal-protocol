@@ -16,14 +16,14 @@ package org.kigalisim.engine.state;
  * represent positive or negative infinity bounds.</p>
  */
 public class YearMatcher {
-  
+
   private final Integer start;
   private final Integer end;
-  
+
   /**
    * Create a new year range.
    *
-   * <p>Create a new year range between start and end where null in either means 
+   * <p>Create a new year range between start and end where null in either means
    * positive or negative infinity.</p>
    *
    * @param start The starting year (inclusive) in this range or null if no min year
@@ -33,19 +33,19 @@ public class YearMatcher {
     boolean hasNull = start == null || end == null;
     boolean startHasSpecial = "beginning".equals(start) || "onwards".equals(start);
     boolean endHasSpecial = "beginning".equals(end) || "onwards".equals(end);
-    
+
     if (hasNull || startHasSpecial || endHasSpecial) {
       this.start = start;
       this.end = end;
     } else {
       int startRearrange = Math.min(start, end);
       int endRearrange = Math.max(start, end);
-      
+
       this.start = startRearrange;
       this.end = endRearrange;
     }
   }
-  
+
   /**
    * Determine if a year is included in this range.
    *
@@ -57,7 +57,7 @@ public class YearMatcher {
     boolean meetsMax = end == null || end >= year;
     return meetsMin && meetsMax;
   }
-  
+
   /**
    * Get the start of the year range.
    *
@@ -66,7 +66,7 @@ public class YearMatcher {
   public Integer getStart() {
     return start;
   }
-  
+
   /**
    * Get the end of the year range.
    *

@@ -16,10 +16,10 @@ package org.kigalisim.engine.state;
  * a unique identifier for substance-application pairs.</p>
  */
 public class SubstanceInApplicationId {
-  
+
   private final String application;
   private final String substance;
-  
+
   /**
    * Create a new substance-in-application identifier.
    *
@@ -30,7 +30,7 @@ public class SubstanceInApplicationId {
     this.application = application;
     this.substance = substance;
   }
-  
+
   /**
    * Get the name of the application.
    *
@@ -39,7 +39,7 @@ public class SubstanceInApplicationId {
   public String getApplication() {
     return application;
   }
-  
+
   /**
    * Get the name of the substance.
    *

@@ -19,12 +19,12 @@ import static org.kigalisim.engine.state.EngineConstants.SUBSTANCE_CONTEXT;
  * <p>Manages scope hierarchy and variable access across different context levels in the engine.</p>
  */
 public class Scope {
-  
+
   private final String stanza;
   private final String application;
   private final String substance;
   private final VariableManager variableManager;
-  
+
   /**
    * Create a new scope.
    *
@@ -34,20 +34,20 @@ public class Scope {
    * @param variableManager The variable manager to reach variables accessible from this
    *     scope or null if no variables accessible
    */
-  public Scope(String stanza, String application, String substance, 
+  public Scope(String stanza, String application, String substance,
                VariableManager variableManager) {
     this.stanza = stanza;
     this.application = application;
     this.substance = substance;
-    
+
     if (substance != null && application == null) {
       throw new IllegalArgumentException("Cannot specify substance without application.");
     }
-    
+
     if (application != null && stanza == null) {
       throw new IllegalArgumentException("Cannot specify application without stanza.");
     }
-    
+
     if (variableManager == null) {
       int contextLevel = calculateContextLevel(stanza, application, substance);
       this.variableManager = new VariableManager(contextLevel);
@@ -55,7 +55,7 @@ public class Scope {
       this.variableManager = variableManager;
     }
   }
-  
+
   /**
    * Convenience constructor for creating a scope without a variable manager.
    *
@@ -66,7 +66,7 @@ public class Scope {
   public Scope(String stanza, String application, String substance) {
     this(stanza, application, substance, null);
   }
-  
+
   /**
    * Get the name of the stanza where this scope resides.
    *
@@ -75,7 +75,7 @@ public class Scope {
   public String getStanza() {
     return stanza;
   }
-  
+
   /**
    * Get the name of the application where this scope resides.
    *
@@ -84,7 +84,7 @@ public class Scope {
   public String getApplication() {
     return application;
   }
-  
+
   /**
    * Get the name of the substance where this scope resides.
    *
@@ -93,7 +93,7 @@ public class Scope {
   public String getSubstance() {
     return substance;
   }
-  
+
   /**
    * Create a new scope derived from this scope at the substance level.
    *
@@ -104,7 +104,7 @@ public class Scope {
     if (application == null) {
       throw new IllegalStateException("Not able to set substance without application.");
     }
-    
+
     return new Scope(
         stanza,
         application,
@@ -112,7 +112,7 @@ public class Scope {
         variableManager.getWithLevel(SUBSTANCE_CONTEXT)
     );
   }
-  
+
   /**
    * Create a new scope derived from this scope at the application level.
    *
@@ -123,7 +123,7 @@ public class Scope {
     if (stanza == null) {
       throw new IllegalStateException("Not able to set substance without stanza.");
     }
-    
+
     return new Scope(
         stanza,
         newApplication,
@@ -131,7 +131,7 @@ public class Scope {
         variableManager.getWithLevel(APPLICATION_CONTEXT)
     );
   }
-  
+
   /**
    * Create a new scope derived from this scope at the stanza level.
    *
@@ -141,7 +141,7 @@ public class Scope {
   public Scope getWithStanza(String newStanza) {
     return new Scope(newStanza, null, null, variableManager.getWithLevel(STANZA_CONTEXT));
   }
-  
+
   /**
    * Define a variable in the current scope.
    *
@@ -153,7 +153,7 @@ public class Scope {
   public void defineVariable(String name) {
     variableManager.defineVariable(name);
   }
-  
+
   /**
    * Set the value of a variable already defined.
    *
@@ -166,7 +166,7 @@ public class Scope {
   public void setVariable(String name, Object value) {
     variableManager.setVariable(name, value);
   }
-  
+
   /**
    * Get the value of a variable already defined.
    *
@@ -179,12 +179,12 @@ public class Scope {
   public Object getVariable(String name) {
     return variableManager.getVariable(name);
   }
-  
+
   /**
    * Calculate the context level based on the scope components.
    *
    * @param stanza The stanza name
-   * @param application The application name  
+   * @param application The application name
    * @param substance The substance name
    * @return The context level
    */

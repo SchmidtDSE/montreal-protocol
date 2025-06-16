@@ -20,112 +20,112 @@ import org.kigalisim.engine.number.UnitConverter;
  * state values needed for unit conversions and calculations in the engine.</p>
  */
 public interface OverridingConverterStateGetter {
-  
+
   /**
    * Set the substance consumption value.
    *
    * @param newValue The new substance consumption value
    */
   void setSubstanceConsumption(EngineNumber newValue);
-  
+
   /**
    * Get the substance consumption value.
    *
    * @return The substance consumption value
    */
   EngineNumber getSubstanceConsumption();
-  
+
   /**
    * Set the energy intensity value.
    *
    * @param newValue The new energy intensity value
    */
   void setEnergyIntensity(EngineNumber newValue);
-  
+
   /**
    * Get the energy intensity value.
    *
    * @return The energy intensity value
    */
   EngineNumber getEnergyIntensity();
-  
+
   /**
    * Set the amortized unit volume value.
    *
    * @param newValue The new amortized unit volume value
    */
   void setAmortizedUnitVolume(EngineNumber newValue);
-  
+
   /**
    * Get the amortized unit volume value.
    *
    * @return The amortized unit volume value
    */
   EngineNumber getAmortizedUnitVolume();
-  
+
   /**
    * Set the population value.
    *
    * @param newValue The new population value
    */
   void setPopulation(EngineNumber newValue);
-  
+
   /**
    * Get the population value.
    *
    * @return The population value
    */
   EngineNumber getPopulation();
-  
+
   /**
    * Set the years elapsed value.
    *
    * @param newValue The new years elapsed value
    */
   void setYearsElapsed(EngineNumber newValue);
-  
+
   /**
    * Get the years elapsed value.
    *
    * @return The years elapsed value
    */
   EngineNumber getYearsElapsed();
-  
+
   /**
    * Get the GHG consumption value.
    *
    * @return The GHG consumption value
    */
   EngineNumber getGhgConsumption();
-  
+
   /**
    * Get the energy consumption value.
    *
    * @return The energy consumption value
    */
   EngineNumber getEnergyConsumption();
-  
+
   /**
    * Get the volume value.
    *
    * @return The volume value
    */
   EngineNumber getVolume();
-  
+
   /**
    * Get the amortized unit consumption value.
    *
    * @return The amortized unit consumption value
    */
   EngineNumber getAmortizedUnitConsumption();
-  
+
   /**
    * Set the population change value.
    *
    * @param newValue The new population change value
    */
   void setPopulationChange(EngineNumber newValue);
-  
+
   /**
    * Get the population change value.
    *

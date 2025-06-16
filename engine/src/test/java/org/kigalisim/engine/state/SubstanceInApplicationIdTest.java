@@ -50,9 +50,9 @@ public class SubstanceInApplicationIdTest {
   public void testWithRealisticNames() {
     SubstanceInApplicationId id = new SubstanceInApplicationId(
         "domestic refrigeration", "HFC-134a");
-    assertEquals("domestic refrigeration", id.getApplication(), 
+    assertEquals("domestic refrigeration", id.getApplication(),
                  "Should return correct realistic application name");
-    assertEquals("HFC-134a", id.getSubstance(), 
+    assertEquals("HFC-134a", id.getSubstance(),
                  "Should return correct realistic substance name");
   }
 }

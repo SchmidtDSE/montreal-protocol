@@ -38,46 +38,46 @@ public class StreamParameterizationTest {
     // Test GHG intensity default
     EngineNumber ghgIntensity = parameterization.getGhgIntensity();
     assertEquals(BigDecimal.ZERO, ghgIntensity.getValue(), "GHG intensity should default to 0");
-    assertEquals("tCO2e / kg", ghgIntensity.getUnits(), 
+    assertEquals("tCO2e / kg", ghgIntensity.getUnits(),
                  "GHG intensity should have correct units");
 
     // Test energy intensity default
     EngineNumber energyIntensity = parameterization.getEnergyIntensity();
-    assertEquals(BigDecimal.ZERO, energyIntensity.getValue(), 
+    assertEquals(BigDecimal.ZERO, energyIntensity.getValue(),
                  "Energy intensity should default to 0");
-    assertEquals("kwh / kg", energyIntensity.getUnits(), 
+    assertEquals("kwh / kg", energyIntensity.getUnits(),
                  "Energy intensity should have correct units");
 
     // Test initial charge defaults
     EngineNumber manufactureCharge = parameterization.getInitialCharge("manufacture");
-    assertEquals(BigDecimal.ONE, manufactureCharge.getValue(), 
+    assertEquals(BigDecimal.ONE, manufactureCharge.getValue(),
                  "Manufacture charge should default to 1");
-    assertEquals("kg / unit", manufactureCharge.getUnits(), 
+    assertEquals("kg / unit", manufactureCharge.getUnits(),
                  "Manufacture charge should have correct units");
 
     EngineNumber importCharge = parameterization.getInitialCharge("import");
-    assertEquals(BigDecimal.ONE, importCharge.getValue(), 
+    assertEquals(BigDecimal.ONE, importCharge.getValue(),
                  "Import charge should default to 1");
-    assertEquals("kg / unit", importCharge.getUnits(), 
+    assertEquals("kg / unit", importCharge.getUnits(),
                  "Import charge should have correct units");
 
     // Test recharge population default
     EngineNumber rechargePopulation = parameterization.getRechargePopulation();
-    assertEquals(BigDecimal.ZERO, rechargePopulation.getValue(), 
+    assertEquals(BigDecimal.ZERO, rechargePopulation.getValue(),
                  "Recharge population should default to 0");
-    assertEquals("%", rechargePopulation.getUnits(), 
+    assertEquals("%", rechargePopulation.getUnits(),
                  "Recharge population should have correct units");
 
     // Test recharge intensity default
     EngineNumber rechargeIntensity = parameterization.getRechargeIntensity();
-    assertEquals(BigDecimal.ZERO, rechargeIntensity.getValue(), 
+    assertEquals(BigDecimal.ZERO, rechargeIntensity.getValue(),
                  "Recharge intensity should default to 0");
-    assertEquals("kg / unit", rechargeIntensity.getUnits(), 
+    assertEquals("kg / unit", rechargeIntensity.getUnits(),
                  "Recharge intensity should have correct units");
 
     // Test recovery rate default
     EngineNumber recoveryRate = parameterization.getRecoveryRate();
-    assertEquals(BigDecimal.ZERO, recoveryRate.getValue(), 
+    assertEquals(BigDecimal.ZERO, recoveryRate.getValue(),
                  "Recovery rate should default to 0");
     assertEquals("%", recoveryRate.getUnits(), "Recovery rate should have correct units");
 
@@ -88,15 +88,15 @@ public class StreamParameterizationTest {
 
     // Test retirement rate default
     EngineNumber retirementRate = parameterization.getRetirementRate();
-    assertEquals(BigDecimal.ZERO, retirementRate.getValue(), 
+    assertEquals(BigDecimal.ZERO, retirementRate.getValue(),
                  "Retirement rate should default to 0");
     assertEquals("%", retirementRate.getUnits(), "Retirement rate should have correct units");
 
     // Test displacement rate default
     EngineNumber displacementRate = parameterization.getDisplacementRate();
-    assertEquals(new BigDecimal("100"), displacementRate.getValue(), 
+    assertEquals(new BigDecimal("100"), displacementRate.getValue(),
                  "Displacement rate should default to 100");
-    assertEquals("%", displacementRate.getUnits(), 
+    assertEquals("%", displacementRate.getUnits(),
                  "Displacement rate should have correct units");
   }
 
@@ -111,9 +111,9 @@ public class StreamParameterizationTest {
     parameterization.setGhgIntensity(newValue);
     EngineNumber retrieved = parameterization.getGhgIntensity();
 
-    assertEquals(new BigDecimal("2.5"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("2.5"), retrieved.getValue(),
                  "Should retrieve set GHG intensity value");
-    assertEquals("tCO2e / kg", retrieved.getUnits(), 
+    assertEquals("tCO2e / kg", retrieved.getUnits(),
                  "Should retrieve correct GHG intensity units");
   }
 
@@ -128,9 +128,9 @@ public class StreamParameterizationTest {
     parameterization.setEnergyIntensity(newValue);
     EngineNumber retrieved = parameterization.getEnergyIntensity();
 
-    assertEquals(new BigDecimal("1.5"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("1.5"), retrieved.getValue(),
                  "Should retrieve set energy intensity value");
-    assertEquals("kwh / kg", retrieved.getUnits(), 
+    assertEquals("kwh / kg", retrieved.getUnits(),
                  "Should retrieve correct energy intensity units");
   }
 
@@ -145,9 +145,9 @@ public class StreamParameterizationTest {
     parameterization.setInitialCharge("manufacture", newValue);
     EngineNumber retrieved = parameterization.getInitialCharge("manufacture");
 
-    assertEquals(new BigDecimal("2.0"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("2.0"), retrieved.getValue(),
                  "Should retrieve set initial charge value");
-    assertEquals("kg / unit", retrieved.getUnits(), 
+    assertEquals("kg / unit", retrieved.getUnits(),
                  "Should retrieve correct initial charge units");
   }
 
@@ -162,9 +162,9 @@ public class StreamParameterizationTest {
     parameterization.setInitialCharge("import", newValue);
     EngineNumber retrieved = parameterization.getInitialCharge("import");
 
-    assertEquals(new BigDecimal("1.8"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("1.8"), retrieved.getValue(),
                  "Should retrieve set initial charge value");
-    assertEquals("kg / unit", retrieved.getUnits(), 
+    assertEquals("kg / unit", retrieved.getUnits(),
                  "Should retrieve correct initial charge units");
   }
 
@@ -196,7 +196,7 @@ public class StreamParameterizationTest {
     parameterization.setRechargePopulation(newValue);
     EngineNumber retrieved = parameterization.getRechargePopulation();
 
-    assertEquals(new BigDecimal("15.5"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("15.5"), retrieved.getValue(),
                  "Should retrieve set recharge population value");
     assertEquals("%", retrieved.getUnits(), "Should retrieve correct recharge population units");
   }
@@ -212,9 +212,9 @@ public class StreamParameterizationTest {
     parameterization.setRechargeIntensity(newValue);
     EngineNumber retrieved = parameterization.getRechargeIntensity();
 
-    assertEquals(new BigDecimal("0.5"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("0.5"), retrieved.getValue(),
                  "Should retrieve set recharge intensity value");
-    assertEquals("kg / unit", retrieved.getUnits(), 
+    assertEquals("kg / unit", retrieved.getUnits(),
                  "Should retrieve correct recharge intensity units");
   }
 
@@ -229,7 +229,7 @@ public class StreamParameterizationTest {
     parameterization.setRecoveryRate(newValue);
     EngineNumber retrieved = parameterization.getRecoveryRate();
 
-    assertEquals(new BigDecimal("80.0"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("80.0"), retrieved.getValue(),
                  "Should retrieve set recovery rate value");
     assertEquals("%", retrieved.getUnits(), "Should retrieve correct recovery rate units");
   }
@@ -245,7 +245,7 @@ public class StreamParameterizationTest {
     parameterization.setYieldRate(newValue);
     EngineNumber retrieved = parameterization.getYieldRate();
 
-    assertEquals(new BigDecimal("90.0"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("90.0"), retrieved.getValue(),
                  "Should retrieve set yield rate value");
     assertEquals("%", retrieved.getUnits(), "Should retrieve correct yield rate units");
   }
@@ -261,7 +261,7 @@ public class StreamParameterizationTest {
     parameterization.setDisplacementRate(newValue);
     EngineNumber retrieved = parameterization.getDisplacementRate();
 
-    assertEquals(new BigDecimal("75.0"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("75.0"), retrieved.getValue(),
                  "Should retrieve set displacement rate value");
     assertEquals("%", retrieved.getUnits(), "Should retrieve correct displacement rate units");
   }
@@ -277,7 +277,7 @@ public class StreamParameterizationTest {
     parameterization.setRetirementRate(newValue);
     EngineNumber retrieved = parameterization.getRetirementRate();
 
-    assertEquals(new BigDecimal("10.0"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("10.0"), retrieved.getValue(),
                  "Should retrieve set retirement rate value");
     assertEquals("%", retrieved.getUnits(), "Should retrieve correct retirement rate units");
   }
@@ -313,12 +313,12 @@ public class StreamParameterizationTest {
 
     // Set units and verify
     parameterization.setLastSpecifiedUnits("units");
-    assertEquals("units", parameterization.getLastSpecifiedUnits(), 
+    assertEquals("units", parameterization.getLastSpecifiedUnits(),
                  "Should have set units");
 
     // Reset and verify default
     parameterization.resetInternals();
-    assertEquals("kg", parameterization.getLastSpecifiedUnits(), 
+    assertEquals("kg", parameterization.getLastSpecifiedUnits(),
                  "Should reset to default units");
   }
 }

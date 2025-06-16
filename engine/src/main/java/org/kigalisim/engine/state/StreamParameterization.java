@@ -21,7 +21,7 @@ import org.kigalisim.engine.number.EngineNumber;
  * recovery rates, and other stream-specific values.</p>
  */
 public class StreamParameterization {
-  
+
   private EngineNumber ghgIntensity;
   private EngineNumber energyIntensity;
   private final Map<String, EngineNumber> initialCharge;
@@ -32,7 +32,7 @@ public class StreamParameterization {
   private EngineNumber retirementRate;
   private EngineNumber displacementRate;
   private String lastSpecifiedUnits;
-  
+
   /**
    * Create a new stream parameterization instance.
    */
@@ -40,17 +40,17 @@ public class StreamParameterization {
     this.initialCharge = new HashMap<>();
     resetInternals();
   }
-  
+
   /**
    * Reset all internal parameters to their default values.
    */
   public void resetInternals() {
     this.ghgIntensity = new EngineNumber(BigDecimal.ZERO, "tCO2e / kg");
     this.energyIntensity = new EngineNumber(BigDecimal.ZERO, "kwh / kg");
-    
+
     this.initialCharge.put("manufacture", new EngineNumber(BigDecimal.ONE, "kg / unit"));
     this.initialCharge.put("import", new EngineNumber(BigDecimal.ONE, "kg / unit"));
-    
+
     this.rechargePopulation = new EngineNumber(BigDecimal.ZERO, "%");
     this.rechargeIntensity = new EngineNumber(BigDecimal.ZERO, "kg / unit");
     this.recoveryRate = new EngineNumber(BigDecimal.ZERO, "%");
@@ -59,7 +59,7 @@ public class StreamParameterization {
     this.displacementRate = new EngineNumber(new BigDecimal("100"), "%");
     this.lastSpecifiedUnits = "kg";
   }
-  
+
   /**
    * Set the greenhouse gas intensity.
    *
@@ -68,7 +68,7 @@ public class StreamParameterization {
   public void setGhgIntensity(EngineNumber newValue) {
     this.ghgIntensity = newValue;
   }
-  
+
   /**
    * Get the greenhouse gas intensity.
    *
@@ -77,7 +77,7 @@ public class StreamParameterization {
   public EngineNumber getGhgIntensity() {
     return ghgIntensity;
   }
-  
+
   /**
    * Set the energy intensity.
    *
@@ -86,7 +86,7 @@ public class StreamParameterization {
   public void setEnergyIntensity(EngineNumber newValue) {
     this.energyIntensity = newValue;
   }
-  
+
   /**
    * Get the energy intensity.
    *
@@ -95,7 +95,7 @@ public class StreamParameterization {
   public EngineNumber getEnergyIntensity() {
     return energyIntensity;
   }
-  
+
   /**
    * Set the initial charge for a stream.
    *
@@ -106,7 +106,7 @@ public class StreamParameterization {
     ensureSalesStreamAllowed(stream);
     initialCharge.put(stream, newValue);
   }
-  
+
   /**
    * Get the initial charge for a stream.
    *
@@ -117,7 +117,7 @@ public class StreamParameterization {
     ensureSalesStreamAllowed(stream);
     return initialCharge.get(stream);
   }
-  
+
   /**
    * Set the recharge population percentage.
    *
@@ -126,7 +126,7 @@ public class StreamParameterization {
   public void setRechargePopulation(EngineNumber newValue) {
     this.rechargePopulation = newValue;
   }
-  
+
   /**
    * Get the recharge population percentage.
    *
@@ -135,7 +135,7 @@ public class StreamParameterization {
   public EngineNumber getRechargePopulation() {
     return rechargePopulation;
   }
-  
+
   /**
    * Set the recharge intensity.
    *
@@ -144,7 +144,7 @@ public class StreamParameterization {
   public void setRechargeIntensity(EngineNumber newValue) {
     this.rechargeIntensity = newValue;
   }
-  
+
   /**
    * Get the recharge intensity.
    *
@@ -153,7 +153,7 @@ public class StreamParameterization {
   public EngineNumber getRechargeIntensity() {
     return rechargeIntensity;
   }
-  
+
   /**
    * Set the recovery rate percentage.
    *
@@ -162,7 +162,7 @@ public class StreamParameterization {
   public void setRecoveryRate(EngineNumber newValue) {
     this.recoveryRate = newValue;
   }
-  
+
   /**
    * Get the recovery rate percentage.
    *
@@ -171,7 +171,7 @@ public class StreamParameterization {
   public EngineNumber getRecoveryRate() {
     return recoveryRate;
   }
-  
+
   /**
    * Set the yield rate percentage for recycling.
    *
@@ -180,7 +180,7 @@ public class StreamParameterization {
   public void setYieldRate(EngineNumber newValue) {
     this.yieldRate = newValue;
   }
-  
+
   /**
    * Get the yield rate percentage for recycling.
    *
@@ -189,7 +189,7 @@ public class StreamParameterization {
   public EngineNumber getYieldRate() {
     return yieldRate;
   }
-  
+
   /**
    * Set the displacement rate percentage.
    *
@@ -198,7 +198,7 @@ public class StreamParameterization {
   public void setDisplacementRate(EngineNumber newValue) {
     this.displacementRate = newValue;
   }
-  
+
   /**
    * Get the displacement rate percentage.
    *
@@ -207,7 +207,7 @@ public class StreamParameterization {
   public EngineNumber getDisplacementRate() {
     return displacementRate;
   }
-  
+
   /**
    * Set the retirement rate percentage.
    *
@@ -216,7 +216,7 @@ public class StreamParameterization {
   public void setRetirementRate(EngineNumber newValue) {
     this.retirementRate = newValue;
   }
-  
+
   /**
    * Get the retirement rate percentage.
    *
@@ -225,7 +225,7 @@ public class StreamParameterization {
   public EngineNumber getRetirementRate() {
     return retirementRate;
   }
-  
+
   /**
    * Set the last specified units for stream operations.
    *
@@ -234,7 +234,7 @@ public class StreamParameterization {
   public void setLastSpecifiedUnits(String units) {
     this.lastSpecifiedUnits = units;
   }
-  
+
   /**
    * Get the last specified units for stream operations.
    *
@@ -243,7 +243,7 @@ public class StreamParameterization {
   public String getLastSpecifiedUnits() {
     return lastSpecifiedUnits;
   }
-  
+
   /**
    * Validate that the given stream name is allowed for sales operations.
    *
