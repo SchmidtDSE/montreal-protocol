@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Object simplifying conversion between units.
@@ -77,14 +76,14 @@ public class UnitConverter {
     boolean sameDenominator = !differentDenominator;
     
     // Create strategy maps
-    Map<String, Function<EngineNumber, EngineNumber>> numeratorStrategy = 
+    Map<String, UnitConverterStrategy> numeratorStrategy = 
         createNumeratorStrategy();
-    Map<String, Function<EngineNumber, EngineNumber>> denominatorStrategy = 
+    Map<String, UnitConverterStrategy> denominatorStrategy = 
         createDenominatorStrategy();
     
-    Function<EngineNumber, EngineNumber> numeratorFunc = 
+    UnitConverterStrategy numeratorFunc = 
         numeratorStrategy.get(destinationNumeratorUnits);
-    Function<EngineNumber, EngineNumber> denominatorFunc = 
+    UnitConverterStrategy denominatorFunc = 
         denominatorStrategy.get(destinationDenominatorUnits);
     
     if (numeratorFunc == null) {
@@ -98,11 +97,11 @@ public class UnitConverter {
     
     if (sourceHasDenominator && sameDenominator) {
       EngineNumber sourceEffective = new EngineNumber(source.getValue(), sourceNumeratorUnits);
-      EngineNumber convertedNumerator = numeratorFunc.apply(sourceEffective);
+      EngineNumber convertedNumerator = numeratorFunc.convert(sourceEffective);
       return new EngineNumber(convertedNumerator.getValue(), destinationUnits);
     } else {
-      EngineNumber numerator = numeratorFunc.apply(source);
-      EngineNumber denominator = denominatorFunc.apply(source);
+      EngineNumber numerator = numeratorFunc.convert(source);
+      EngineNumber denominator = denominatorFunc.convert(source);
       
       if (denominator.getValue().compareTo(BigDecimal.ZERO) == 0) {
         BigDecimal inferredFactor = inferScale(sourceDenominatorUnits, 
@@ -126,10 +125,10 @@ public class UnitConverter {
   /**
    * Create the numerator conversion strategy map.
    *
-   * @return Map of unit types to conversion functions
+   * @return Map of unit types to conversion strategies
    */
-  private Map<String, Function<EngineNumber, EngineNumber>> createNumeratorStrategy() {
-    Map<String, Function<EngineNumber, EngineNumber>> strategy = new HashMap<>();
+  private Map<String, UnitConverterStrategy> createNumeratorStrategy() {
+    Map<String, UnitConverterStrategy> strategy = new HashMap<>();
     strategy.put("kg", this::toKg);
     strategy.put("mt", this::toMt);
     strategy.put("unit", this::toUnits);
@@ -145,10 +144,10 @@ public class UnitConverter {
   /**
    * Create the denominator conversion strategy map.
    *
-   * @return Map of unit types to conversion functions
+   * @return Map of unit types to conversion strategies
    */
-  private Map<String, Function<EngineNumber, EngineNumber>> createDenominatorStrategy() {
-    Map<String, Function<EngineNumber, EngineNumber>> strategy = new HashMap<>();
+  private Map<String, UnitConverterStrategy> createDenominatorStrategy() {
+    Map<String, UnitConverterStrategy> strategy = new HashMap<>();
     strategy.put("kg", x -> convert(stateGetter.getVolume(), "kg"));
     strategy.put("mt", x -> convert(stateGetter.getVolume(), "mt"));
     strategy.put("unit", x -> convert(stateGetter.getPopulation(), "unit"));

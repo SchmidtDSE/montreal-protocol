@@ -8,6 +8,9 @@ package org.kigalisim.engine.number;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
@@ -124,6 +127,28 @@ public class UnitConverterTest {
   }
 
   /**
+   * Helper method to create a mockito-based StateGetter for testing.
+   *
+   * @return Mock StateGetter with lenient stubbing  
+   */
+  private StateGetter createMockStateGetter() {
+    StateGetter mock = mock(StateGetter.class);
+    // Use lenient stubbing for common default values
+    lenient().when(mock.getSubstanceConsumption()).thenReturn(new EngineNumber(0, "tCO2e / kg"));
+    lenient().when(mock.getEnergyIntensity()).thenReturn(new EngineNumber(0, "kwh / kg"));
+    lenient().when(mock.getAmortizedUnitVolume()).thenReturn(new EngineNumber(0, "kg / unit"));
+    lenient().when(mock.getPopulation()).thenReturn(new EngineNumber(0, "units"));
+    lenient().when(mock.getYearsElapsed()).thenReturn(new EngineNumber(0, "years"));
+    lenient().when(mock.getGhgConsumption()).thenReturn(new EngineNumber(0, "tCO2e"));
+    lenient().when(mock.getVolume()).thenReturn(new EngineNumber(0, "kg"));
+    lenient().when(mock.getAmortizedUnitConsumption())
+        .thenReturn(new EngineNumber(0, "tCO2e / unit"));
+    lenient().when(mock.getPopulationChange()).thenReturn(new EngineNumber(0, "units"));
+    lenient().when(mock.getEnergyConsumption()).thenReturn(new EngineNumber(0, "kwh"));
+    return mock;
+  }
+
+  /**
    * Helper method to convert units using the UnitConverter.
    *
    * @param source The source EngineNumber
@@ -151,7 +176,7 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumeToVolume() {
-    EngineNumber result = convertUnits(new EngineNumber(1, "mt"), "kg", new MockStateGetter());
+    EngineNumber result = convertUnits(new EngineNumber(1, "mt"), "kg", createMockStateGetter());
 
     assertCloseTo(1000, result.getValue(), 0.001);
     assertEquals("kg", result.getUnits());
@@ -159,8 +184,9 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionToVolume() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setSubstanceConsumption(new EngineNumber(5, "tCO2e / mt"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getSubstanceConsumption())
+        .thenReturn(new EngineNumber(5, "tCO2e / mt"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "tCO2e"), "mt", mockStateGetter);
 
@@ -170,8 +196,9 @@ public class UnitConverterTest {
 
   @Test
   public void testUnitsToVolume() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setAmortizedUnitVolume(new EngineNumber(10, "kg / unit"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getAmortizedUnitVolume())
+        .thenReturn(new EngineNumber(10, "kg / unit"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "units"), "kg", mockStateGetter);
 
@@ -181,8 +208,8 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumePerPopToVolume() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setPopulation(new EngineNumber(10, "units"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getPopulation()).thenReturn(new EngineNumber(10, "units"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "kg / unit"), "kg", mockStateGetter);
 
@@ -192,8 +219,8 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumePerPopToVolumePerPop() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setPopulation(new EngineNumber(10, "units"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getPopulation()).thenReturn(new EngineNumber(10, "units"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(20, "kg / unit"), "mt / unit", mockStateGetter);
@@ -204,8 +231,8 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumePerTimeToVolume() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setYearsElapsed(new EngineNumber(2, "years"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getYearsElapsed()).thenReturn(new EngineNumber(2, "years"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "kg / year"), "kg", mockStateGetter);
 
@@ -215,8 +242,8 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumePerConsumptionToVolume() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setGhgConsumption(new EngineNumber(10, "tCO2e"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getGhgConsumption()).thenReturn(new EngineNumber(10, "tCO2e"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "kg / tCO2e"), "kg", mockStateGetter);
 
@@ -226,8 +253,8 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumePerConsumptionToVolumeUsingEnergyConsumption() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setEnergyConsumption(new EngineNumber(10, "MJ"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getEnergyConsumption()).thenReturn(new EngineNumber(10, "MJ"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "kg / kwh"), "kg", mockStateGetter);
 
@@ -237,8 +264,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPercentToVolume() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setVolume(new EngineNumber(20, "kg"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getVolume()).thenReturn(new EngineNumber(20, "kg"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "%"), "kg", mockStateGetter);
 
@@ -249,7 +276,7 @@ public class UnitConverterTest {
   @Test
   public void testPopToPop() {
     EngineNumber result = convertUnits(
-        new EngineNumber(5, "unit"), "units", new MockStateGetter());
+        new EngineNumber(5, "unit"), "units", createMockStateGetter());
 
     assertCloseTo(5, result.getValue(), 0.001);
     assertEquals("units", result.getUnits());
@@ -257,8 +284,9 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumeToPop() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setAmortizedUnitVolume(new EngineNumber(10, "kg / unit"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getAmortizedUnitVolume())
+        .thenReturn(new EngineNumber(10, "kg / unit"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "kg"), "units", mockStateGetter);
 
@@ -268,8 +296,9 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionToPop() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setAmortizedUnitConsumption(new EngineNumber(50, "tCO2e / unit"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getAmortizedUnitConsumption())
+        .thenReturn(new EngineNumber(50, "tCO2e / unit"));
 
     EngineNumber result = convertUnits(new EngineNumber(200, "tCO2e"), "units", mockStateGetter);
 
@@ -279,8 +308,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPopPerTimeToPop() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setYearsElapsed(new EngineNumber(2, "years"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getYearsElapsed()).thenReturn(new EngineNumber(2, "years"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(20, "units / year"), "units", mockStateGetter);
@@ -291,8 +320,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPopPerVolumeToPop() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setVolume(new EngineNumber(10, "kg"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getVolume()).thenReturn(new EngineNumber(10, "kg"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(2, "units / kg"), "units", mockStateGetter);
@@ -303,8 +332,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPopPerConsumptionToPop() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setGhgConsumption(new EngineNumber(5, "tCO2e"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getGhgConsumption()).thenReturn(new EngineNumber(5, "tCO2e"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(2, "units / tCO2e"), "units", mockStateGetter);
@@ -315,8 +344,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPopPerConsumptionToPopUsingEnergyConsumption() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setEnergyConsumption(new EngineNumber(5, "kwh"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getEnergyConsumption()).thenReturn(new EngineNumber(5, "kwh"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(2, "units / kwh"), "units", mockStateGetter);
@@ -327,8 +356,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPercentToPop() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setPopulation(new EngineNumber(20, "units"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getPopulation()).thenReturn(new EngineNumber(20, "units"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "%"), "units", mockStateGetter);
 
@@ -339,7 +368,7 @@ public class UnitConverterTest {
   @Test
   public void testConsumptionToConsumptionGhg() {
     EngineNumber result = convertUnits(
-        new EngineNumber(5, "tCO2e"), "tCO2e", new MockStateGetter());
+        new EngineNumber(5, "tCO2e"), "tCO2e", createMockStateGetter());
 
     assertCloseTo(5, result.getValue(), 0.001);
     assertEquals("tCO2e", result.getUnits());
@@ -347,8 +376,9 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumeToConsumptionForGhg() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setSubstanceConsumption(new EngineNumber(5, "tCO2e / kg"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getSubstanceConsumption())
+        .thenReturn(new EngineNumber(5, "tCO2e / kg"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "kg"), "tCO2e", mockStateGetter);
 
@@ -358,8 +388,9 @@ public class UnitConverterTest {
 
   @Test
   public void testPopToConsumptionForGhg() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setSubstanceConsumption(new EngineNumber(0.1, "tCO2e / unit"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getSubstanceConsumption())
+        .thenReturn(new EngineNumber(0.1, "tCO2e / unit"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "units"), "tCO2e", mockStateGetter);
 
@@ -369,8 +400,8 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionPerTimeToConsumptionForGhg() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setYearsElapsed(new EngineNumber(2, "years"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getYearsElapsed()).thenReturn(new EngineNumber(2, "years"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(20, "tCO2e / year"), "tCO2e", mockStateGetter);
@@ -381,8 +412,8 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionPerVolumeToConsumptionForGhg() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setVolume(new EngineNumber(5, "kg"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getVolume()).thenReturn(new EngineNumber(5, "kg"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(2, "tCO2e / kg"), "tCO2e", mockStateGetter);
@@ -393,8 +424,8 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionPerPopToConsumptionForGhg() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setPopulation(new EngineNumber(20, "units"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getPopulation()).thenReturn(new EngineNumber(20, "units"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(10, "tCO2e / unit"), "tCO2e", mockStateGetter);
@@ -405,8 +436,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPercentToConsumptionForGhg() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setGhgConsumption(new EngineNumber(10, "tCO2e"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getGhgConsumption()).thenReturn(new EngineNumber(10, "tCO2e"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "%"), "tCO2e", mockStateGetter);
 
@@ -416,8 +447,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPercentToConsumptionUsingEnergyConsumption() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setEnergyConsumption(new EngineNumber(10, "kwh"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getEnergyConsumption()).thenReturn(new EngineNumber(10, "kwh"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "%"), "kwh", mockStateGetter);
 
@@ -427,7 +458,7 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionToConsumptionEnergy() {
-    EngineNumber result = convertUnits(new EngineNumber(5, "kwh"), "kwh", new MockStateGetter());
+    EngineNumber result = convertUnits(new EngineNumber(5, "kwh"), "kwh", createMockStateGetter());
 
     assertCloseTo(5, result.getValue(), 0.001);
     assertEquals("kwh", result.getUnits());
@@ -435,8 +466,9 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumeToConsumptionForEnergy() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setEnergyIntensity(new EngineNumber(5, "kwh / kg"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getEnergyIntensity())
+        .thenReturn(new EngineNumber(5, "kwh / kg"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "kg"), "kwh", mockStateGetter);
 
@@ -446,8 +478,9 @@ public class UnitConverterTest {
 
   @Test
   public void testPopToConsumptionForEnergy() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setEnergyIntensity(new EngineNumber(0.1, "kwh / unit"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getEnergyIntensity())
+        .thenReturn(new EngineNumber(0.1, "kwh / unit"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "units"), "kwh", mockStateGetter);
 
@@ -457,8 +490,8 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionPerTimeToConsumptionForEnergy() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setYearsElapsed(new EngineNumber(2, "years"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getYearsElapsed()).thenReturn(new EngineNumber(2, "years"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "kwh / year"), "kwh", mockStateGetter);
 
@@ -468,8 +501,8 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionPerVolumeToConsumptionForEnergy() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setVolume(new EngineNumber(5, "kg"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getVolume()).thenReturn(new EngineNumber(5, "kg"));
 
     EngineNumber result = convertUnits(new EngineNumber(2, "kwh / kg"), "kwh", mockStateGetter);
 
@@ -479,7 +512,8 @@ public class UnitConverterTest {
 
   @Test
   public void testYearsToYears() {
-    EngineNumber result = convertUnits(new EngineNumber(5, "year"), "years", new MockStateGetter());
+    EngineNumber result = convertUnits(
+        new EngineNumber(5, "year"), "years", createMockStateGetter());
 
     assertCloseTo(5, result.getValue(), 0.001);
     assertEquals("years", result.getUnits());
@@ -487,8 +521,8 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionToYears() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setGhgConsumption(new EngineNumber(5, "tCO2e"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getGhgConsumption()).thenReturn(new EngineNumber(5, "tCO2e"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "tCO2e"), "years", mockStateGetter);
 
@@ -498,8 +532,8 @@ public class UnitConverterTest {
 
   @Test
   public void testConsumptionToYearsUsingEnergyConsumption() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setEnergyConsumption(new EngineNumber(5, "kwh"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getEnergyConsumption()).thenReturn(new EngineNumber(5, "kwh"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "kwh"), "years", mockStateGetter);
 
@@ -509,8 +543,8 @@ public class UnitConverterTest {
 
   @Test
   public void testVolumeToYears() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setVolume(new EngineNumber(5, "kg"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getVolume()).thenReturn(new EngineNumber(5, "kg"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "kg"), "years", mockStateGetter);
 
@@ -520,8 +554,9 @@ public class UnitConverterTest {
 
   @Test
   public void testPopToYears() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setPopulationChange(new EngineNumber(2, "units"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getPopulationChange())
+        .thenReturn(new EngineNumber(2, "units"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "units"), "years", mockStateGetter);
 
@@ -531,8 +566,8 @@ public class UnitConverterTest {
 
   @Test
   public void testPercentToYears() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setYearsElapsed(new EngineNumber(2, "years"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getYearsElapsed()).thenReturn(new EngineNumber(2, "years"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "%"), "years", mockStateGetter);
 
@@ -542,8 +577,8 @@ public class UnitConverterTest {
 
   @Test
   public void testNormalizeByPopulation() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setPopulation(new EngineNumber(2, "units"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getPopulation()).thenReturn(new EngineNumber(2, "units"));
 
     EngineNumber result = convertUnits(new EngineNumber(20, "kg"), "kg / unit", mockStateGetter);
 
@@ -553,8 +588,8 @@ public class UnitConverterTest {
 
   @Test
   public void testNormalizeByVolume() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setVolume(new EngineNumber(2, "kg"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getVolume()).thenReturn(new EngineNumber(2, "kg"));
 
     EngineNumber result = convertUnits(new EngineNumber(10, "units"), "unit / kg", mockStateGetter);
 
@@ -564,8 +599,8 @@ public class UnitConverterTest {
 
   @Test
   public void testNormalizeByGhgConsumption() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setGhgConsumption(new EngineNumber(2, "tCO2e"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getGhgConsumption()).thenReturn(new EngineNumber(2, "tCO2e"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(10, "units"), "unit / tCO2e", mockStateGetter);
@@ -576,8 +611,8 @@ public class UnitConverterTest {
 
   @Test
   public void testNormalizeByTime() {
-    MockStateGetter mockStateGetter = new MockStateGetter();
-    mockStateGetter.setYearsElapsed(new EngineNumber(2, "years"));
+    StateGetter mockStateGetter = createMockStateGetter();
+    lenient().when(mockStateGetter.getYearsElapsed()).thenReturn(new EngineNumber(2, "years"));
 
     EngineNumber result = convertUnits(
         new EngineNumber(10, "units"), "unit / year", mockStateGetter);
