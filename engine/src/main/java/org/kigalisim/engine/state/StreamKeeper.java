@@ -9,8 +9,6 @@
 
 package org.kigalisim.engine.state;
 
-import static org.kigalisim.engine.state.EngineConstants.STREAM_BASE_UNITS;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,30 +88,30 @@ public class StreamKeeper {
     substances.put(key, new StreamParameterization());
     
     // Sales: manufacture, import, recycle
-    streams.put(getKey(application, substance, "manufacture"), 
-                new EngineNumber(BigDecimal.ZERO, "kg"));
-    streams.put(getKey(application, substance, "import"), 
-                new EngineNumber(BigDecimal.ZERO, "kg"));
-    streams.put(getKey(application, substance, "recycle"), 
-                new EngineNumber(BigDecimal.ZERO, "kg"));
+    String manufactureKey = getKey(application, substance, "manufacture");
+    streams.put(manufactureKey, new EngineNumber(BigDecimal.ZERO, "kg"));
+    String importKey = getKey(application, substance, "import");
+    streams.put(importKey, new EngineNumber(BigDecimal.ZERO, "kg"));
+    String recycleKey = getKey(application, substance, "recycle");
+    streams.put(recycleKey, new EngineNumber(BigDecimal.ZERO, "kg"));
     
     // Consumption: count, conversion
-    streams.put(getKey(application, substance, "consumption"), 
-                new EngineNumber(BigDecimal.ZERO, "tCO2e"));
+    String consumptionKey = getKey(application, substance, "consumption");
+    streams.put(consumptionKey, new EngineNumber(BigDecimal.ZERO, "tCO2e"));
     
     // Population
-    streams.put(getKey(application, substance, "equipment"), 
-                new EngineNumber(BigDecimal.ZERO, "units"));
-    streams.put(getKey(application, substance, "priorEquipment"), 
-                new EngineNumber(BigDecimal.ZERO, "units"));
-    streams.put(getKey(application, substance, "newEquipment"), 
-                new EngineNumber(BigDecimal.ZERO, "units"));
+    String equipmentKey = getKey(application, substance, "equipment");
+    streams.put(equipmentKey, new EngineNumber(BigDecimal.ZERO, "units"));
+    String priorEquipmentKey = getKey(application, substance, "priorEquipment");
+    streams.put(priorEquipmentKey, new EngineNumber(BigDecimal.ZERO, "units"));
+    String newEquipmentKey = getKey(application, substance, "newEquipment");
+    streams.put(newEquipmentKey, new EngineNumber(BigDecimal.ZERO, "units"));
     
     // Emissions
-    streams.put(getKey(application, substance, "rechargeEmissions"), 
-                new EngineNumber(BigDecimal.ZERO, "tCO2e"));
-    streams.put(getKey(application, substance, "eolEmissions"), 
-                new EngineNumber(BigDecimal.ZERO, "tCO2e"));
+    String rechargeEmissionsKey = getKey(application, substance, "rechargeEmissions");
+    streams.put(rechargeEmissionsKey, new EngineNumber(BigDecimal.ZERO, "tCO2e"));
+    String eolEmissionsKey = getKey(application, substance, "eolEmissions");
+    streams.put(eolEmissionsKey, new EngineNumber(BigDecimal.ZERO, "tCO2e"));
   }
   
   /**
@@ -511,9 +509,14 @@ public class StreamKeeper {
    */
   private void ensureSubstancePresent(String application, String substance, String context) {
     if (!hasSubstance(application, substance)) {
-      String pairStr = application + ", " + substance;
-      throw new IllegalStateException("Not a known application substance pair in " 
-                                      + context + ": " + pairStr);
+      StringBuilder message = new StringBuilder();
+      message.append("Not a known application substance pair in ");
+      message.append(context);
+      message.append(": ");
+      message.append(application);
+      message.append(", ");
+      message.append(substance);
+      throw new IllegalStateException(message.toString());
     }
   }
   
@@ -524,7 +527,7 @@ public class StreamKeeper {
    * @throws IllegalArgumentException If the stream name is not recognized
    */
   private void ensureStreamKnown(String name) {
-    if (!STREAM_BASE_UNITS.containsKey(name)) {
+    if (EngineConstants.getBaseUnits(name) == null) {
       throw new IllegalArgumentException("Unknown stream: " + name);
     }
   }
@@ -537,7 +540,7 @@ public class StreamKeeper {
    */
   private String getUnits(String name) {
     ensureStreamKnown(name);
-    return STREAM_BASE_UNITS.get(name);
+    return EngineConstants.getBaseUnits(name);
   }
   
   /**
@@ -618,7 +621,8 @@ public class StreamKeeper {
       throw new RuntimeException("Encountered negative stream to be set for: " + pieces);
     }
     
-    streams.put(getKey(application, substance, name), valueConverted);
+    String streamKey = getKey(application, substance, name);
+    streams.put(streamKey, valueConverted);
   }
   
   /**

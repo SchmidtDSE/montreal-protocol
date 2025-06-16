@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,182 +27,58 @@ import org.kigalisim.engine.number.UnitConverter;
 public class StreamKeeperTest {
 
   /**
-   * Mock implementation of StateGetter for testing.
-   */
-  private static class MockStateGetter implements StateGetter {
-    private EngineNumber substanceConsumption = new EngineNumber(BigDecimal.ONE, "tCO2e / kg");
-    private EngineNumber energyIntensity = new EngineNumber(BigDecimal.ONE, "kwh / kg");
-    private EngineNumber amortizedUnitVolume = new EngineNumber(BigDecimal.ONE, "kg / unit");
-    private EngineNumber population = new EngineNumber(new BigDecimal("100"), "units");
-    private EngineNumber yearsElapsed = new EngineNumber(BigDecimal.ONE, "year");
-    private EngineNumber totalGhgConsumption = new EngineNumber(new BigDecimal("50"), "tCO2e");
-    private EngineNumber totalEnergyConsumption = new EngineNumber(new BigDecimal("100"), "kwh");
-    private EngineNumber volume = new EngineNumber(new BigDecimal("200"), "kg");
-    private EngineNumber amortizedUnitConsumption = 
-        new EngineNumber(new BigDecimal("0.5"), "tCO2e / unit");
-    private EngineNumber populationChange = new EngineNumber(new BigDecimal("10"), "units");
-
-    @Override
-    public EngineNumber getSubstanceConsumption() {
-      return substanceConsumption;
-    }
-
-    @Override
-    public EngineNumber getEnergyIntensity() {
-      return energyIntensity;
-    }
-
-    @Override
-    public EngineNumber getAmortizedUnitVolume() {
-      return amortizedUnitVolume;
-    }
-
-    @Override
-    public EngineNumber getPopulation() {
-      return population;
-    }
-
-    @Override
-    public EngineNumber getYearsElapsed() {
-      return yearsElapsed;
-    }
-
-    @Override
-    public EngineNumber getGhgConsumption() {
-      return totalGhgConsumption;
-    }
-
-    @Override
-    public EngineNumber getEnergyConsumption() {
-      return totalEnergyConsumption;
-    }
-
-    @Override
-    public EngineNumber getVolume() {
-      return volume;
-    }
-
-    @Override
-    public EngineNumber getAmortizedUnitConsumption() {
-      return amortizedUnitConsumption;
-    }
-
-    @Override
-    public EngineNumber getPopulationChange() {
-      return populationChange;
-    }
-  }
-
-  /**
-   * Mock implementation of OverridingConverterStateGetter for testing.
-   */
-  private static class MockOverridingConverterStateGetter 
-      implements OverridingConverterStateGetter {
-    private final StateGetter inner;
-    private EngineNumber substanceConsumption;
-    private EngineNumber energyIntensity;
-    private EngineNumber amortizedUnitVolume;
-    private EngineNumber population;
-    private EngineNumber yearsElapsed;
-    private EngineNumber populationChange;
-
-    public MockOverridingConverterStateGetter(StateGetter inner) {
-      this.inner = inner;
-    }
-
-    @Override
-    public void setSubstanceConsumption(EngineNumber newValue) {
-      this.substanceConsumption = newValue;
-    }
-
-    @Override
-    public EngineNumber getSubstanceConsumption() {
-      return substanceConsumption != null ? substanceConsumption : inner.getSubstanceConsumption();
-    }
-
-    @Override
-    public void setEnergyIntensity(EngineNumber newValue) {
-      this.energyIntensity = newValue;
-    }
-
-    @Override
-    public EngineNumber getEnergyIntensity() {
-      return energyIntensity != null ? energyIntensity : inner.getEnergyIntensity();
-    }
-
-    @Override
-    public void setAmortizedUnitVolume(EngineNumber newValue) {
-      this.amortizedUnitVolume = newValue;
-    }
-
-    @Override
-    public EngineNumber getAmortizedUnitVolume() {
-      return amortizedUnitVolume != null ? amortizedUnitVolume : inner.getAmortizedUnitVolume();
-    }
-
-    @Override
-    public void setPopulation(EngineNumber newValue) {
-      this.population = newValue;
-    }
-
-    @Override
-    public EngineNumber getPopulation() {
-      return population != null ? population : inner.getPopulation();
-    }
-
-    @Override
-    public void setYearsElapsed(EngineNumber newValue) {
-      this.yearsElapsed = newValue;
-    }
-
-    @Override
-    public EngineNumber getYearsElapsed() {
-      return yearsElapsed != null ? yearsElapsed : inner.getYearsElapsed();
-    }
-
-    @Override
-    public EngineNumber getGhgConsumption() {
-      return inner.getGhgConsumption();
-    }
-
-    @Override
-    public EngineNumber getEnergyConsumption() {
-      return inner.getEnergyConsumption();
-    }
-
-    @Override
-    public EngineNumber getVolume() {
-      return inner.getVolume();
-    }
-
-    @Override
-    public EngineNumber getAmortizedUnitConsumption() {
-      return inner.getAmortizedUnitConsumption();
-    }
-
-    @Override
-    public void setPopulationChange(EngineNumber newValue) {
-      this.populationChange = newValue;
-    }
-
-    @Override
-    public EngineNumber getPopulationChange(UnitConverter unitConverter) {
-      return populationChange != null ? populationChange : inner.getPopulationChange();
-    }
-  }
-
-  /**
    * Create a mock StreamKeeper for testing.
    *
    * @return A new StreamKeeper with mock dependencies
    */
   private StreamKeeper createMockKeeper() {
-    MockStateGetter stateGetter = new MockStateGetter();
+    StateGetter stateGetter = mock(StateGetter.class);
+    when(stateGetter.getSubstanceConsumption())
+        .thenReturn(new EngineNumber(BigDecimal.ONE, "tCO2e / kg"));
+    when(stateGetter.getEnergyIntensity())
+        .thenReturn(new EngineNumber(BigDecimal.ONE, "kwh / kg"));
+    when(stateGetter.getAmortizedUnitVolume())
+        .thenReturn(new EngineNumber(BigDecimal.ONE, "kg / unit"));
+    when(stateGetter.getPopulation())
+        .thenReturn(new EngineNumber(new BigDecimal("100"), "units"));
+    when(stateGetter.getYearsElapsed())
+        .thenReturn(new EngineNumber(BigDecimal.ONE, "year"));
+    when(stateGetter.getGhgConsumption())
+        .thenReturn(new EngineNumber(new BigDecimal("50"), "tCO2e"));
+    when(stateGetter.getEnergyConsumption())
+        .thenReturn(new EngineNumber(new BigDecimal("100"), "kwh"));
+    when(stateGetter.getVolume())
+        .thenReturn(new EngineNumber(new BigDecimal("200"), "kg"));
+    when(stateGetter.getAmortizedUnitConsumption())
+        .thenReturn(new EngineNumber(new BigDecimal("0.5"), "tCO2e / unit"));
+    when(stateGetter.getPopulationChange())
+        .thenReturn(new EngineNumber(new BigDecimal("10"), "units"));
+    
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     
     // Create a mock OverridingConverterStateGetter for StreamKeeper
     OverridingConverterStateGetter mockOverridingStateGetter = 
-        new MockOverridingConverterStateGetter(stateGetter);
+        mock(OverridingConverterStateGetter.class);
+    when(mockOverridingStateGetter.getSubstanceConsumption())
+        .thenReturn(new EngineNumber(BigDecimal.ONE, "tCO2e / kg"));
+    when(mockOverridingStateGetter.getEnergyIntensity())
+        .thenReturn(new EngineNumber(BigDecimal.ONE, "kwh / kg"));
+    when(mockOverridingStateGetter.getAmortizedUnitVolume())
+        .thenReturn(new EngineNumber(BigDecimal.ONE, "kg / unit"));
+    when(mockOverridingStateGetter.getPopulation())
+        .thenReturn(new EngineNumber(new BigDecimal("100"), "units"));
+    when(mockOverridingStateGetter.getYearsElapsed())
+        .thenReturn(new EngineNumber(BigDecimal.ONE, "year"));
+    when(mockOverridingStateGetter.getGhgConsumption())
+        .thenReturn(new EngineNumber(new BigDecimal("50"), "tCO2e"));
+    when(mockOverridingStateGetter.getEnergyConsumption())
+        .thenReturn(new EngineNumber(new BigDecimal("100"), "kwh"));
+    when(mockOverridingStateGetter.getVolume())
+        .thenReturn(new EngineNumber(new BigDecimal("200"), "kg"));
+    when(mockOverridingStateGetter.getAmortizedUnitConsumption())
+        .thenReturn(new EngineNumber(new BigDecimal("0.5"), "tCO2e / unit"));
+    when(mockOverridingStateGetter.getPopulationChange(unitConverter))
+        .thenReturn(new EngineNumber(new BigDecimal("10"), "units"));
     
     return new StreamKeeper(mockOverridingStateGetter, unitConverter);
   }

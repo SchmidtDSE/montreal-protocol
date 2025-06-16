@@ -43,7 +43,7 @@ public final class EngineConstants {
   /**
    * Base units for different stream types in the engine.
    */
-  public static final Map<String, String> STREAM_BASE_UNITS = createStreamBaseUnits();
+  private static final Map<String, String> STREAM_BASE_UNITS = createStreamBaseUnits();
   
   /**
    * Create the map of stream base units.
@@ -64,6 +64,16 @@ public final class EngineConstants {
     units.put("priorEquipment", "units");
     units.put("newEquipment", "units");
     return units;
+  }
+  
+  /**
+   * Get the base units for a given stream name.
+   *
+   * @param streamName The name of the stream
+   * @return The base units for the stream, or null if not found
+   */
+  public static String getBaseUnits(String streamName) {
+    return STREAM_BASE_UNITS.get(streamName);
   }
   
   /**
