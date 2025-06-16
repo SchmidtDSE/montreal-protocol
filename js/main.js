@@ -38,6 +38,7 @@ class ButtonPanelPresenter {
     self._root = root;
 
     self._availableDisplay = self._root.querySelector("#available-panel");
+    self._autorunDisplay = self._root.querySelector("#auto-run-panel");
     self._loadingDisplay = self._root.querySelector("#loading");
     self._runButton = self._root.querySelector("#run-button");
 
@@ -55,6 +56,7 @@ class ButtonPanelPresenter {
   enable() {
     const self = this;
     self._availableDisplay.style.display = "block";
+    self._autorunDisplay.style.display = "block";
     self._loadingDisplay.style.display = "none";
   }
 
@@ -64,6 +66,7 @@ class ButtonPanelPresenter {
   disable() {
     const self = this;
     self._availableDisplay.style.display = "none";
+    self._autorunDisplay.style.display = "none";
     self._loadingDisplay.style.display = "block";
   }
 
@@ -186,7 +189,7 @@ class MainPresenter {
    */
   _isOnCodeEditorTab() {
     const codeEditorPane = document.getElementById("code-editor-pane");
-    return codeEditorPane && codeEditorPane.getAttribute("aria-hidden") !== "true";
+    return codeEditorPane && codeEditorPane.getAttribute("hidden") !== "hidden";
   }
 
   /**
