@@ -638,8 +638,9 @@ public class StreamKeeper {
    */
   private void setStreamForSalesWithUnits(String application, String substance, String name,
                                          EngineNumber value) {
-    OverridingConverterStateGetter overridingStateGetter = 
-        new OverridingConverterStateGetter(stateGetter);
+    OverridingConverterStateGetter overridingStateGetter = new OverridingConverterStateGetter(
+        stateGetter
+    );
     UnitConverter unitConverter = new UnitConverter(overridingStateGetter);
 
     EngineNumber initialCharge = getInitialCharge(application, substance, name);
