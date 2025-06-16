@@ -24,16 +24,16 @@ import org.kigalisim.engine.number.UnitConverter;
 public class OverridingConverterStateGetter implements StateGetter {
 
   private final StateGetter innerGetter;
-  private Optional<EngineNumber> energyIntensity = Optional.empty();
-  private Optional<EngineNumber> amortizedUnitVolume = Optional.empty();
-  private Optional<EngineNumber> population = Optional.empty();
-  private Optional<EngineNumber> yearsElapsed = Optional.empty();
-  private Optional<EngineNumber> totalConsumption = Optional.empty();
-  private Optional<EngineNumber> energyConsumption = Optional.empty();
-  private Optional<EngineNumber> volume = Optional.empty();
-  private Optional<EngineNumber> amortizedUnitConsumption = Optional.empty();
-  private Optional<EngineNumber> populationChange = Optional.empty();
-  private Optional<EngineNumber> substanceConsumption = Optional.empty();
+  private Optional<EngineNumber> energyIntensity;
+  private Optional<EngineNumber> amortizedUnitVolume;
+  private Optional<EngineNumber> population;
+  private Optional<EngineNumber> yearsElapsed;
+  private Optional<EngineNumber> totalConsumption;
+  private Optional<EngineNumber> energyConsumption;
+  private Optional<EngineNumber> volume;
+  private Optional<EngineNumber> amortizedUnitConsumption;
+  private Optional<EngineNumber> populationChange;
+  private Optional<EngineNumber> substanceConsumption;
 
   /**
    * Create a new overriding converter state getter.
@@ -42,6 +42,16 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   public OverridingConverterStateGetter(StateGetter innerGetter) {
     this.innerGetter = innerGetter;
+    this.energyIntensity = Optional.empty();
+    this.amortizedUnitVolume = Optional.empty();
+    this.population = Optional.empty();
+    this.yearsElapsed = Optional.empty();
+    this.totalConsumption = Optional.empty();
+    this.energyConsumption = Optional.empty();
+    this.volume = Optional.empty();
+    this.amortizedUnitConsumption = Optional.empty();
+    this.populationChange = Optional.empty();
+    this.substanceConsumption = Optional.empty();
   }
 
   /**
@@ -55,9 +65,7 @@ public class OverridingConverterStateGetter implements StateGetter {
       case "sales", "manufacture", "import" -> setVolume(value);
       case "equipment", "priorEquipment" -> setPopulation(value);
       case "consumption" -> setConsumption(value);
-      default -> {
-        // No-op for unrecognized stream names
-      }
+      default -> throw new IllegalArgumentException("Unrecognized stream name: " + streamName);
     }
   }
 
