@@ -53,11 +53,11 @@ public class StreamKeeperTest {
         .thenReturn(new EngineNumber(new BigDecimal("0.5"), "tCO2e / unit"));
     when(stateGetter.getPopulationChange())
         .thenReturn(new EngineNumber(new BigDecimal("10"), "units"));
-    
+
     UnitConverter unitConverter = new UnitConverter(stateGetter);
-    
+
     // Create a mock OverridingConverterStateGetter for StreamKeeper
-    OverridingConverterStateGetter mockOverridingStateGetter = 
+    OverridingConverterStateGetter mockOverridingStateGetter =
         mock(OverridingConverterStateGetter.class);
     when(mockOverridingStateGetter.getSubstanceConsumption())
         .thenReturn(new EngineNumber(BigDecimal.ONE, "tCO2e / kg"));
@@ -79,7 +79,7 @@ public class StreamKeeperTest {
         .thenReturn(new EngineNumber(new BigDecimal("0.5"), "tCO2e / unit"));
     when(mockOverridingStateGetter.getPopulationChange(unitConverter))
         .thenReturn(new EngineNumber(new BigDecimal("10"), "units"));
-    
+
     return new StreamKeeper(mockOverridingStateGetter, unitConverter);
   }
 
@@ -98,7 +98,7 @@ public class StreamKeeperTest {
   @Test
   public void testHasSubstanceReturnsFalseForUnknownSubstance() {
     StreamKeeper keeper = createMockKeeper();
-    assertFalse(keeper.hasSubstance("test app", "test substance"), 
+    assertFalse(keeper.hasSubstance("test app", "test substance"),
                 "Should return false for unknown substance");
   }
 
@@ -111,7 +111,7 @@ public class StreamKeeperTest {
 
     keeper.ensureSubstance("test app", "test substance");
 
-    assertTrue(keeper.hasSubstance("test app", "test substance"), 
+    assertTrue(keeper.hasSubstance("test app", "test substance"),
                "Should return true after ensuring substance");
   }
 
@@ -126,7 +126,7 @@ public class StreamKeeperTest {
 
     // Test that default streams exist with zero values
     EngineNumber manufacture = keeper.getStream("test app", "test substance", "manufacture");
-    assertEquals(BigDecimal.ZERO, manufacture.getValue(), 
+    assertEquals(BigDecimal.ZERO, manufacture.getValue(),
                  "Manufacture should default to 0");
     assertEquals("kg", manufacture.getUnits(), "Manufacture should have kg units");
 
@@ -159,7 +159,7 @@ public class StreamKeeperTest {
     keeper.setStream("test app", "test substance", "manufacture", newValue);
 
     EngineNumber retrieved = keeper.getStream("test app", "test substance", "manufacture");
-    assertEquals(new BigDecimal("100"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("100"), retrieved.getValue(),
                  "Should retrieve set value");
     assertEquals("kg", retrieved.getUnits(), "Should retrieve correct units");
   }
@@ -172,13 +172,13 @@ public class StreamKeeperTest {
     StreamKeeper keeper = createMockKeeper();
     keeper.ensureSubstance("test app", "test substance");
 
-    keeper.setStream("test app", "test substance", "manufacture", 
+    keeper.setStream("test app", "test substance", "manufacture",
                      new EngineNumber(new BigDecimal("50"), "kg"));
-    keeper.setStream("test app", "test substance", "import", 
+    keeper.setStream("test app", "test substance", "import",
                      new EngineNumber(new BigDecimal("30"), "kg"));
 
     EngineNumber sales = keeper.getStream("test app", "test substance", "sales");
-    assertEquals(new BigDecimal("80"), sales.getValue(), 
+    assertEquals(new BigDecimal("80"), sales.getValue(),
                  "Sales should be sum of manufacture and import");
     assertEquals("kg", sales.getUnits(), "Sales should have kg units");
   }
@@ -195,9 +195,9 @@ public class StreamKeeperTest {
     keeper.setGhgIntensity("test app", "test substance", newValue);
 
     EngineNumber retrieved = keeper.getGhgIntensity("test app", "test substance");
-    assertEquals(new BigDecimal("2.5"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("2.5"), retrieved.getValue(),
                  "Should retrieve set GHG intensity");
-    assertEquals("tCO2e / kg", retrieved.getUnits(), 
+    assertEquals("tCO2e / kg", retrieved.getUnits(),
                  "Should retrieve correct GHG intensity units");
   }
 
@@ -213,9 +213,9 @@ public class StreamKeeperTest {
     keeper.setEnergyIntensity("test app", "test substance", newValue);
 
     EngineNumber retrieved = keeper.getEnergyIntensity("test app", "test substance");
-    assertEquals(new BigDecimal("1.5"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("1.5"), retrieved.getValue(),
                  "Should retrieve set energy intensity");
-    assertEquals("kwh / kg", retrieved.getUnits(), 
+    assertEquals("kwh / kg", retrieved.getUnits(),
                  "Should retrieve correct energy intensity units");
   }
 
@@ -231,9 +231,9 @@ public class StreamKeeperTest {
     keeper.setInitialCharge("test app", "test substance", "manufacture", newValue);
 
     EngineNumber retrieved = keeper.getInitialCharge("test app", "test substance", "manufacture");
-    assertEquals(new BigDecimal("2.0"), retrieved.getValue(), 
+    assertEquals(new BigDecimal("2.0"), retrieved.getValue(),
                  "Should retrieve set initial charge");
-    assertEquals("kg / unit", retrieved.getUnits(), 
+    assertEquals("kg / unit", retrieved.getUnits(),
                  "Should retrieve correct initial charge units");
   }
 
@@ -246,18 +246,18 @@ public class StreamKeeperTest {
     keeper.ensureSubstance("test app", "test substance");
 
     // Set equipment value
-    keeper.setStream("test app", "test substance", "equipment", 
+    keeper.setStream("test app", "test substance", "equipment",
                      new EngineNumber(new BigDecimal("150"), "units"));
 
     // Increment year
     keeper.incrementYear();
 
     // Check that equipment was moved to priorEquipment
-    EngineNumber priorEquipment = keeper.getStream("test app", "test substance", 
+    EngineNumber priorEquipment = keeper.getStream("test app", "test substance",
                                                    "priorEquipment");
-    assertEquals(new BigDecimal("150"), priorEquipment.getValue(), 
+    assertEquals(new BigDecimal("150"), priorEquipment.getValue(),
                  "Prior equipment should equal previous equipment value");
-    assertEquals("units", priorEquipment.getUnits(), 
+    assertEquals("units", priorEquipment.getUnits(),
                  "Prior equipment should have correct units");
   }
 

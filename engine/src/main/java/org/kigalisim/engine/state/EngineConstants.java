@@ -19,32 +19,32 @@ import java.util.Map;
  * stream types in the simulation engine.</p>
  */
 public final class EngineConstants {
-  
+
   /**
    * Global context level for variables accessible throughout the system.
    */
   public static final int GLOBAL_CONTEXT = 0;
-  
+
   /**
    * Stanza context level for variables accessible within a stanza.
    */
   public static final int STANZA_CONTEXT = 1;
-  
+
   /**
    * Application context level for variables accessible within an application.
    */
   public static final int APPLICATION_CONTEXT = 2;
-  
+
   /**
    * Substance context level for variables accessible within a substance.
    */
   public static final int SUBSTANCE_CONTEXT = 3;
-  
+
   /**
    * Base units for different stream types in the engine.
    */
   private static final Map<String, String> STREAM_BASE_UNITS = createStreamBaseUnits();
-  
+
   /**
    * Create the map of stream base units.
    *
@@ -65,7 +65,7 @@ public final class EngineConstants {
     units.put("newEquipment", "units");
     return units;
   }
-  
+
   /**
    * Get the base units for a given stream name.
    *
@@ -75,7 +75,7 @@ public final class EngineConstants {
   public static String getBaseUnits(String streamName) {
     return STREAM_BASE_UNITS.get(streamName);
   }
-  
+
   /**
    * Private constructor to prevent instantiation of utility class.
    */
