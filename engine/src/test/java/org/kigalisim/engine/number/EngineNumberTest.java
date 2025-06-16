@@ -99,8 +99,11 @@ public class EngineNumberTest {
     String units = "liters";
     EngineNumber number = new EngineNumber(value, units);
     
-    assertEquals(BigDecimal.valueOf(value), number.getValue(), 
-        "getValue should return the converted BigDecimal value");
+    assertEquals(
+        BigDecimal.valueOf(value),
+        number.getValue(), 
+        "getValue should return the converted BigDecimal value"
+    );
     assertEquals(units, number.getUnits(), "getUnits should return the correct units");
   }
 }
