@@ -11,6 +11,7 @@ package org.kigalisim.engine.state;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
 
@@ -23,16 +24,16 @@ import org.kigalisim.engine.number.UnitConverter;
 public class OverridingConverterStateGetter implements StateGetter {
 
   private final StateGetter innerGetter;
-  private EngineNumber energyIntensity;
-  private EngineNumber amortizedUnitVolume;
-  private EngineNumber population;
-  private EngineNumber yearsElapsed;
-  private EngineNumber totalConsumption;
-  private EngineNumber energyConsumption;
-  private EngineNumber volume;
-  private EngineNumber amortizedUnitConsumption;
-  private EngineNumber populationChange;
-  private EngineNumber substanceConsumption;
+  private Optional<EngineNumber> energyIntensity = Optional.empty();
+  private Optional<EngineNumber> amortizedUnitVolume = Optional.empty();
+  private Optional<EngineNumber> population = Optional.empty();
+  private Optional<EngineNumber> yearsElapsed = Optional.empty();
+  private Optional<EngineNumber> totalConsumption = Optional.empty();
+  private Optional<EngineNumber> energyConsumption = Optional.empty();
+  private Optional<EngineNumber> volume = Optional.empty();
+  private Optional<EngineNumber> amortizedUnitConsumption = Optional.empty();
+  private Optional<EngineNumber> populationChange = Optional.empty();
+  private Optional<EngineNumber> substanceConsumption = Optional.empty();
 
   /**
    * Create a new overriding converter state getter.
@@ -51,21 +52,12 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   public void setTotal(String streamName, EngineNumber value) {
     switch (streamName) {
-      case "sales":
-      case "manufacture":
-      case "import":
-        setVolume(value);
-        break;
-      case "equipment":
-      case "priorEquipment":
-        setPopulation(value);
-        break;
-      case "consumption":
-        setConsumption(value);
-        break;
-      default:
+      case "sales", "manufacture", "import" -> setVolume(value);
+      case "equipment", "priorEquipment" -> setPopulation(value);
+      case "consumption" -> setConsumption(value);
+      default -> {
         // No-op for unrecognized stream names
-        break;
+      }
     }
   }
 
@@ -75,7 +67,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new substance consumption value
    */
   public void setSubstanceConsumption(EngineNumber newValue) {
-    this.substanceConsumption = newValue;
+    this.substanceConsumption = Optional.of(newValue);
   }
 
   /**
@@ -85,8 +77,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getSubstanceConsumption() {
-    return substanceConsumption != null 
-        ? substanceConsumption : innerGetter.getSubstanceConsumption();
+    if (substanceConsumption.isPresent()) {
+      return substanceConsumption.get();
+    } else {
+      return innerGetter.getSubstanceConsumption();
+    }
   }
 
   /**
@@ -95,7 +90,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new energy intensity value
    */
   public void setEnergyIntensity(EngineNumber newValue) {
-    this.energyIntensity = newValue;
+    this.energyIntensity = Optional.of(newValue);
   }
 
   /**
@@ -105,7 +100,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getEnergyIntensity() {
-    return energyIntensity != null ? energyIntensity : innerGetter.getEnergyIntensity();
+    if (energyIntensity.isPresent()) {
+      return energyIntensity.get();
+    } else {
+      return innerGetter.getEnergyIntensity();
+    }
   }
 
   /**
@@ -114,7 +113,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new amortized unit volume value
    */
   public void setAmortizedUnitVolume(EngineNumber newValue) {
-    this.amortizedUnitVolume = newValue;
+    this.amortizedUnitVolume = Optional.of(newValue);
   }
 
   /**
@@ -124,7 +123,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getAmortizedUnitVolume() {
-    return amortizedUnitVolume != null ? amortizedUnitVolume : innerGetter.getAmortizedUnitVolume();
+    if (amortizedUnitVolume.isPresent()) {
+      return amortizedUnitVolume.get();
+    } else {
+      return innerGetter.getAmortizedUnitVolume();
+    }
   }
 
   /**
@@ -133,7 +136,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new population value
    */
   public void setPopulation(EngineNumber newValue) {
-    this.population = newValue;
+    this.population = Optional.of(newValue);
   }
 
   /**
@@ -143,7 +146,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getPopulation() {
-    return population != null ? population : innerGetter.getPopulation();
+    if (population.isPresent()) {
+      return population.get();
+    } else {
+      return innerGetter.getPopulation();
+    }
   }
 
   /**
@@ -152,7 +159,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new years elapsed value
    */
   public void setYearsElapsed(EngineNumber newValue) {
-    this.yearsElapsed = newValue;
+    this.yearsElapsed = Optional.of(newValue);
   }
 
   /**
@@ -162,7 +169,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getYearsElapsed() {
-    return yearsElapsed != null ? yearsElapsed : innerGetter.getYearsElapsed();
+    if (yearsElapsed.isPresent()) {
+      return yearsElapsed.get();
+    } else {
+      return innerGetter.getYearsElapsed();
+    }
   }
 
   /**
@@ -171,7 +182,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new consumption value
    */
   public void setConsumption(EngineNumber newValue) {
-    this.totalConsumption = newValue;
+    this.totalConsumption = Optional.of(newValue);
   }
 
   /**
@@ -180,7 +191,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new energy consumption value
    */
   public void setEnergyConsumption(EngineNumber newValue) {
-    this.energyConsumption = newValue;
+    this.energyConsumption = Optional.of(newValue);
   }
 
   /**
@@ -190,7 +201,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getGhgConsumption() {
-    return totalConsumption != null ? totalConsumption : innerGetter.getGhgConsumption();
+    if (totalConsumption.isPresent()) {
+      return totalConsumption.get();
+    } else {
+      return innerGetter.getGhgConsumption();
+    }
   }
 
   /**
@@ -200,7 +215,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getEnergyConsumption() {
-    return energyConsumption != null ? energyConsumption : innerGetter.getEnergyConsumption();
+    if (energyConsumption.isPresent()) {
+      return energyConsumption.get();
+    } else {
+      return innerGetter.getEnergyConsumption();
+    }
   }
 
   /**
@@ -209,7 +228,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new volume value
    */
   public void setVolume(EngineNumber newValue) {
-    this.volume = newValue;
+    this.volume = Optional.of(newValue);
   }
 
   /**
@@ -219,7 +238,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getVolume() {
-    return volume != null ? volume : innerGetter.getVolume();
+    if (volume.isPresent()) {
+      return volume.get();
+    } else {
+      return innerGetter.getVolume();
+    }
   }
 
   /**
@@ -228,7 +251,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new amortized unit consumption value
    */
   public void setAmortizedUnitConsumption(EngineNumber newValue) {
-    this.amortizedUnitConsumption = newValue;
+    this.amortizedUnitConsumption = Optional.of(newValue);
   }
 
   /**
@@ -238,8 +261,11 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getAmortizedUnitConsumption() {
-    return amortizedUnitConsumption != null 
-        ? amortizedUnitConsumption : innerGetter.getAmortizedUnitConsumption();
+    if (amortizedUnitConsumption.isPresent()) {
+      return amortizedUnitConsumption.get();
+    } else {
+      return innerGetter.getAmortizedUnitConsumption();
+    }
   }
 
   /**
@@ -248,7 +274,7 @@ public class OverridingConverterStateGetter implements StateGetter {
    * @param newValue The new population change value
    */
   public void setPopulationChange(EngineNumber newValue) {
-    this.populationChange = newValue;
+    this.populationChange = Optional.of(newValue);
   }
 
   /**
@@ -259,7 +285,10 @@ public class OverridingConverterStateGetter implements StateGetter {
    */
   @Override
   public EngineNumber getPopulationChange(UnitConverter unitConverter) {
-    return populationChange != null 
-        ? populationChange : innerGetter.getPopulationChange(unitConverter);
+    if (populationChange.isPresent()) {
+      return populationChange.get();
+    } else {
+      return innerGetter.getPopulationChange(unitConverter);
+    }
   }
 }

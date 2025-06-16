@@ -25,43 +25,6 @@ import org.kigalisim.engine.number.UnitConverter;
 public class EngineUnitStateTest {
 
   /**
-   * Mock Engine implementation for testing.
-   */
-  private static class MockEngine {
-    private final Map<String, EngineNumber> streams = new HashMap<>();
-    private final Map<String, EngineNumber> intensities = new HashMap<>();
-    private final Map<String, EngineNumber> charges = new HashMap<>();
-
-    public void setStream(String name, EngineNumber value) {
-      streams.put(name, value);
-    }
-
-    public EngineNumber getStream(String name) {
-      return streams.getOrDefault(name, new EngineNumber(BigDecimal.ZERO, "kg"));
-    }
-
-    public void setIntensity(String name, EngineNumber value) {
-      intensities.put(name, value);
-    }
-
-    public EngineNumber getEqualsGhgIntensity() {
-      return intensities.getOrDefault("ghg", new EngineNumber(BigDecimal.ONE, "tCO2e / kg"));
-    }
-
-    public EngineNumber getEqualsEnergyIntensity() {
-      return intensities.getOrDefault("energy", new EngineNumber(BigDecimal.ONE, "kwh / kg"));
-    }
-
-    public void setCharge(String name, EngineNumber value) {
-      charges.put(name, value);
-    }
-
-    public EngineNumber getInitialCharge(String name) {
-      return charges.getOrDefault(name, new EngineNumber(BigDecimal.ONE, "kg / unit"));
-    }
-  }
-
-  /**
    * Mock inner StateGetter implementation for testing.
    */
   private static class MockInnerStateGetter implements StateGetter {
