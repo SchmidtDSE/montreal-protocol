@@ -32,8 +32,8 @@ public class ImportSupplement {
    *     initial charge of imported equipment (like tCO2e)
    * @param newPopulation The number of new units imported
    */
-  public ImportSupplement(EngineNumber initialChargeValue, 
-                         EngineNumber initialChargeConsumption, 
+  public ImportSupplement(EngineNumber initialChargeValue,
+                         EngineNumber initialChargeConsumption,
                          EngineNumber newPopulation) {
     this.initialChargeValue = initialChargeValue;
     this.initialChargeConsumption = initialChargeConsumption;

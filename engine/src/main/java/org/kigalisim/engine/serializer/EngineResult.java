@@ -55,7 +55,7 @@ public class EngineResult {
    * @param importSupplement The supplemental import data needed for attribution
    */
   public EngineResult(String application, String substance, int year,
-                     EngineNumber manufactureValue, EngineNumber importValue, 
+                     EngineNumber manufactureValue, EngineNumber importValue,
                      EngineNumber recycleValue, EngineNumber domesticConsumptionValue,
                      EngineNumber importConsumptionValue, EngineNumber recycleConsumptionValue,
                      EngineNumber populationValue, EngineNumber populationNew,

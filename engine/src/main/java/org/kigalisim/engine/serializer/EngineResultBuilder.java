@@ -9,6 +9,7 @@
 
 package org.kigalisim.engine.serializer;
 
+import java.util.Optional;
 import org.kigalisim.engine.number.EngineNumber;
 
 /**
@@ -18,27 +19,41 @@ import org.kigalisim.engine.number.EngineNumber;
  * constructing an EngineResult instance.</p>
  */
 public class EngineResultBuilder {
-  private String application;
-  private String substance;
-  private Integer year;
-  private EngineNumber manufactureValue;
-  private EngineNumber importValue;
-  private EngineNumber recycleValue;
-  private EngineNumber domesticConsumptionValue;
-  private EngineNumber importConsumptionValue;
-  private EngineNumber recycleConsumptionValue;
-  private EngineNumber populationValue;
-  private EngineNumber populationNew;
-  private EngineNumber rechargeEmissions;
-  private EngineNumber eolEmissions;
-  private EngineNumber energyConsumption;
-  private ImportSupplement importSupplement;
+  private Optional<String> application;
+  private Optional<String> substance;
+  private Optional<Integer> year;
+  private Optional<EngineNumber> manufactureValue;
+  private Optional<EngineNumber> importValue;
+  private Optional<EngineNumber> recycleValue;
+  private Optional<EngineNumber> domesticConsumptionValue;
+  private Optional<EngineNumber> importConsumptionValue;
+  private Optional<EngineNumber> recycleConsumptionValue;
+  private Optional<EngineNumber> populationValue;
+  private Optional<EngineNumber> populationNew;
+  private Optional<EngineNumber> rechargeEmissions;
+  private Optional<EngineNumber> eolEmissions;
+  private Optional<EngineNumber> energyConsumption;
+  private Optional<ImportSupplement> importSupplement;
 
   /**
    * Create builder without any values initialized.
    */
   public EngineResultBuilder() {
-    // All fields initialized to null by default
+    this.application = Optional.empty();
+    this.substance = Optional.empty();
+    this.year = Optional.empty();
+    this.manufactureValue = Optional.empty();
+    this.importValue = Optional.empty();
+    this.recycleValue = Optional.empty();
+    this.domesticConsumptionValue = Optional.empty();
+    this.importConsumptionValue = Optional.empty();
+    this.recycleConsumptionValue = Optional.empty();
+    this.populationValue = Optional.empty();
+    this.populationNew = Optional.empty();
+    this.rechargeEmissions = Optional.empty();
+    this.eolEmissions = Optional.empty();
+    this.energyConsumption = Optional.empty();
+    this.importSupplement = Optional.empty();
   }
 
   /**
@@ -48,7 +63,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setApplication(String application) {
-    this.application = application;
+    this.application = Optional.of(application);
     return this;
   }
 
@@ -59,7 +74,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setSubstance(String substance) {
-    this.substance = substance;
+    this.substance = Optional.of(substance);
     return this;
   }
 
@@ -70,7 +85,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setYear(int year) {
-    this.year = year;
+    this.year = Optional.of(year);
     return this;
   }
 
@@ -81,7 +96,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setManufactureValue(EngineNumber manufactureValue) {
-    this.manufactureValue = manufactureValue;
+    this.manufactureValue = Optional.of(manufactureValue);
     return this;
   }
 
@@ -92,7 +107,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setImportValue(EngineNumber importValue) {
-    this.importValue = importValue;
+    this.importValue = Optional.of(importValue);
     return this;
   }
 
@@ -103,7 +118,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setRecycleValue(EngineNumber recycleValue) {
-    this.recycleValue = recycleValue;
+    this.recycleValue = Optional.of(recycleValue);
     return this;
   }
 
@@ -114,7 +129,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setDomesticConsumptionValue(EngineNumber domesticConsumptionValue) {
-    this.domesticConsumptionValue = domesticConsumptionValue;
+    this.domesticConsumptionValue = Optional.of(domesticConsumptionValue);
     return this;
   }
 
@@ -125,19 +140,19 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setImportConsumptionValue(EngineNumber importConsumptionValue) {
-    this.importConsumptionValue = importConsumptionValue;
+    this.importConsumptionValue = Optional.of(importConsumptionValue);
     return this;
   }
 
   /**
    * Set the recycle consumption value.
    *
-   * @param recycleConsumptionValue The recycle consumption value in tCO2e 
+   * @param recycleConsumptionValue The recycle consumption value in tCO2e
    *     or equivalent
    * @return This builder for method chaining
    */
   public EngineResultBuilder setRecycleConsumptionValue(EngineNumber recycleConsumptionValue) {
-    this.recycleConsumptionValue = recycleConsumptionValue;
+    this.recycleConsumptionValue = Optional.of(recycleConsumptionValue);
     return this;
   }
 
@@ -148,7 +163,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setPopulationValue(EngineNumber populationValue) {
-    this.populationValue = populationValue;
+    this.populationValue = Optional.of(populationValue);
     return this;
   }
 
@@ -159,7 +174,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setPopulationNew(EngineNumber populationNew) {
-    this.populationNew = populationNew;
+    this.populationNew = Optional.of(populationNew);
     return this;
   }
 
@@ -170,7 +185,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setRechargeEmissions(EngineNumber rechargeEmissions) {
-    this.rechargeEmissions = rechargeEmissions;
+    this.rechargeEmissions = Optional.of(rechargeEmissions);
     return this;
   }
 
@@ -181,7 +196,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setEolEmissions(EngineNumber eolEmissions) {
-    this.eolEmissions = eolEmissions;
+    this.eolEmissions = Optional.of(eolEmissions);
     return this;
   }
 
@@ -192,7 +207,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setEnergyConsumption(EngineNumber energyConsumption) {
-    this.energyConsumption = energyConsumption;
+    this.energyConsumption = Optional.of(energyConsumption);
     return this;
   }
 
@@ -203,7 +218,7 @@ public class EngineResultBuilder {
    * @return This builder for method chaining
    */
   public EngineResultBuilder setImportSupplement(ImportSupplement importSupplement) {
-    this.importSupplement = importSupplement;
+    this.importSupplement = Optional.of(importSupplement);
     return this;
   }
 
@@ -216,10 +231,21 @@ public class EngineResultBuilder {
   public EngineResult build() {
     checkReadyToConstruct();
     return new EngineResult(
-      application, substance, year, manufactureValue, importValue, recycleValue,
-      domesticConsumptionValue, importConsumptionValue, recycleConsumptionValue,
-      populationValue, populationNew, rechargeEmissions, eolEmissions,
-      energyConsumption, importSupplement
+        application.get(),
+        substance.get(),
+        year.get(),
+        manufactureValue.get(),
+        importValue.get(),
+        recycleValue.get(),
+        domesticConsumptionValue.get(),
+        importConsumptionValue.get(),
+        recycleConsumptionValue.get(),
+        populationValue.get(),
+        populationNew.get(),
+        rechargeEmissions.get(),
+        eolEmissions.get(),
+        energyConsumption.get(),
+        importSupplement.get()
     );
   }
 
@@ -247,14 +273,14 @@ public class EngineResultBuilder {
   }
 
   /**
-   * Check if a value is valid (not null).
+   * Check if a value is valid (not empty).
    *
-   * @param value The value to check
+   * @param value The optional value to check
    * @param name The name of the field for error reporting
-   * @throws IllegalStateException if the value is null
+   * @throws IllegalStateException if the value is empty
    */
-  private void checkValid(Object value, String name) {
-    if (value == null) {
+  private void checkValid(Optional<?> value, String name) {
+    if (value.isEmpty()) {
       throw new IllegalStateException(
           "Could not make engine result because " + name + " was not given.");
     }

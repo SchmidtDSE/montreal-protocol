@@ -70,12 +70,12 @@ public class EngineResultSerializer {
    * @param builder The builder into which parsed values should be registered
    * @param application The name of the application for which to get values
    *     like commercial refrigeration
-   * @param substance The name of the substance for which to get values 
+   * @param substance The name of the substance for which to get values
    *     like HFC-134a
    */
   private void parseMainBody(EngineResultBuilder builder, String application, String substance) {
     // Prepare units
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
 
@@ -112,7 +112,7 @@ public class EngineResultSerializer {
 
     BigDecimal nonRecycleSalesKg = manufactureKg.add(importKg);
     boolean noSales = nonRecycleSalesKg.compareTo(BigDecimal.ZERO) == 0;
-    BigDecimal percentManufacture = noSales ? BigDecimal.ONE : 
+    BigDecimal percentManufacture = noSales ? BigDecimal.ONE :
         manufactureKg.divide(nonRecycleSalesKg, MathContext.DECIMAL128);
     BigDecimal percentImport = BigDecimal.ONE.subtract(percentManufacture);
 
@@ -142,7 +142,7 @@ public class EngineResultSerializer {
     builder.setRecycleConsumptionValue(recycleConsumptionValue);
 
     // Offset recharge emissions
-    OverridingConverterStateGetter clearStateGetter = 
+    OverridingConverterStateGetter clearStateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter clearUnitConverter = new UnitConverter(clearStateGetter);
     EngineNumber rechargeEmissionsConvert = clearUnitConverter.convert(rechargeEmissions, "tCO2e");
@@ -159,7 +159,7 @@ public class EngineResultSerializer {
    * @param unitConverter The unit converter to use
    * @return The consumption by volume engine number
    */
-  private EngineNumber getConsumptionByVolume(String application, String substance, 
+  private EngineNumber getConsumptionByVolume(String application, String substance,
                                             UnitConverter unitConverter) {
     EngineNumber consumptionRaw = engine.getGhgIntensity(application, substance);
     String units = consumptionRaw.getUnits();
@@ -179,7 +179,7 @@ public class EngineResultSerializer {
    * @param unitConverter The unit converter to use
    * @return The consumption engine number
    */
-  private EngineNumber getConsumptionForVolume(EngineNumber volume, 
+  private EngineNumber getConsumptionForVolume(EngineNumber volume,
                                              EngineNumber consumptionByVolume,
                                              OverridingConverterStateGetter stateGetter,
                                              UnitConverter unitConverter) {
@@ -201,13 +201,13 @@ public class EngineResultSerializer {
    * @param builder The builder into which parsed values should be registered
    * @param application The name of the application for which to get values
    *     like commercial refrigeration
-   * @param substance The name of the substance for which to get values 
+   * @param substance The name of the substance for which to get values
    *     like HFC-134a
    */
-  private void parseImportSupplement(EngineResultBuilder builder, 
+  private void parseImportSupplement(EngineResultBuilder builder,
                                     String application, String substance) {
-    // Prepare units  
-    OverridingConverterStateGetter stateGetter = 
+    // Prepare units
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
 
@@ -227,11 +227,11 @@ public class EngineResultSerializer {
     BigDecimal totalImportValueKg = unitConverter.convert(totalImportValue, "kg").getValue();
     BigDecimal totalDomesticValueKg = unitConverter.convert(totalDomesticValue, "kg").getValue();
     BigDecimal totalKg = totalImportValueKg.add(totalDomesticValueKg);
-    
-    BigDecimal proportionImport = totalKg.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : 
+
+    BigDecimal proportionImport = totalKg.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO :
         totalImportValueKg.divide(totalKg, MathContext.DECIMAL128);
     BigDecimal totalRechargeKg = unitConverter.convert(totalRechargeEmissions, "kg").getValue();
-    
+
     BigDecimal importRechargeKg = proportionImport.multiply(totalRechargeKg);
     BigDecimal importForInitialChargeKg = totalImportValueKg.subtract(importRechargeKg);
 
