@@ -108,7 +108,7 @@ public interface Engine {
    *     Used when the original user-specified units differ from the converted units being set.
    */
   void setStream(String name, EngineNumber value, YearMatcher yearMatcher, Scope scope,
-      Boolean propagateChanges, String unitsToRecord);
+      boolean propagateChanges, String unitsToRecord);
 
   /**
    * Set the value of a stream with default parameters.
@@ -390,4 +390,6 @@ public interface Engine {
    * @return Array of results for each registered substance
    */
   Object[] getResults();
+  
+  // TODO: getResults will return EngineResult after that object is converted to Java.
 }
