@@ -11,6 +11,7 @@ package org.kigalisim.engine.support;
 
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.SingleThreadEngine;
+import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.state.Scope;
 
 /**
@@ -37,6 +38,11 @@ public class RechargeEmissionsRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    engine.recalcRechargeEmissions(scope);
+    
+    // Move the logic from SingleThreadEngine.recalcRechargeEmissions
+    Scope scopeEffective = scope != null ? scope : engine.getScope();
+    EngineNumber rechargeVolume = engine.calculateRechargeVolume();
+    EngineNumber rechargeGhg = engine.getUnitConverter().convert(rechargeVolume, "tCO2e");
+    engine.setStream("rechargeEmissions", rechargeGhg, null, scopeEffective, false, null);
   }
 }

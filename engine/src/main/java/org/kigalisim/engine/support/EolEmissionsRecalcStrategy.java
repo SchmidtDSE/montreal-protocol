@@ -11,6 +11,9 @@ package org.kigalisim.engine.support;
 
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.SingleThreadEngine;
+import org.kigalisim.engine.number.EngineNumber;
+import org.kigalisim.engine.number.UnitConverter;
+import org.kigalisim.engine.state.OverridingConverterStateGetter;
 import org.kigalisim.engine.state.Scope;
 
 /**
@@ -37,6 +40,32 @@ public class EolEmissionsRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    engine.recalcEolEmissions(scope);
+    
+    // Move the logic from SingleThreadEngine.recalcEolEmissions
+    // Setup
+    OverridingConverterStateGetter stateGetter =
+        new OverridingConverterStateGetter(engine.getStateGetter());
+    UnitConverter unitConverter = new UnitConverter(stateGetter);
+    Scope scopeEffective = scope != null ? scope : engine.getScope();
+    String application = scopeEffective.getApplication();
+    String substance = scopeEffective.getSubstance();
+
+    // Check allowed
+    if (application == null || substance == null) {
+      engine.raiseNoAppOrSubstance("recalculating EOL emissions change", "");
+    }
+
+    // Calculate change
+    EngineNumber currentPriorRaw = engine.getStreamRaw(application, substance, "priorEquipment");
+    EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
+
+    stateGetter.setPopulation(currentPrior);
+    EngineNumber amountRaw = engine.getStreamKeeper().getRetirementRate(application, substance);
+    EngineNumber amount = unitConverter.convert(amountRaw, "units");
+    stateGetter.clearPopulation();
+
+    // Update GHG accounting
+    EngineNumber eolGhg = unitConverter.convert(amount, "tCO2e");
+    engine.getStreamKeeper().setStream(application, substance, "eolEmissions", eolGhg);
   }
 }

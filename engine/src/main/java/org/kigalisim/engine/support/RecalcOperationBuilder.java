@@ -12,6 +12,7 @@ package org.kigalisim.engine.support;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.kigalisim.engine.state.Scope;
 
 /**
@@ -19,8 +20,8 @@ import org.kigalisim.engine.state.Scope;
  */
 public class RecalcOperationBuilder {
 
-  private Scope scopeEffective;
-  private Boolean subtractRecharge;
+  private Optional<Scope> scopeEffective;
+  private Optional<Boolean> subtractRecharge;
   private final List<RecalcStrategy> strategies;
   private boolean hasInitialRecalc;
 
@@ -28,6 +29,8 @@ public class RecalcOperationBuilder {
    * Create a new RecalcOperationBuilder.
    */
   public RecalcOperationBuilder() {
+    this.scopeEffective = Optional.empty();
+    this.subtractRecharge = Optional.empty();
     this.strategies = new ArrayList<>();
     this.hasInitialRecalc = false;
   }
@@ -39,7 +42,7 @@ public class RecalcOperationBuilder {
    * @return This builder for method chaining
    */
   public RecalcOperationBuilder setScopeEffective(Scope scope) {
-    this.scopeEffective = scope;
+    this.scopeEffective = Optional.ofNullable(scope);
     return this;
   }
 
@@ -50,7 +53,7 @@ public class RecalcOperationBuilder {
    * @return This builder for method chaining
    */
   public RecalcOperationBuilder setSubtractRecharge(Boolean subtractRecharge) {
-    this.subtractRecharge = subtractRecharge;
+    this.subtractRecharge = Optional.ofNullable(subtractRecharge);
     return this;
   }
 
@@ -65,7 +68,8 @@ public class RecalcOperationBuilder {
           "Only one recalc method can be called - use thenPropagate methods "
           + "for subsequent operations");
     }
-    strategies.add(new PopulationChangeRecalcStrategy(scopeEffective, subtractRecharge));
+    strategies.add(new PopulationChangeRecalcStrategy(scopeEffective.orElse(null), 
+        subtractRecharge.orElse(null)));
     hasInitialRecalc = true;
     return this;
   }
@@ -81,7 +85,7 @@ public class RecalcOperationBuilder {
           "Only one recalc method can be called - use thenPropagate methods "
           + "for subsequent operations");
     }
-    strategies.add(new ConsumptionRecalcStrategy(scopeEffective));
+    strategies.add(new ConsumptionRecalcStrategy(scopeEffective.orElse(null)));
     hasInitialRecalc = true;
     return this;
   }
@@ -97,7 +101,7 @@ public class RecalcOperationBuilder {
           "Only one recalc method can be called - use thenPropagate methods "
           + "for subsequent operations");
     }
-    strategies.add(new SalesRecalcStrategy(scopeEffective));
+    strategies.add(new SalesRecalcStrategy(scopeEffective.orElse(null)));
     hasInitialRecalc = true;
     return this;
   }
@@ -113,7 +117,7 @@ public class RecalcOperationBuilder {
           "Only one recalc method can be called - use thenPropagate methods "
           + "for subsequent operations");
     }
-    strategies.add(new RechargeEmissionsRecalcStrategy(scopeEffective));
+    strategies.add(new RechargeEmissionsRecalcStrategy(scopeEffective.orElse(null)));
     hasInitialRecalc = true;
     return this;
   }
@@ -129,7 +133,7 @@ public class RecalcOperationBuilder {
           "Only one recalc method can be called - use thenPropagate methods "
           + "for subsequent operations");
     }
-    strategies.add(new EolEmissionsRecalcStrategy(scopeEffective));
+    strategies.add(new EolEmissionsRecalcStrategy(scopeEffective.orElse(null)));
     hasInitialRecalc = true;
     return this;
   }
@@ -145,7 +149,7 @@ public class RecalcOperationBuilder {
           "Only one recalc method can be called - use thenPropagate methods "
           + "for subsequent operations");
     }
-    strategies.add(new RetireRecalcStrategy(scopeEffective));
+    strategies.add(new RetireRecalcStrategy(scopeEffective.orElse(null)));
     hasInitialRecalc = true;
     return this;
   }
@@ -160,7 +164,7 @@ public class RecalcOperationBuilder {
       throw new IllegalStateException(
           "Must call a recalc method before using thenPropagate methods");
     }
-    strategies.add(new PopulationChangeRecalcStrategy(scopeEffective, subtractRecharge));
+    strategies.add(new PopulationChangeRecalcStrategy(scopeEffective.orElse(null), subtractRecharge.orElse(null)));
     return this;
   }
 
@@ -174,7 +178,7 @@ public class RecalcOperationBuilder {
       throw new IllegalStateException(
           "Must call a recalc method before using thenPropagate methods");
     }
-    strategies.add(new ConsumptionRecalcStrategy(scopeEffective));
+    strategies.add(new ConsumptionRecalcStrategy(scopeEffective.orElse(null)));
     return this;
   }
 
@@ -188,7 +192,7 @@ public class RecalcOperationBuilder {
       throw new IllegalStateException(
           "Must call a recalc method before using thenPropagate methods");
     }
-    strategies.add(new SalesRecalcStrategy(scopeEffective));
+    strategies.add(new SalesRecalcStrategy(scopeEffective.orElse(null)));
     return this;
   }
 
@@ -202,7 +206,7 @@ public class RecalcOperationBuilder {
       throw new IllegalStateException(
           "Must call a recalc method before using thenPropagate methods");
     }
-    strategies.add(new RechargeEmissionsRecalcStrategy(scopeEffective));
+    strategies.add(new RechargeEmissionsRecalcStrategy(scopeEffective.orElse(null)));
     return this;
   }
 
@@ -216,7 +220,7 @@ public class RecalcOperationBuilder {
       throw new IllegalStateException(
           "Must call a recalc method before using thenPropagate methods");
     }
-    strategies.add(new EolEmissionsRecalcStrategy(scopeEffective));
+    strategies.add(new EolEmissionsRecalcStrategy(scopeEffective.orElse(null)));
     return this;
   }
 
@@ -230,7 +234,7 @@ public class RecalcOperationBuilder {
       throw new IllegalStateException(
           "Must call a recalc method before using thenPropagate methods");
     }
-    strategies.add(new RetireRecalcStrategy(scopeEffective));
+    strategies.add(new RetireRecalcStrategy(scopeEffective.orElse(null)));
     return this;
   }
 

@@ -28,6 +28,9 @@ import org.kigalisim.engine.state.StreamKeeper;
 import org.kigalisim.engine.state.SubstanceInApplicationId;
 import org.kigalisim.engine.state.YearMatcher;
 import org.kigalisim.engine.support.ConsumptionCalculator;
+import org.kigalisim.engine.support.EolEmissionsRecalcStrategy;
+import org.kigalisim.engine.support.PopulationChangeRecalcStrategy;
+import org.kigalisim.engine.support.RechargeEmissionsRecalcStrategy;
 import org.kigalisim.engine.support.RecalcOperation;
 import org.kigalisim.engine.support.RecalcOperationBuilder;
 
@@ -140,6 +143,24 @@ public class SingleThreadEngine implements Engine {
    */
   public ConverterStateGetter getStateGetter() {
     return stateGetter;
+  }
+
+  /**
+   * Get the unit converter instance.
+   *
+   * @return The unit converter
+   */
+  public UnitConverter getUnitConverter() {
+    return this.unitConverter;
+  }
+
+  /**
+   * Get the stream keeper instance.
+   *
+   * @return The stream keeper
+   */
+  public StreamKeeper getStreamKeeper() {
+    return this.streamKeeper;
   }
 
   @Override
@@ -738,7 +759,7 @@ public class SingleThreadEngine implements Engine {
    *
    * @return The recharge volume in kg
    */
-  private EngineNumber calculateRechargeVolume() {
+  public EngineNumber calculateRechargeVolume() {
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
@@ -889,56 +910,9 @@ public class SingleThreadEngine implements Engine {
    * @param subtractRecharge Whether to subtract recharge
    */
   public void recalcPopulationChange(Scope scope, Boolean subtractRecharge) {
-    OverridingConverterStateGetter stateGetter =
-        new OverridingConverterStateGetter(this.stateGetter);
-    UnitConverter unitConverter = new UnitConverter(stateGetter);
-    Scope scopeEffective = scope != null ? scope : this.scope;
-    boolean subtractRechargeEffective = subtractRecharge != null ? subtractRecharge : true;
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
-
-    if (application == null || substance == null) {
-      raiseNoAppOrSubstance("recalculating population change", "");
-    }
-
-    // Get prior population
-    EngineNumber priorPopulationRaw = getStream("priorEquipment", scopeEffective, null);
-    EngineNumber priorPopulation = unitConverter.convert(priorPopulationRaw, "units");
-    stateGetter.setPopulation(priorPopulation);
-
-    // Get substance sales
-    EngineNumber substanceSalesRaw = getStream("sales", scopeEffective, null);
-    EngineNumber substanceSales = unitConverter.convert(substanceSalesRaw, "kg");
-
-    // Get recharge volume
-    EngineNumber rechargeVolume = calculateRechargeVolume();
-
-    // Get total volume available for new units
-    BigDecimal salesKg = substanceSales.getValue();
-    BigDecimal rechargeKg = subtractRechargeEffective ? rechargeVolume.getValue() : BigDecimal.ZERO;
-    BigDecimal availableForNewUnitsKg = salesKg.subtract(rechargeKg);
-
-    // Convert to unit delta
-    EngineNumber initialChargeRaw = getInitialCharge("sales");
-    EngineNumber initialCharge = unitConverter.convert(initialChargeRaw, "kg / unit");
-    BigDecimal initialChargeKgUnit = initialCharge.getValue();
-    BigDecimal deltaUnitsRaw = divideWithZero(availableForNewUnitsKg, initialChargeKgUnit);
-    BigDecimal deltaUnits = deltaUnitsRaw;
-    EngineNumber newUnitsMarginal = new EngineNumber(
-        deltaUnits.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : deltaUnits, "units");
-
-    // Find new total
-    BigDecimal priorPopulationUnits = priorPopulation.getValue();
-    BigDecimal newUnits = priorPopulationUnits.add(deltaUnits);
-    boolean newUnitsNegative = newUnits.compareTo(BigDecimal.ZERO) < 0;
-    BigDecimal newUnitsAllowed = newUnitsNegative ? BigDecimal.ZERO : newUnits;
-    EngineNumber newUnitsEffective = new EngineNumber(newUnitsAllowed, "units");
-
-    // Save
-    setStream("equipment", newUnitsEffective, null, scopeEffective, false, null);
-    setStream("newEquipment", newUnitsMarginal, null, scopeEffective, false, null);
-
-    recalcRechargeEmissions(scopeEffective);
+    // Delegate to strategy
+    PopulationChangeRecalcStrategy strategy = new PopulationChangeRecalcStrategy(scope, subtractRecharge);
+    strategy.execute(this);
   }
 
   /**
@@ -947,10 +921,9 @@ public class SingleThreadEngine implements Engine {
    * @param scope The scope in which to set the recharge emissions
    */
   public void recalcRechargeEmissions(Scope scope) {
-    Scope scopeEffective = scope != null ? scope : this.scope;
-    EngineNumber rechargeVolume = calculateRechargeVolume();
-    EngineNumber rechargeGhg = this.unitConverter.convert(rechargeVolume, "tCO2e");
-    setStream("rechargeEmissions", rechargeGhg, null, scopeEffective, false, null);
+    // Delegate to strategy
+    RechargeEmissionsRecalcStrategy strategy = new RechargeEmissionsRecalcStrategy(scope);
+    strategy.execute(this);
   }
 
   /**
@@ -959,35 +932,9 @@ public class SingleThreadEngine implements Engine {
    * @param scope The scope in which to recalculate EOL emissions
    */
   public void recalcEolEmissions(Scope scope) {
-    // Setup
-    OverridingConverterStateGetter stateGetter =
-        new OverridingConverterStateGetter(this.stateGetter);
-    UnitConverter unitConverter = new UnitConverter(stateGetter);
-    Scope scopeEffective = scope != null ? scope : this.scope;
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
-
-    // Check allowed
-    if (application == null || substance == null) {
-      raiseNoAppOrSubstance("recalculating EOL emissions change", "");
-    }
-
-    // Calculate change
-    EngineNumber currentPriorRaw = this.streamKeeper.getStream(
-        application,
-        substance,
-        "priorEquipment"
-    );
-    EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
-
-    stateGetter.setPopulation(currentPrior);
-    EngineNumber amountRaw = this.streamKeeper.getRetirementRate(application, substance);
-    EngineNumber amount = unitConverter.convert(amountRaw, "units");
-    stateGetter.clearPopulation();
-
-    // Update GHG accounting
-    EngineNumber eolGhg = unitConverter.convert(amount, "tCO2e");
-    this.streamKeeper.setStream(application, substance, "eolEmissions", eolGhg);
+    // Delegate to strategy
+    EolEmissionsRecalcStrategy strategy = new EolEmissionsRecalcStrategy(scope);
+    strategy.execute(this);
   }
 
   /**
@@ -1243,7 +1190,7 @@ public class SingleThreadEngine implements Engine {
    * @param operation The operation being attempted
    * @param suffix Additional suffix for the error message (usually " specified")
    */
-  private void raiseNoAppOrSubstance(String operation, String suffix) {
+  public void raiseNoAppOrSubstance(String operation, String suffix) {
     throw new RuntimeException(String.format(NO_APP_OR_SUBSTANCE_MESSAGE, operation, suffix));
   }
 }
