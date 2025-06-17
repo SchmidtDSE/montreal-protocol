@@ -1060,6 +1060,86 @@ class CompileVisitor extends toolkit.QubecTalkVisitor {
   }
 
   /**
+   * Process a replace command with displacement to a substance for all years.
+   *
+   * @param {Object} ctx - The parser context for the displacing replace command.
+   * @returns {Function} A function that executes the replacement with displacement.
+   */
+  visitReplaceDisplacingAllYears(ctx) {
+    const self = this;
+    const volumeFuture = ctx.volume.accept(self);
+    const stream = ctx.target.getText();
+    const destination = self._getStringWithoutQuotes(ctx.destination.getText());
+    const displacement = self._getStringWithoutQuotes(ctx.displacement.getText());
+
+    return (engine) => {
+      const volume = volumeFuture(engine);
+      engine.replace(volume, stream, destination, null, displacement);
+    };
+  }
+
+  /**
+   * Process a replace command with displacement to a substance for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the displacing replace command.
+   * @returns {Function} A function that executes the replacement with displacement.
+   */
+  visitReplaceDisplacingDuration(ctx) {
+    const self = this;
+    const volumeFuture = ctx.volume.accept(self);
+    const durationFuture = ctx.duration.accept(self);
+    const stream = ctx.target.getText();
+    const destination = self._getStringWithoutQuotes(ctx.destination.getText());
+    const displacement = self._getStringWithoutQuotes(ctx.displacement.getText());
+
+    return (engine) => {
+      const volume = volumeFuture(engine);
+      const duration = durationFuture(engine);
+      engine.replace(volume, stream, destination, duration, displacement);
+    };
+  }
+
+  /**
+   * Process a replace command with displacement to a stream for all years.
+   *
+   * @param {Object} ctx - The parser context for the displacing replace command.
+   * @returns {Function} A function that executes the replacement with displacement.
+   */
+  visitReplaceDisplacingStreamAllYears(ctx) {
+    const self = this;
+    const volumeFuture = ctx.volume.accept(self);
+    const stream = ctx.target.getText();
+    const destination = self._getStringWithoutQuotes(ctx.destination.getText());
+    const displacement = ctx.displacement.getText();
+
+    return (engine) => {
+      const volume = volumeFuture(engine);
+      engine.replace(volume, stream, destination, null, displacement);
+    };
+  }
+
+  /**
+   * Process a replace command with displacement to a stream for a specific duration.
+   *
+   * @param {Object} ctx - The parser context for the displacing replace command.
+   * @returns {Function} A function that executes the replacement with displacement.
+   */
+  visitReplaceDisplacingStreamDuration(ctx) {
+    const self = this;
+    const volumeFuture = ctx.volume.accept(self);
+    const durationFuture = ctx.duration.accept(self);
+    const stream = ctx.target.getText();
+    const destination = self._getStringWithoutQuotes(ctx.destination.getText());
+    const displacement = ctx.displacement.getText();
+
+    return (engine) => {
+      const volume = volumeFuture(engine);
+      const duration = durationFuture(engine);
+      engine.replace(volume, stream, destination, duration, displacement);
+    };
+  }
+
+  /**
    * Process a retire command applying to all simulation years.
    *
    * @param {Object} ctx - The parser context for the retire command.

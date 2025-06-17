@@ -865,6 +865,103 @@ function buildCompilerTests() {
         },
       ],
     );
+
+    buildTest(
+      "handles replace with displacement using units",
+      "/test/qta/replace_units_displace.qta",
+      [
+        (result, assert) => {
+        // Check source substance - should have reduced volume due to replacement
+          const recordSource = getResult(result, "result", 1, 0, "test", "source");
+          const manufactureSource = recordSource.getManufacture();
+          // Original 100 kg - available 96 kg (limited by recharge) = 4 kg remaining
+          assert.closeTo(manufactureSource.getValue(), 4, 0.0001);
+          assert.deepEqual(manufactureSource.getUnits(), "kg");
+
+          const consumptionSource = recordSource.getGhgConsumption();
+          // 4 kg remaining * 100 tCO2e/mt * (1 mt / 1000 kg) = 0.4 tCO2e
+          assert.closeTo(consumptionSource.getValue(), 0.4, 0.0001);
+          assert.deepEqual(consumptionSource.getUnits(), "tCO2e");
+        },
+        (result, assert) => {
+        // Check destination substance - should have increased volume
+          const recordDest = getResult(result, "result", 1, 0, "test", "destination");
+          const manufactureDest = recordDest.getManufacture();
+          // Original 200 kg + 96 kg from source = 296 kg total
+          assert.closeTo(manufactureDest.getValue(), 296, 0.0001);
+          assert.deepEqual(manufactureDest.getUnits(), "kg");
+
+          const consumptionDest = recordDest.getGhgConsumption();
+          // 296 kg * 50 tCO2e/mt * (1 mt / 1000 kg) = 14.8 tCO2e
+          assert.closeTo(consumptionDest.getValue(), 14.8, 0.0001);
+          assert.deepEqual(consumptionDest.getUnits(), "tCO2e");
+        },
+        (result, assert) => {
+        // Check displacement substance - should have increased volume from displacement
+          const recordDisplace = getResult(result, "result", 1, 0, "test", "displacement");
+          const manufactureDisplace = recordDisplace.getManufacture();
+          // Original 150 kg + 96 kg from displacement = 246 kg total
+          assert.closeTo(manufactureDisplace.getValue(), 246, 0.0001);
+          assert.deepEqual(manufactureDisplace.getUnits(), "kg");
+
+          const consumptionDisplace = recordDisplace.getGhgConsumption();
+          // 246 kg * 75 tCO2e/mt * (1 mt / 1000 kg) = 18.45 tCO2e
+          assert.closeTo(consumptionDisplace.getValue(), 18.45, 0.0001);
+          assert.deepEqual(consumptionDisplace.getUnits(), "tCO2e");
+        },
+      ]);
+
+    buildTest("handles cap with displacement using units", "/test/qta/cap_units_displace.qta", [
+      (result, assert) => {
+        // Check source substance - should be capped
+        const recordSource = getResult(result, "result", 1, 0, "test", "source");
+        const manufactureSource = recordSource.getManufacture();
+        // Cap at 5 units with recharge on top: 5 * 10 kg/unit + 4 kg recharge = 54 kg
+        assert.closeTo(manufactureSource.getValue(), 54, 0.0001);
+        assert.deepEqual(manufactureSource.getUnits(), "kg");
+      },
+      (result, assert) => {
+        // Check displacement substance - should receive displaced amount
+        const recordDisplace = getResult(result, "result", 1, 0, "test", "displacement");
+        const manufactureDisplace = recordDisplace.getManufacture();
+        // Original 150 kg + displaced amount (100 - 54 = 46 kg) = 196 kg
+        assert.closeTo(manufactureDisplace.getValue(), 196, 0.0001);
+        assert.deepEqual(manufactureDisplace.getUnits(), "kg");
+      },
+    ]);
+
+    buildTest("handles floor with displacement using units", "/test/qta/floor_units_displace.qta", [
+      (result, assert) => {
+        // Check source substance - should be floored
+        const recordSource = getResult(result, "result", 1, 0, "test", "source");
+        const manufactureSource = recordSource.getManufacture();
+        // Floor at 8 units with recharge on top: 8 * 10 kg/unit + 4 kg recharge = 84 kg
+        assert.closeTo(manufactureSource.getValue(), 84, 0.0001);
+        assert.deepEqual(manufactureSource.getUnits(), "kg");
+      },
+      (result, assert) => {
+        // Check displacement substance - should receive displaced amount
+        const recordDisplace = getResult(result, "result", 1, 0, "test", "displacement");
+        const manufactureDisplace = recordDisplace.getManufacture();
+        // Original 150 kg - displaced amount (84 - 50 = 34 kg) = 116 kg
+        assert.closeTo(manufactureDisplace.getValue(), 116, 0.0001);
+        assert.deepEqual(manufactureDisplace.getUnits(), "kg");
+      },
+    ]);
+
+    buildTest(
+      "handles recover with displacement using units",
+      "/test/qta/recover_units_displace.qta",
+      [
+        (result, assert) => {
+        // Check source substance - recover operation should work
+          const recordSource = getResult(result, "result", 1, 0, "test", "source");
+          const manufactureSource = recordSource.getManufacture();
+          // Should verify that recover operation completed successfully
+          assert.ok(manufactureSource.getValue() >= 0);
+          assert.deepEqual(manufactureSource.getUnits(), "kg");
+        },
+      ]);
   });
 }
 

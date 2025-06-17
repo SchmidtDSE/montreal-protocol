@@ -967,8 +967,9 @@ class Engine {
    * @param {string} destinationSubstance - The substance to replace with.
    * @param {Object} yearMatcher - Matcher to determine if the change applies
    *     to current year.
+   * @param {string} displaceTarget - Optional target for displaced amount.
    */
-  replace(amountRaw, stream, destinationSubstance, yearMatcher) {
+  replace(amountRaw, stream, destinationSubstance, yearMatcher, displaceTarget) {
     const self = this;
 
     if (!self._getIsInRange(yearMatcher)) {
@@ -976,7 +977,22 @@ class Engine {
     }
 
     const unitConverter = self._createUnitConverterWithTotal(stream);
-    const amount = unitConverter.convert(amountRaw, "kg");
+
+    // Handle unit conversion for replacement, taking into account different initial charges
+    let amount;
+    if (amountRaw.hasEquipmentUnits() && displaceTarget !== null && displaceTarget !== undefined) {
+      // When using units of equipment with displacement, we need special handling
+      amount = self._handleUnitsReplacementWithDisplacement(
+        amountRaw,
+        stream,
+        destinationSubstance,
+        displaceTarget,
+        unitConverter,
+      );
+    } else {
+      // For volume units or no displacement, convert directly to kg
+      amount = unitConverter.convert(amountRaw, "kg");
+    }
 
     // Track the original user-specified units for the current substance
     const currentScope = self._scope;
@@ -996,6 +1012,19 @@ class Engine {
 
     const destinationScope = self._scope.getWithSubstance(destinationSubstance);
     self._changeStreamWithoutReportingUnits(stream, amount, null, destinationScope);
+
+    // Handle displacement if specified
+    if (displaceTarget !== null && displaceTarget !== undefined) {
+      const displaceChange = new EngineNumber(amount.getValue(), "kg");
+      const isStream = STREAM_NAMES.has(displaceTarget);
+
+      if (isStream) {
+        self._changeStreamWithoutReportingUnits(displaceTarget, displaceChange);
+      } else {
+        const displacementScope = self._scope.getWithSubstance(displaceTarget);
+        self._changeStreamWithoutReportingUnits(stream, displaceChange, null, displacementScope);
+      }
+    }
   }
 
   /**
@@ -1455,6 +1484,54 @@ class Engine {
     self._recalcPopulationChange();
     self._recalcSales();
     self._recalcConsumption();
+  }
+
+  /**
+   * Handle unit conversion and available amount calculation for replacement with displacement.
+   *
+   * @param {EngineNumber} amountRaw - The raw amount in units of equipment.
+   * @param {string} stream - The stream identifier to modify.
+   * @param {string} destinationSubstance - The substance to replace with.
+   * @param {string} displaceTarget - The displacement target.
+   * @param {UnitConverter} unitConverter - The unit converter to use.
+   * @returns {EngineNumber} The converted amount in kg.
+   * @private
+   */
+  _handleUnitsReplacementWithDisplacement(
+    amountRaw,
+    stream,
+    destinationSubstance,
+    displaceTarget,
+    unitConverter,
+  ) {
+    const self = this;
+
+    // Convert the requested amount from units to kg for the current substance
+    const requestedAmountKg = unitConverter.convert(amountRaw, "kg");
+
+    // If no displacement target, return the converted amount as-is
+    if (displaceTarget === null || displaceTarget === undefined) {
+      return requestedAmountKg;
+    }
+
+    // Calculate available amount for displacement
+    // Available = current sales - recharge for prior equipment
+    const currentSalesRaw = self.getStream(stream);
+    const currentSales = unitConverter.convert(currentSalesRaw, "kg");
+
+    const rechargeVolume = self._calculateRechargeVolume();
+    const availableForDisplacement = new EngineNumber(
+      currentSales.getValue() - rechargeVolume.getValue(),
+      "kg",
+    );
+
+    // Limit the replacement amount to what's available for displacement
+    const effectiveAmountKg = new EngineNumber(
+      Math.min(requestedAmountKg.getValue(), Math.max(0, availableForDisplacement.getValue())),
+      "kg",
+    );
+
+    return effectiveAmountKg;
   }
 }
 

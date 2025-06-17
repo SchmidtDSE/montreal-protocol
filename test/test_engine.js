@@ -1210,6 +1210,173 @@ function buildEngineTests() {
       assert.equal(equipment2.getValue(), 1100);
       assert.equal(equipment2.getUnits(), "units");
     });
+
+    QUnit.test(
+      "replace with displacement using units respects recharge limitation",
+      function (assert) {
+        const engine = new Engine(1, 3);
+
+        engine.setStanza("default");
+        engine.setApplication("test app");
+
+        // Set up source substance
+        engine.setSubstance("source");
+        engine.setInitialCharge(
+          new EngineNumber(10, "kg / unit"),
+          "manufacture",
+          new YearMatcher(null, null),
+        );
+        engine.setStream(
+          "manufacture",
+          new EngineNumber(100, "kg"),
+          new YearMatcher(null, null),
+        );
+        engine.setStream(
+          "priorEquipment",
+          new EngineNumber(5, "units"),
+          new YearMatcher(null, null),
+        );
+        engine.recharge(
+          new EngineNumber(10, "% / year"),
+          new EngineNumber(8, "kg / unit"),
+          new YearMatcher(null, null),
+        );
+        engine.equals(
+          new EngineNumber(100, "tCO2e / mt"),
+          new YearMatcher(null, null),
+        );
+
+        // Set up destination substance
+        engine.setSubstance("destination");
+        engine.setInitialCharge(
+          new EngineNumber(20, "kg / unit"),
+          "manufacture",
+          new YearMatcher(null, null),
+        );
+        engine.setStream(
+          "manufacture",
+          new EngineNumber(200, "kg"),
+          new YearMatcher(null, null),
+        );
+        engine.equals(
+          new EngineNumber(50, "tCO2e / mt"),
+          new YearMatcher(null, null),
+        );
+
+        // Set up displacement substance
+        engine.setSubstance("displacement");
+        engine.setInitialCharge(
+          new EngineNumber(15, "kg / unit"),
+          "manufacture",
+          new YearMatcher(null, null),
+        );
+        engine.setStream(
+          "manufacture",
+          new EngineNumber(150, "kg"),
+          new YearMatcher(null, null),
+        );
+        engine.equals(
+          new EngineNumber(75, "tCO2e / mt"),
+          new YearMatcher(null, null),
+        );
+
+        // Perform replace with displacement
+        engine.setSubstance("source");
+        engine.replace(
+          new EngineNumber(20, "units"),
+          "manufacture",
+          "destination",
+          new YearMatcher(null, null),
+          "displacement",
+        );
+
+        // Check source substance - should be limited by available amount (96 kg)
+        const sourceManufacture = engine.getStream("manufacture");
+        // 100 - 96 = 4 kg remaining
+        assert.closeTo(sourceManufacture.getValue(), 4, 0.0001);
+        assert.deepEqual(sourceManufacture.getUnits(), "kg");
+
+        // Check destination substance - should have increased by 96 kg
+        engine.setSubstance("destination");
+        const destManufacture = engine.getStream("manufacture");
+        // 200 + 96 = 296 kg
+        assert.closeTo(destManufacture.getValue(), 296, 0.0001);
+        assert.deepEqual(destManufacture.getUnits(), "kg");
+
+        // Check displacement substance - should have increased by 96 kg
+        engine.setSubstance("displacement");
+        const displaceManufacture = engine.getStream("manufacture");
+        // 150 + 96 = 246 kg
+        assert.closeTo(displaceManufacture.getValue(), 246, 0.0001);
+        assert.deepEqual(displaceManufacture.getUnits(), "kg");
+      });
+
+    QUnit.test("replace with displacement to stream", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+
+      // Set up source substance
+      engine.setSubstance("source");
+      engine.setInitialCharge(
+        new EngineNumber(10, "kg / unit"),
+        "manufacture",
+        new YearMatcher(null, null),
+      );
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(100, "kg"),
+        new YearMatcher(null, null),
+      );
+      engine.setStream(
+        "import",
+        new EngineNumber(50, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      // Set up destination substance
+      engine.setSubstance("destination");
+      engine.setInitialCharge(
+        new EngineNumber(20, "kg / unit"),
+        "manufacture",
+        new YearMatcher(null, null),
+      );
+      engine.setStream(
+        "manufacture",
+        new EngineNumber(200, "kg"),
+        new YearMatcher(null, null),
+      );
+
+      // Perform replace with displacement to import stream
+      engine.setSubstance("source");
+      engine.replace(
+        new EngineNumber(3, "units"),
+        "manufacture",
+        "destination",
+        new YearMatcher(null, null),
+        "import",
+      );
+
+      // Check source substance - should have reduced by 30 kg
+      const sourceManufacture = engine.getStream("manufacture");
+      // 100 - 30 = 70 kg
+      assert.closeTo(sourceManufacture.getValue(), 70, 0.0001);
+      assert.deepEqual(sourceManufacture.getUnits(), "kg");
+
+      // Check import stream should have increased by 30 kg
+      const sourceImport = engine.getStream("import");
+      // 50 + 30 = 80 kg
+      assert.closeTo(sourceImport.getValue(), 80, 0.0001);
+      assert.deepEqual(sourceImport.getUnits(), "kg");
+
+      // Check destination substance - should have increased by 30 kg
+      engine.setSubstance("destination");
+      const destManufacture = engine.getStream("manufacture");
+      // 200 + 30 = 230 kg
+      assert.closeTo(destManufacture.getValue(), 230, 0.0001);
+      assert.deepEqual(destManufacture.getUnits(), "kg");
+    });
   });
 }
 

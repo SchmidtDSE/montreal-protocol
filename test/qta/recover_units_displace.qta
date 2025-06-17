@@ -1,0 +1,41 @@
+start default
+
+  define application "test"
+
+    uses substance "source"
+      initial charge with 10 kg / unit for manufacture
+      set manufacture to 100 kg during year 1
+      set priorEquipment to 10 units during year 1
+      retire 20% each year
+      equals 100 tCO2e / mt
+    end substance
+
+    uses substance "displacement"
+      initial charge with 15 kg / unit for manufacture
+      set manufacture to 150 kg during year 1
+      equals 75 tCO2e / mt
+    end substance
+
+  end application
+
+end default
+
+
+start policy "intervention"
+
+  modify application "test"
+    
+    modify substance "source"
+      recover 50% with 80% reuse displacing 45 kg
+    end substance
+
+  end application
+
+end policy
+
+
+start simulations
+
+  simulate "result" using "intervention" from years 1 to 1
+
+end simulations

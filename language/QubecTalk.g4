@@ -390,6 +390,10 @@ recycleStatement: RECOVER_ volume=unitValue WITH_ yieldVal=unitValue REUSE_  # r
 
 replaceStatement: REPLACE_ volume=unitValue OF_ target=stream WITH_ destination=string  # replaceAllYears
   | REPLACE_ volume=unitValue OF_ target=stream WITH_ destination=string duration=during  # replaceDuration
+  | REPLACE_ volume=unitValue OF_ target=stream WITH_ destination=string DISPLACING_ displacement=string  # replaceDisplacingAllYears
+  | REPLACE_ volume=unitValue OF_ target=stream WITH_ destination=string DISPLACING_ displacement=string duration=during  # replaceDisplacingDuration
+  | REPLACE_ volume=unitValue OF_ target=stream WITH_ destination=string DISPLACING_ displacement=stream  # replaceDisplacingStreamAllYears
+  | REPLACE_ volume=unitValue OF_ target=stream WITH_ destination=string DISPLACING_ displacement=stream duration=during  # replaceDisplacingStreamDuration
   ;
 
 retireStatement: RETIRE_ volume=unitValue  # retireAllYears
