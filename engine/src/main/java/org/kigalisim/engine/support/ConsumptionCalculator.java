@@ -51,7 +51,7 @@ public class ConsumptionCalculator {
 
   /**
    * Execute the consumption calculation and save the result to the engine.
-   * 
+   *
    * <p>This method handles the complete calculation process including setting up
    * the state, performing unit conversion, ensuring values are in valid ranges,
    * and saving the result to the engine.</p>
@@ -62,25 +62,25 @@ public class ConsumptionCalculator {
    */
   public void execute(Engine engine) {
     validateState();
-    
+
     if (!(engine instanceof SingleThreadEngine)) {
       throw new IllegalArgumentException("ConsumptionCalculator requires a SingleThreadEngine");
     }
-    
+
     SingleThreadEngine singleThreadEngine = (SingleThreadEngine) engine;
-    
+
     // Get current scope
     Scope scopeEffective = singleThreadEngine.getScope();
-    
+
     // Set up converters
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(singleThreadEngine.getStateGetter());
     UnitConverter unitConverter = new UnitConverter(stateGetter);
-    
+
     // Get sales for conversion context
     EngineNumber salesRaw = engine.getStream("sales", scopeEffective, null);
     EngineNumber sales = unitConverter.convert(salesRaw, "kg");
-    
+
     // Determine consumption
     stateGetter.setVolume(sales);
     String targetUnits = streamName.equals("consumption") ? "tCO2e" : "kwh";
@@ -89,7 +89,7 @@ public class ConsumptionCalculator {
 
     // Ensure in range
     boolean isNegative = consumption.getValue().compareTo(BigDecimal.ZERO) < 0;
-    EngineNumber consumptionAllowed = isNegative 
+    EngineNumber consumptionAllowed = isNegative
         ? new EngineNumber(BigDecimal.ZERO, consumption.getUnits()) : consumption;
 
     // Save

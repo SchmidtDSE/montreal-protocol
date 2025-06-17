@@ -885,17 +885,18 @@ public class SingleThreadEngine implements Engine {
       raiseNoAppOrSubstance("recalculating consumption", "");
     }
 
-    // Get intensities
-    EngineNumber ghgIntensity = this.streamKeeper.getGhgIntensity(application, substance);
-    EngineNumber energyIntensity = this.streamKeeper.getEnergyIntensity(application, substance);
-
     // Update streams using ConsumptionCalculator
     ConsumptionCalculator calculator = new ConsumptionCalculator();
+
+    // Get GHG intensity and calculate consumption
+    EngineNumber ghgIntensity = this.streamKeeper.getGhgIntensity(application, substance);
     calculator.setConsumptionRaw(ghgIntensity);
     calculator.setStreamName("consumption");
     calculator.execute(this);
 
+    // Get energy intensity and calculate energy
     calculator = new ConsumptionCalculator();
+    EngineNumber energyIntensity = this.streamKeeper.getEnergyIntensity(application, substance);
     calculator.setConsumptionRaw(energyIntensity);
     calculator.setStreamName("energy");
     calculator.execute(this);
