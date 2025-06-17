@@ -138,14 +138,18 @@ public class EngineResult {
    * @return The consumption value in tCO2e or similar
    */
   public EngineNumber getConsumptionNoRecycle() {
-    if (!domesticConsumptionValue.getUnits().equals(importConsumptionValue.getUnits())) {
+    String domesticUnits = domesticConsumptionValue.getUnits();
+    String importUnits = importConsumptionValue.getUnits();
+    
+    if (!domesticUnits.equals(importUnits)) {
       throw new IllegalStateException(
           "Could not add incompatible units for consumption.");
     }
 
-    BigDecimal totalValue = domesticConsumptionValue.getValue()
-        .add(importConsumptionValue.getValue());
-    return new EngineNumber(totalValue, domesticConsumptionValue.getUnits());
+    BigDecimal domesticConsumptionRaw = domesticConsumptionValue.getValue();
+    BigDecimal importConsumptionRaw = importConsumptionValue.getValue();
+    BigDecimal totalValue = domesticConsumptionRaw.add(importConsumptionRaw);
+    return new EngineNumber(totalValue, domesticUnits);
   }
 
   /**
