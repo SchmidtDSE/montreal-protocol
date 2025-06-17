@@ -240,7 +240,11 @@ public class SingleThreadEngineTest {
     engine.changeStream("manufacture", delta, matcher);
     
     EngineNumber result = engine.getStream("manufacture");
-    assertEquals(BigDecimal.valueOf(15), result.getValue(), "Should apply change when year matches");
+    assertEquals(
+        BigDecimal.valueOf(15),
+        result.getValue(),
+        "Should apply change when year matches"
+    );
     
     // Try to change stream with year matcher that should not apply
     EngineNumber delta2 = new EngineNumber(BigDecimal.valueOf(10), "kg");
@@ -272,7 +276,11 @@ public class SingleThreadEngineTest {
     engine.changeStream("manufacture", percentChange, new YearMatcher(2, null));
     
     EngineNumber result1 = engine.getStream("manufacture");
-    assertEquals(BigDecimal.valueOf(10), result1.getValue(), "Should remain 10 when year doesn't match");
+    assertEquals(
+        BigDecimal.valueOf(10),
+        result1.getValue(),
+        "Should remain 10 when year doesn't match"
+    );
     assertEquals("kg", result1.getUnits(), "Should maintain kg units");
     
     // Increment year to 2
