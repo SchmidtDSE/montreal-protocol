@@ -40,7 +40,7 @@ public class EolEmissionsRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    
+
     // Move the logic from SingleThreadEngine.recalcEolEmissions
     // Setup
     OverridingConverterStateGetter stateGetter =

@@ -41,7 +41,7 @@ public class RetireRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    
+
     // Move the logic from SingleThreadEngine.recalcRetire
     // Setup
     OverridingConverterStateGetter stateGetter =

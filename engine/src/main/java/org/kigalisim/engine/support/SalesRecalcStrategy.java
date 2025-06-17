@@ -43,7 +43,7 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    
+
     // Move the logic from SingleThreadEngine.recalcSales
     Scope scopeEffective = scope != null ? scope : engine.getScope();
 

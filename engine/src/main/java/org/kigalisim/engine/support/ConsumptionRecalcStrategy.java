@@ -39,10 +39,10 @@ public class ConsumptionRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    
+
     // Move the logic from SingleThreadEngine.recalcConsumption
     Scope scopeEffective = scope != null ? scope : engine.getScope();
-    
+
     String application = scopeEffective.getApplication();
     String substance = scopeEffective.getSubstance();
 

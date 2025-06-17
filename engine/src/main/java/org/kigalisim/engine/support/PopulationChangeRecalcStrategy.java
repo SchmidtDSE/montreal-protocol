@@ -45,7 +45,7 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    
+
     // Move the logic from SingleThreadEngine.recalcPopulationChange
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(engine.getStateGetter());

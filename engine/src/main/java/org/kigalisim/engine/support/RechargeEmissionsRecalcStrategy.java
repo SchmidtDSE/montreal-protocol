@@ -38,7 +38,7 @@ public class RechargeEmissionsRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    
+
     // Move the logic from SingleThreadEngine.recalcRechargeEmissions
     Scope scopeEffective = scope != null ? scope : engine.getScope();
     EngineNumber rechargeVolume = engine.calculateRechargeVolume();

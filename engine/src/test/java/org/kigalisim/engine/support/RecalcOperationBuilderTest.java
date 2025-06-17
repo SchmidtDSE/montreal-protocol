@@ -34,11 +34,11 @@ public class RecalcOperationBuilderTest {
   @Test
   public void testBuilderRequiresInitialRecalc() {
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
-    
+
     Exception exception = assertThrows(IllegalStateException.class, () -> {
       builder.thenPropagateToConsumption();
     });
-    
+
     assertTrue(exception.getMessage().contains("Must call a recalc method"));
   }
 
@@ -46,22 +46,22 @@ public class RecalcOperationBuilderTest {
   public void testBuilderPreventsMultipleRecalcs() {
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
     builder.recalcPopulationChange();
-    
+
     Exception exception = assertThrows(IllegalStateException.class, () -> {
       builder.recalcConsumption();
     });
-    
+
     assertTrue(exception.getMessage().contains("Only one recalc method can be called"));
   }
 
   @Test
   public void testBuilderRequiresAtLeastOneStrategy() {
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
-    
+
     Exception exception = assertThrows(IllegalStateException.class, () -> {
       builder.build();
     });
-    
+
     assertTrue(exception.getMessage().contains(
         "Must configure at least one recalculation strategy"));
   }
@@ -69,7 +69,7 @@ public class RecalcOperationBuilderTest {
   @Test
   public void testBuilderFluentInterface() {
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
-    
+
     RecalcOperation operation = builder
         .setScopeEffective(testScope)
         .setSubtractRecharge(true)
@@ -77,7 +77,7 @@ public class RecalcOperationBuilderTest {
         .thenPropagateToConsumption()
         .thenPropagateToSales()
         .build();
-    
+
     assertNotNull(operation);
   }
 
@@ -87,13 +87,13 @@ public class RecalcOperationBuilderTest {
     engine.setStanza("test");
     engine.setApplication("testApp");
     engine.setSubstance("testSubstance");
-    
+
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
-    
+
     RecalcOperation operation = builder
         .recalcConsumption()
         .build();
-    
+
     // This should not throw an exception now that we have proper context
     assertDoesNotThrow(() -> operation.execute(engine));
   }
@@ -104,29 +104,29 @@ public class RecalcOperationBuilderTest {
     engine.setStanza("test");
     engine.setApplication("testApp");
     engine.setSubstance("testSubstance");
-    
+
     // Test individual strategy creation and execution
-    PopulationChangeRecalcStrategy popStrategy = 
+    PopulationChangeRecalcStrategy popStrategy =
         new PopulationChangeRecalcStrategy(testScope, true);
     assertDoesNotThrow(() -> popStrategy.execute(engine));
 
-    ConsumptionRecalcStrategy consumptionStrategy = 
+    ConsumptionRecalcStrategy consumptionStrategy =
         new ConsumptionRecalcStrategy(testScope);
     assertDoesNotThrow(() -> consumptionStrategy.execute(engine));
 
-    SalesRecalcStrategy salesStrategy = 
+    SalesRecalcStrategy salesStrategy =
         new SalesRecalcStrategy(testScope);
     assertDoesNotThrow(() -> salesStrategy.execute(engine));
 
-    RechargeEmissionsRecalcStrategy rechargeStrategy = 
+    RechargeEmissionsRecalcStrategy rechargeStrategy =
         new RechargeEmissionsRecalcStrategy(testScope);
     assertDoesNotThrow(() -> rechargeStrategy.execute(engine));
 
-    EolEmissionsRecalcStrategy eolStrategy = 
+    EolEmissionsRecalcStrategy eolStrategy =
         new EolEmissionsRecalcStrategy(testScope);
     assertDoesNotThrow(() -> eolStrategy.execute(engine));
 
-    RetireRecalcStrategy retireStrategy = 
+    RetireRecalcStrategy retireStrategy =
         new RetireRecalcStrategy(testScope);
     assertDoesNotThrow(() -> retireStrategy.execute(engine));
   }
@@ -165,9 +165,9 @@ public class RecalcOperationBuilderTest {
     engine.setStanza("test");
     engine.setApplication("testApp");
     engine.setSubstance("testSubstance");
-    
+
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
-    
+
     RecalcOperation operation = builder
         .recalcPopulationChange()
         .thenPropagateToConsumption()
@@ -177,7 +177,7 @@ public class RecalcOperationBuilderTest {
         .thenPropagateToRetire()
         .thenPropagateToPopulationChange()
         .build();
-    
+
     assertNotNull(operation);
     assertDoesNotThrow(() -> operation.execute(engine));
   }

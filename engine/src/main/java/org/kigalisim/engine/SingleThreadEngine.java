@@ -15,7 +15,6 @@ import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
@@ -27,7 +26,6 @@ import org.kigalisim.engine.state.Scope;
 import org.kigalisim.engine.state.StreamKeeper;
 import org.kigalisim.engine.state.SubstanceInApplicationId;
 import org.kigalisim.engine.state.YearMatcher;
-import org.kigalisim.engine.support.ConsumptionCalculator;
 import org.kigalisim.engine.support.ConsumptionRecalcStrategy;
 import org.kigalisim.engine.support.EolEmissionsRecalcStrategy;
 import org.kigalisim.engine.support.PopulationChangeRecalcStrategy;
@@ -218,11 +216,11 @@ public class SingleThreadEngine implements Engine {
           .setSubtractRecharge(!value.hasEquipmentUnits())
           .recalcPopulationChange()
           .thenPropagateToConsumption();
-      
+
       if (!OPTIMIZE_RECALCS) {
         builder = builder.thenPropagateToSales();
       }
-      
+
       RecalcOperation operation = builder.build();
       operation.execute(this);
     } else if ("consumption".equals(name)) {
@@ -230,11 +228,11 @@ public class SingleThreadEngine implements Engine {
           .setScopeEffective(scopeEffective)
           .recalcSales()
           .thenPropagateToPopulationChange();
-      
+
       if (!OPTIMIZE_RECALCS) {
         builder = builder.thenPropagateToConsumption();
       }
-      
+
       RecalcOperation operation = builder.build();
       operation.execute(this);
     } else if ("equipment".equals(name)) {
@@ -242,11 +240,11 @@ public class SingleThreadEngine implements Engine {
           .setScopeEffective(scopeEffective)
           .recalcSales()
           .thenPropagateToConsumption();
-      
+
       if (!OPTIMIZE_RECALCS) {
         builder = builder.thenPropagateToPopulationChange();
       }
-      
+
       RecalcOperation operation = builder.build();
       operation.execute(this);
     } else if ("priorEquipment".equals(name)) {
@@ -807,7 +805,7 @@ public class SingleThreadEngine implements Engine {
    * @param changeAmount The actual change amount in kg
    * @param displaceTarget Optional target for displaced amount
    */
-  private void handleDisplacement(String stream, EngineNumber amount, 
+  private void handleDisplacement(String stream, EngineNumber amount,
       BigDecimal changeAmount, String displaceTarget) {
     if (displaceTarget == null) {
       return;

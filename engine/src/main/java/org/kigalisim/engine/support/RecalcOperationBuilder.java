@@ -68,7 +68,7 @@ public class RecalcOperationBuilder {
           "Only one recalc method can be called - use thenPropagate methods "
           + "for subsequent operations");
     }
-    strategies.add(new PopulationChangeRecalcStrategy(scopeEffective.orElse(null), 
+    strategies.add(new PopulationChangeRecalcStrategy(scopeEffective.orElse(null),
         subtractRecharge.orElse(null)));
     hasInitialRecalc = true;
     return this;
