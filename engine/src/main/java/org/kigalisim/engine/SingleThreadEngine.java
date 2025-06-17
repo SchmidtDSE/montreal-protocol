@@ -12,11 +12,11 @@ package org.kigalisim.engine;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
 import org.kigalisim.engine.serializer.EngineResult;
@@ -39,7 +39,7 @@ public class SingleThreadEngine implements Engine {
 
   private static final Set<String> STREAM_NAMES = new HashSet<>();
   private static final boolean OPTIMIZE_RECALCS = true;
-  private static final String NO_APP_OR_SUBSTANCE_MESSAGE = 
+  private static final String NO_APP_OR_SUBSTANCE_MESSAGE =
       "Tried %s without application and substance%s.";
 
   static {
@@ -446,7 +446,7 @@ public class SingleThreadEngine implements Engine {
 
     String application = this.scope.getApplication();
     String substance = this.scope.getSubstance();
-    
+
     String units = amount.getUnits();
     boolean isGhg = units.startsWith("tCO2e");
     boolean isKwh = units.startsWith("kwh");
@@ -652,17 +652,15 @@ public class SingleThreadEngine implements Engine {
   public List<EngineResult> getResults() {
     List<SubstanceInApplicationId> substances = this.streamKeeper.getRegisteredSubstances();
     EngineResultSerializer serializer = new EngineResultSerializer(this, this.stateGetter);
-    
-    List<EngineResult> results = new ArrayList<>();
-    for (SubstanceInApplicationId substanceId : substances) {
-      String application = substanceId.getApplication();
-      String substance = substanceId.getSubstance();
-      int year = this.currentYear;
-      EngineResult result = serializer.getResult(application, substance, year);
-      results.add(result);
-    }
-    
-    return results;
+
+    return substances.stream()
+        .map(substanceId -> {
+          String application = substanceId.getApplication();
+          String substance = substanceId.getSubstance();
+          int year = this.currentYear;
+          return serializer.getResult(application, substance, year);
+        })
+        .collect(Collectors.toList());
   }
 
   /**
@@ -672,7 +670,7 @@ public class SingleThreadEngine implements Engine {
    * @return True if in range or no matcher provided
    */
   private boolean getIsInRange(YearMatcher yearMatcher) {
-    return yearMatcher == null || yearMatcher.getInRange(this.currentYear);  
+    return yearMatcher == null || yearMatcher.getInRange(this.currentYear);
   }
 
   /**
@@ -737,7 +735,7 @@ public class SingleThreadEngine implements Engine {
     EngineNumber convertedDelta = unitConverter.convert(amount, currentValue.getUnits());
     BigDecimal newAmount = currentValue.getValue().add(convertedDelta.getValue());
     EngineNumber outputWithUnits = new EngineNumber(newAmount, currentValue.getUnits());
-    
+
     // Allow propagation but don't track units (since units tracking was handled by the caller)
     setStream(stream, outputWithUnits, null, scope, true, null);
   }
@@ -905,7 +903,7 @@ public class SingleThreadEngine implements Engine {
 
       // Ensure in range
       boolean isNegative = consumption.getValue().compareTo(BigDecimal.ZERO) < 0;
-      EngineNumber consumptionAllowed = isNegative 
+      EngineNumber consumptionAllowed = isNegative
           ? new EngineNumber(BigDecimal.ZERO, consumption.getUnits()) : consumption;
 
       // Save
@@ -1024,7 +1022,7 @@ public class SingleThreadEngine implements Engine {
     // Get stream percentages for allocation
     BigDecimal percentManufacture;
     BigDecimal percentImport;
-    
+
     if (totalNonRecycleKg.compareTo(BigDecimal.ZERO) == 0) {
       EngineNumber manufactureInitialCharge = getInitialCharge("manufacture");
       EngineNumber importInitialCharge = getInitialCharge("import");
@@ -1032,7 +1030,7 @@ public class SingleThreadEngine implements Engine {
       BigDecimal importInitialChargeVal = unitConverter
           .convert(importInitialCharge, manufactureInitialCharge.getUnits()).getValue();
       BigDecimal totalInitialChargeVal = manufactureInitialChargeVal.add(importInitialChargeVal);
-      
+
       if (totalInitialChargeVal.compareTo(BigDecimal.ZERO) == 0) {
         percentManufacture = BigDecimal.ONE;
         percentImport = BigDecimal.ZERO;
