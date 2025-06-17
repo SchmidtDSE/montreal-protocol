@@ -11,6 +11,7 @@ package org.kigalisim.engine.support;
 
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.SingleThreadEngine;
+import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.state.Scope;
 
 /**
@@ -37,6 +38,31 @@ public class ConsumptionRecalcStrategy implements RecalcStrategy {
     }
 
     SingleThreadEngine engine = (SingleThreadEngine) target;
-    engine.recalcConsumption(scope);
+    
+    // Move the logic from SingleThreadEngine.recalcConsumption
+    Scope scopeEffective = scope != null ? scope : engine.getScope();
+    
+    String application = scopeEffective.getApplication();
+    String substance = scopeEffective.getSubstance();
+
+    if (application == null || substance == null) {
+      engine.raiseNoAppOrSubstance("recalculating consumption", "");
+    }
+
+    // Update streams using ConsumptionCalculator
+    ConsumptionCalculator calculator = new ConsumptionCalculator();
+
+    // Get GHG intensity and calculate consumption
+    EngineNumber ghgIntensity = engine.getStreamKeeper().getGhgIntensity(application, substance);
+    calculator.setConsumptionRaw(ghgIntensity);
+    calculator.setStreamName("consumption");
+    calculator.execute(engine);
+
+    // Get energy intensity and calculate energy
+    calculator = new ConsumptionCalculator();
+    EngineNumber energyIntensity = engine.getStreamKeeper().getEnergyIntensity(application, substance);
+    calculator.setConsumptionRaw(energyIntensity);
+    calculator.setStreamName("energy");
+    calculator.execute(engine);
   }
 }

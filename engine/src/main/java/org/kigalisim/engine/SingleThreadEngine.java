@@ -28,9 +28,12 @@ import org.kigalisim.engine.state.StreamKeeper;
 import org.kigalisim.engine.state.SubstanceInApplicationId;
 import org.kigalisim.engine.state.YearMatcher;
 import org.kigalisim.engine.support.ConsumptionCalculator;
+import org.kigalisim.engine.support.ConsumptionRecalcStrategy;
 import org.kigalisim.engine.support.EolEmissionsRecalcStrategy;
 import org.kigalisim.engine.support.PopulationChangeRecalcStrategy;
 import org.kigalisim.engine.support.RechargeEmissionsRecalcStrategy;
+import org.kigalisim.engine.support.RetireRecalcStrategy;
+import org.kigalisim.engine.support.SalesRecalcStrategy;
 import org.kigalisim.engine.support.RecalcOperation;
 import org.kigalisim.engine.support.RecalcOperationBuilder;
 
@@ -943,30 +946,9 @@ public class SingleThreadEngine implements Engine {
    * @param scope The scope to recalculate for
    */
   public void recalcConsumption(Scope scope) {
-    Scope scopeEffective = scope != null ? scope : this.scope;
-
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
-
-    if (application == null || substance == null) {
-      raiseNoAppOrSubstance("recalculating consumption", "");
-    }
-
-    // Update streams using ConsumptionCalculator
-    ConsumptionCalculator calculator = new ConsumptionCalculator();
-
-    // Get GHG intensity and calculate consumption
-    EngineNumber ghgIntensity = this.streamKeeper.getGhgIntensity(application, substance);
-    calculator.setConsumptionRaw(ghgIntensity);
-    calculator.setStreamName("consumption");
-    calculator.execute(this);
-
-    // Get energy intensity and calculate energy
-    calculator = new ConsumptionCalculator();
-    EngineNumber energyIntensity = this.streamKeeper.getEnergyIntensity(application, substance);
-    calculator.setConsumptionRaw(energyIntensity);
-    calculator.setStreamName("energy");
-    calculator.execute(this);
+    // Delegate to strategy
+    ConsumptionRecalcStrategy strategy = new ConsumptionRecalcStrategy(scope);
+    strategy.execute(this);
   }
 
   /**
@@ -975,138 +957,9 @@ public class SingleThreadEngine implements Engine {
    * @param scope The scope to recalculate for
    */
   public void recalcSales(Scope scope) {
-    Scope scopeEffective = scope != null ? scope : this.scope;
-
-    OverridingConverterStateGetter stateGetter =
-        new OverridingConverterStateGetter(this.stateGetter);
-    UnitConverter unitConverter = new UnitConverter(stateGetter);
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
-
-    if (application == null || substance == null) {
-      raiseNoAppOrSubstance("recalculating sales", "");
-    }
-
-    // Get recharge population
-    EngineNumber basePopulation = getStream("priorEquipment", scopeEffective, null);
-    stateGetter.setPopulation(basePopulation);
-    EngineNumber rechargePopRaw = this.streamKeeper.getRechargePopulation(application, substance);
-    EngineNumber rechargePop = unitConverter.convert(rechargePopRaw, "units");
-    stateGetter.clearPopulation();
-
-    // Switch into recharge population
-    stateGetter.setPopulation(rechargePop);
-
-    // Get recharge amount
-    EngineNumber rechargeIntensityRaw = this.streamKeeper.getRechargeIntensity(
-        application,
-        substance
-    );
-    EngineNumber rechargeVolume = unitConverter.convert(rechargeIntensityRaw, "kg");
-
-    // Determine initial charge
-    EngineNumber initialChargeRaw = getInitialCharge("sales");
-    EngineNumber initialCharge = unitConverter.convert(initialChargeRaw, "kg / unit");
-
-    // Get recycling volume
-    stateGetter.setVolume(rechargeVolume);
-    EngineNumber recoveryVolumeRaw = this.streamKeeper.getRecoveryRate(application, substance);
-    EngineNumber recoveryVolume = unitConverter.convert(recoveryVolumeRaw, "kg");
-    stateGetter.clearVolume();
-
-    // Get recycling amount
-    stateGetter.setVolume(recoveryVolume);
-    EngineNumber recycledVolumeRaw = this.streamKeeper.getYieldRate(application, substance);
-    EngineNumber recycledVolume = unitConverter.convert(recycledVolumeRaw, "kg");
-    stateGetter.clearVolume();
-
-    // Get recycling displaced
-    BigDecimal recycledKg = recycledVolume.getValue();
-
-    EngineNumber displacementRateRaw = this.streamKeeper.getDisplacementRate(
-        application,
-        substance
-    );
-    EngineNumber displacementRate = unitConverter.convert(displacementRateRaw, "%");
-    BigDecimal displacementRateRatio = displacementRate.getValue().divide(BigDecimal.valueOf(100));
-    final BigDecimal recycledDisplacedKg = recycledKg.multiply(displacementRateRatio);
-
-    // Switch out of recharge population
-    stateGetter.clearPopulation();
-
-    // Determine needs for new equipment deployment
-    stateGetter.setAmortizedUnitVolume(initialCharge);
-    EngineNumber populationChangeRaw = stateGetter.getPopulationChange(this.unitConverter);
-    EngineNumber populationChange = unitConverter.convert(populationChangeRaw, "units");
-    EngineNumber volumeForNew = unitConverter.convert(populationChange, "kg");
-
-    // Get prior population
-    EngineNumber priorPopulationRaw = getStream("priorEquipment", scopeEffective, null);
-    EngineNumber priorPopulation = unitConverter.convert(priorPopulationRaw, "units");
-    stateGetter.setPopulation(priorPopulation);
-
-    // Determine sales prior to recycling
-    final BigDecimal kgForRecharge = rechargeVolume.getValue();
-    final BigDecimal kgForNew = volumeForNew.getValue();
-
-    // Return to original initial charge
-    stateGetter.clearAmortizedUnitVolume();
-
-    // Return original
-    stateGetter.clearVolume();
-
-    // Determine how much to offset domestic and imports
-    EngineNumber manufactureRaw = getStream("manufacture", scopeEffective, null);
-    EngineNumber importRaw = getStream("import", scopeEffective, null);
-    EngineNumber priorRecycleRaw = getStream("recycle", scopeEffective, null);
-
-    EngineNumber manufactureSalesConverted = unitConverter.convert(manufactureRaw, "kg");
-    EngineNumber importSalesConverted = unitConverter.convert(importRaw, "kg");
-    EngineNumber priorRecycleSalesConverted = unitConverter.convert(priorRecycleRaw, "kg");
-
-    BigDecimal manufactureSalesKg = manufactureSalesConverted.getValue();
-    BigDecimal importSalesKg = importSalesConverted.getValue();
-    BigDecimal priorRecycleSalesKg = priorRecycleSalesConverted.getValue();
-    BigDecimal totalNonRecycleKg = manufactureSalesKg.add(importSalesKg);
-
-    // Get stream percentages for allocation
-    BigDecimal percentManufacture;
-    BigDecimal percentImport;
-
-    if (totalNonRecycleKg.compareTo(BigDecimal.ZERO) == 0) {
-      EngineNumber manufactureInitialCharge = getInitialCharge("manufacture");
-      EngineNumber importInitialCharge = getInitialCharge("import");
-      BigDecimal manufactureInitialChargeVal = manufactureInitialCharge.getValue();
-      BigDecimal importInitialChargeVal = unitConverter
-          .convert(importInitialCharge, manufactureInitialCharge.getUnits()).getValue();
-      BigDecimal totalInitialChargeVal = manufactureInitialChargeVal.add(importInitialChargeVal);
-
-      if (totalInitialChargeVal.compareTo(BigDecimal.ZERO) == 0) {
-        percentManufacture = BigDecimal.ONE;
-        percentImport = BigDecimal.ZERO;
-      } else {
-        percentManufacture = divideWithZero(manufactureInitialChargeVal, totalInitialChargeVal);
-        percentImport = divideWithZero(importInitialChargeVal, totalInitialChargeVal);
-      }
-    } else {
-      percentManufacture = divideWithZero(manufactureSalesKg, totalNonRecycleKg);
-      percentImport = divideWithZero(importSalesKg, totalNonRecycleKg);
-    }
-
-    // Recycle
-    EngineNumber newRecycleValue = new EngineNumber(recycledDisplacedKg, "kg");
-    this.streamKeeper.setStream(application, substance, "recycle", newRecycleValue);
-
-    // New values
-    BigDecimal requiredKgUnbound = kgForRecharge.add(kgForNew);
-    boolean requiredKgNegative = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0;
-    BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
-    BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
-    BigDecimal newImportKg = percentImport.multiply(requiredKg);
-    EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
-    EngineNumber newImport = new EngineNumber(newImportKg, "kg");
-    this.streamKeeper.setStream(application, substance, "manufacture", newManufacture);
-    this.streamKeeper.setStream(application, substance, "import", newImport);
+    // Delegate to strategy
+    SalesRecalcStrategy strategy = new SalesRecalcStrategy(scope);
+    strategy.execute(this);
   }
 
   /**
@@ -1131,57 +984,9 @@ public class SingleThreadEngine implements Engine {
    * @param scope The scope to recalculate for
    */
   public void recalcRetire(Scope scope) {
-    // Setup
-    OverridingConverterStateGetter stateGetter =
-        new OverridingConverterStateGetter(this.stateGetter);
-    UnitConverter unitConverter = new UnitConverter(stateGetter);
-    Scope scopeEffective = scope != null ? scope : this.scope;
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
-
-    // Check allowed
-    if (application == null || substance == null) {
-      raiseNoAppOrSubstance("recalculating population change", "");
-    }
-
-    // Calculate change
-    EngineNumber currentPriorRaw = this.streamKeeper.getStream(
-        application,
-        substance,
-        "priorEquipment"
-    );
-    EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
-
-    EngineNumber currentEquipmentRaw = this.streamKeeper.getStream(
-        application,
-        substance,
-        "equipment"
-    );
-    EngineNumber currentEquipment = unitConverter.convert(currentEquipmentRaw, "units");
-
-    stateGetter.setPopulation(currentPrior);
-    EngineNumber amountRaw = this.streamKeeper.getRetirementRate(application, substance);
-    EngineNumber amount = unitConverter.convert(amountRaw, "units");
-    stateGetter.clearPopulation();
-
-    // Calculate new values
-    BigDecimal newPriorValue = currentPrior.getValue().subtract(amount.getValue());
-    BigDecimal newEquipmentValue = currentEquipment.getValue().subtract(amount.getValue());
-
-    EngineNumber newPrior = new EngineNumber(newPriorValue, "units");
-    EngineNumber newEquipment = new EngineNumber(newEquipmentValue, "units");
-
-    // Update equipment streams
-    this.streamKeeper.setStream(application, substance, "priorEquipment", newPrior);
-    this.streamKeeper.setStream(application, substance, "equipment", newEquipment);
-
-    // Update GHG accounting
-    recalcEolEmissions(scopeEffective);
-
-    // Propagate
-    recalcPopulationChange(null, null);
-    recalcSales(null);
-    recalcConsumption(null);
+    // Delegate to strategy
+    RetireRecalcStrategy strategy = new RetireRecalcStrategy(scope);
+    strategy.execute(this);
   }
 
   /**
