@@ -29,8 +29,10 @@ public class ConsumptionCalculatorIntegrationTest {
     calculator.setStreamName("consumption");
 
     // Execute and verify exception
-    IllegalStateException exception = assertThrows(IllegalStateException.class,
-        () -> calculator.execute(engine));
+    IllegalStateException exception = assertThrows(
+        IllegalStateException.class,
+        () -> calculator.execute(engine)
+    );
     assertEquals("consumptionRaw must be set", exception.getMessage());
   }
 
@@ -47,8 +49,10 @@ public class ConsumptionCalculatorIntegrationTest {
     calculator.setConsumptionRaw(ghgIntensity);
 
     // Execute and verify exception
-    IllegalStateException exception = assertThrows(IllegalStateException.class,
-        () -> calculator.execute(engine));
+    IllegalStateException exception = assertThrows(
+        IllegalStateException.class,
+        () -> calculator.execute(engine)
+    );
     assertEquals("streamName must be set", exception.getMessage());
   }
 }
