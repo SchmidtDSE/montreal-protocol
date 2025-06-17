@@ -28,6 +28,16 @@ import org.kigalisim.engine.state.YearMatcher;
  * <p>This implementation provides the core simulation engine functionality
  * without thread safety considerations. It manages substance streams, equipment
  * populations, and various calculations related to the Montreal Protocol simulation.</p>
+ * 
+ * <p>Key differences from JavaScript Engine implementation:
+ * - Uses BigDecimal throughout for numerical precision instead of JavaScript floats
+ * - Uses Java Optional pattern in state getters instead of null/undefined checking  
+ * - Uses typed exceptions (RuntimeException) instead of throwing string literals
+ * - Uses Java Set and BiConsumer instead of JavaScript Set and arrow functions
+ * - Method signatures use typed parameters instead of JavaScript dynamic typing
+ * - Uses clear() methods on state getters instead of setting to null
+ * - All recalc methods and core functionality logic are otherwise identical to JS
+ * - getResults() is not yet implemented pending EngineResult Java conversion</p>
  */
 public class SingleThreadEngine implements Engine {
 

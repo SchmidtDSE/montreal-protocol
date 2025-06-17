@@ -22,6 +22,13 @@ import org.kigalisim.engine.state.StateGetter;
  * <p>This class handles unit conversions within the engine, supporting conversions
  * between volume units (kg, mt), population units (unit, units), consumption units
  * (tCO2e, kwh), time units (year, years), and percentage units (%).</p>
+ * 
+ * <p>Key differences from JavaScript implementation:
+ * - Uses BigDecimal with DECIMAL128 MathContext for precision instead of JavaScript floats
+ * - Uses static final constants for configuration instead of const variables
+ * - Uses Java Map instead of JavaScript object for conversion strategies
+ * - Explicit type checking with Java types instead of JavaScript dynamic typing
+ * The conversion logic and algorithms are otherwise identical.</p>
  */
 public class UnitConverter {
 

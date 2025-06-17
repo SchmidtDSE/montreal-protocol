@@ -17,6 +17,13 @@ import java.util.Map;
  *
  * <p>Defines context levels for variable scoping and base units for different
  * stream types in the simulation engine.</p>
+ * 
+ * <p>Key differences from JavaScript engine_const.js:
+ * - Uses final class with private constructor to prevent instantiation (Java utility class pattern)
+ * - Uses static final int constants instead of JavaScript const variables  
+ * - Uses HashMap with factory method instead of JavaScript Map with set() calls
+ * - Provides getBaseUnits() accessor method instead of direct Map export
+ * - Constants and mappings are otherwise identical to JavaScript version</p>
  */
 public final class EngineConstants {
 
