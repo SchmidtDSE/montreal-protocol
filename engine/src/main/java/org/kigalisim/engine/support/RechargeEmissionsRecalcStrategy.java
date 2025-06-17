@@ -45,4 +45,21 @@ public class RechargeEmissionsRecalcStrategy implements RecalcStrategy {
     EngineNumber rechargeGhg = engine.getUnitConverter().convert(rechargeVolume, "tCO2e");
     engine.setStream("rechargeEmissions", rechargeGhg, null, scopeEffective, false, null);
   }
+
+  @Override
+  public void execute(Engine target, RecalcKit kit) {
+    // Move the logic from SingleThreadEngine.recalcRechargeEmissions
+    Scope scopeEffective = scope != null ? scope : target.getScope();
+    EngineNumber rechargeVolume = RechargeVolumeCalculator.calculateRechargeVolume(
+        scopeEffective, 
+        kit.getStateGetter().orElseThrow(
+            () -> new IllegalStateException("StateGetter required for recharge emissions recalculation")), 
+        kit.getStreamKeeper().orElseThrow(
+            () -> new IllegalStateException("StreamKeeper required for recharge emissions recalculation")),
+        target);
+    EngineNumber rechargeGhg = kit.getUnitConverter().orElseThrow(
+        () -> new IllegalStateException("UnitConverter required for recharge emissions recalculation"))
+        .convert(rechargeVolume, "tCO2e");
+    target.setStream("rechargeEmissions", rechargeGhg, null, scopeEffective, false, null);
+  }
 }

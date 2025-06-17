@@ -28,7 +28,10 @@ import org.kigalisim.engine.state.SubstanceInApplicationId;
 import org.kigalisim.engine.state.YearMatcher;
 import org.kigalisim.engine.support.ConsumptionRecalcStrategy;
 import org.kigalisim.engine.support.EolEmissionsRecalcStrategy;
+import org.kigalisim.engine.support.ExceptionsGenerator;
 import org.kigalisim.engine.support.PopulationChangeRecalcStrategy;
+import org.kigalisim.engine.support.RecalcKit;
+import org.kigalisim.engine.support.RecalcKitBuilder;
 import org.kigalisim.engine.support.RecalcOperation;
 import org.kigalisim.engine.support.RecalcOperationBuilder;
 import org.kigalisim.engine.support.RechargeEmissionsRecalcStrategy;
@@ -214,6 +217,7 @@ public class SingleThreadEngine implements Engine {
       RecalcOperationBuilder builder = new RecalcOperationBuilder()
           .setScopeEffective(scopeEffective)
           .setSubtractRecharge(!value.hasEquipmentUnits())
+          .setRecalcKit(createRecalcKit())
           .recalcPopulationChange()
           .thenPropagateToConsumption();
 
@@ -226,6 +230,7 @@ public class SingleThreadEngine implements Engine {
     } else if ("consumption".equals(name)) {
       RecalcOperationBuilder builder = new RecalcOperationBuilder()
           .setScopeEffective(scopeEffective)
+          .setRecalcKit(createRecalcKit())
           .recalcSales()
           .thenPropagateToPopulationChange();
 
@@ -238,6 +243,7 @@ public class SingleThreadEngine implements Engine {
     } else if ("equipment".equals(name)) {
       RecalcOperationBuilder builder = new RecalcOperationBuilder()
           .setScopeEffective(scopeEffective)
+          .setRecalcKit(createRecalcKit())
           .recalcSales()
           .thenPropagateToConsumption();
 
@@ -250,6 +256,7 @@ public class SingleThreadEngine implements Engine {
     } else if ("priorEquipment".equals(name)) {
       RecalcOperation operation = new RecalcOperationBuilder()
           .setScopeEffective(scopeEffective)
+          .setRecalcKit(createRecalcKit())
           .recalcRetire()
           .build();
       operation.execute(this);
@@ -358,6 +365,7 @@ public class SingleThreadEngine implements Engine {
     boolean subtractRecharge = getShouldSubtractRecharge(stream);
     RecalcOperation operation = new RecalcOperationBuilder()
         .setSubtractRecharge(subtractRecharge)
+        .setRecalcKit(createRecalcKit())
         .recalcPopulationChange()
         .build();
     operation.execute(this);
@@ -455,6 +463,7 @@ public class SingleThreadEngine implements Engine {
 
     // Recalculate
     RecalcOperation operation = new RecalcOperationBuilder()
+        .setRecalcKit(createRecalcKit())
         .recalcPopulationChange()
         .thenPropagateToSales()
         .thenPropagateToConsumption()
@@ -472,6 +481,7 @@ public class SingleThreadEngine implements Engine {
     String substance = this.scope.getSubstance();
     this.streamKeeper.setRetirementRate(application, substance, amount);
     RecalcOperation operation = new RecalcOperationBuilder()
+        .setRecalcKit(createRecalcKit())
         .recalcRetire()
         .build();
     operation.execute(this);
@@ -501,6 +511,7 @@ public class SingleThreadEngine implements Engine {
     }
 
     RecalcOperation operation = new RecalcOperationBuilder()
+        .setRecalcKit(createRecalcKit())
         .recalcSales()
         .thenPropagateToPopulationChange()
         .thenPropagateToConsumption()
@@ -525,6 +536,7 @@ public class SingleThreadEngine implements Engine {
       this.streamKeeper.setGhgIntensity(application, substance, amount);
       RecalcOperation operation = new RecalcOperationBuilder()
           .setScopeEffective(this.scope)
+          .setRecalcKit(createRecalcKit())
           .recalcRechargeEmissions()
           .thenPropagateToEolEmissions()
           .build();
@@ -536,6 +548,7 @@ public class SingleThreadEngine implements Engine {
     }
 
     RecalcOperation operation = new RecalcOperationBuilder()
+        .setRecalcKit(createRecalcKit())
         .recalcConsumption()
         .build();
     operation.execute(this);
@@ -997,6 +1010,19 @@ public class SingleThreadEngine implements Engine {
    * @param suffix Additional suffix for the error message (usually " specified")
    */
   public void raiseNoAppOrSubstance(String operation, String suffix) {
-    throw new RuntimeException(String.format(NO_APP_OR_SUBSTANCE_MESSAGE, operation, suffix));
+    ExceptionsGenerator.raiseNoAppOrSubstance(operation, suffix);
+  }
+
+  /**
+   * Create a RecalcKit with this engine's dependencies.
+   *
+   * @return A RecalcKit containing this engine's streamKeeper, unitConverter, and stateGetter
+   */
+  private RecalcKit createRecalcKit() {
+    return new RecalcKitBuilder()
+        .setStreamKeeper(this.streamKeeper)
+        .setUnitConverter(this.unitConverter)
+        .setStateGetter(this.stateGetter)
+        .build();
   }
 }

@@ -100,6 +100,69 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
     engine.recalcRechargeEmissions(scopeEffective);
   }
 
+  @Override
+  public void execute(Engine target, RecalcKit kit) {
+    // Move the logic from SingleThreadEngine.recalcPopulationChange
+    OverridingConverterStateGetter stateGetter =
+        new OverridingConverterStateGetter(kit.getStateGetter().orElseThrow(
+            () -> new IllegalStateException("StateGetter required for population change recalculation")));
+    UnitConverter unitConverter = new UnitConverter(stateGetter);
+    Scope scopeEffective = scope != null ? scope : target.getScope();
+    boolean subtractRechargeEffective = subtractRecharge != null ? subtractRecharge : true;
+    String application = scopeEffective.getApplication();
+    String substance = scopeEffective.getSubstance();
+
+    if (application == null || substance == null) {
+      ExceptionsGenerator.raiseNoAppOrSubstance("recalculating population change", "");
+    }
+
+    // Get prior population
+    EngineNumber priorPopulationRaw = target.getStream("priorEquipment", scopeEffective, null);
+    EngineNumber priorPopulation = unitConverter.convert(priorPopulationRaw, "units");
+    stateGetter.setPopulation(priorPopulation);
+
+    // Get substance sales
+    EngineNumber substanceSalesRaw = target.getStream("sales", scopeEffective, null);
+    EngineNumber substanceSales = unitConverter.convert(substanceSalesRaw, "kg");
+
+    // Get recharge volume using the calculator
+    EngineNumber rechargeVolume = RechargeVolumeCalculator.calculateRechargeVolume(
+        scopeEffective, 
+        kit.getStateGetter().get(), 
+        kit.getStreamKeeper().orElseThrow(
+            () -> new IllegalStateException("StreamKeeper required for population change recalculation")),
+        target);
+
+    // Get total volume available for new units
+    BigDecimal salesKg = substanceSales.getValue();
+    BigDecimal rechargeKg = subtractRechargeEffective ? rechargeVolume.getValue() : BigDecimal.ZERO;
+    BigDecimal availableForNewUnitsKg = salesKg.subtract(rechargeKg);
+
+    // Convert to unit delta
+    EngineNumber initialChargeRaw = target.getInitialCharge("sales");
+    EngineNumber initialCharge = unitConverter.convert(initialChargeRaw, "kg / unit");
+    BigDecimal initialChargeKgUnit = initialCharge.getValue();
+    BigDecimal deltaUnitsRaw = divideWithZero(availableForNewUnitsKg, initialChargeKgUnit);
+    BigDecimal deltaUnits = deltaUnitsRaw;
+    EngineNumber newUnitsMarginal = new EngineNumber(
+        deltaUnits.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : deltaUnits, "units");
+
+    // Find new total
+    BigDecimal priorPopulationUnits = priorPopulation.getValue();
+    BigDecimal newUnits = priorPopulationUnits.add(deltaUnits);
+    boolean newUnitsNegative = newUnits.compareTo(BigDecimal.ZERO) < 0;
+    BigDecimal newUnitsAllowed = newUnitsNegative ? BigDecimal.ZERO : newUnits;
+    EngineNumber newUnitsEffective = new EngineNumber(newUnitsAllowed, "units");
+
+    // Save
+    target.setStream("equipment", newUnitsEffective, null, scopeEffective, false, null);
+    target.setStream("newEquipment", newUnitsMarginal, null, scopeEffective, false, null);
+
+    // Recalc recharge emissions - need to create a new operation
+    RechargeEmissionsRecalcStrategy rechargeStrategy = new RechargeEmissionsRecalcStrategy(scopeEffective);
+    rechargeStrategy.execute(target, kit);
+  }
+
   /**
    * Divide with a check for division by zero.
    *

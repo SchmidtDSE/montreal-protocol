@@ -19,6 +19,7 @@ import org.kigalisim.engine.Engine;
 public class RecalcOperation {
 
   private final List<RecalcStrategy> strategies;
+  private final RecalcKit recalcKit;
 
   /**
    * Create a new RecalcOperation with the given strategies.
@@ -27,6 +28,18 @@ public class RecalcOperation {
    */
   public RecalcOperation(List<RecalcStrategy> strategies) {
     this.strategies = strategies;
+    this.recalcKit = null;
+  }
+
+  /**
+   * Create a new RecalcOperation with the given strategies and RecalcKit.
+   *
+   * @param strategies The list of strategies to execute in order
+   * @param recalcKit The RecalcKit containing dependencies for strategies
+   */
+  public RecalcOperation(List<RecalcStrategy> strategies, RecalcKit recalcKit) {
+    this.strategies = strategies;
+    this.recalcKit = recalcKit;
   }
 
   /**
@@ -36,7 +49,11 @@ public class RecalcOperation {
    */
   public void execute(Engine target) {
     for (RecalcStrategy strategy : strategies) {
-      strategy.execute(target);
+      if (recalcKit != null) {
+        strategy.execute(target, recalcKit);
+      } else {
+        strategy.execute(target);
+      }
     }
   }
 }

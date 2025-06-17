@@ -69,4 +69,37 @@ public class ConsumptionRecalcStrategy implements RecalcStrategy {
     calculator.setStreamName("energy");
     calculator.execute(engine);
   }
+
+  @Override
+  public void execute(Engine target, RecalcKit kit) {
+    // Move the logic from SingleThreadEngine.recalcConsumption
+    Scope scopeEffective = scope != null ? scope : target.getScope();
+
+    String application = scopeEffective.getApplication();
+    String substance = scopeEffective.getSubstance();
+
+    if (application == null || substance == null) {
+      ExceptionsGenerator.raiseNoAppOrSubstance("recalculating consumption", "");
+    }
+
+    // Update streams using ConsumptionCalculator
+    ConsumptionCalculator calculator = new ConsumptionCalculator();
+
+    // Get stream keeper from kit
+    StreamKeeper streamKeeper = kit.getStreamKeeper().orElseThrow(
+        () -> new IllegalStateException("StreamKeeper required for consumption recalculation"));
+
+    // Get GHG intensity and calculate consumption
+    EngineNumber ghgIntensity = streamKeeper.getGhgIntensity(application, substance);
+    calculator.setConsumptionRaw(ghgIntensity);
+    calculator.setStreamName("consumption");
+    calculator.execute(target);
+
+    // Get energy intensity and calculate energy
+    calculator = new ConsumptionCalculator();
+    EngineNumber energyIntensity = streamKeeper.getEnergyIntensity(application, substance);
+    calculator.setConsumptionRaw(energyIntensity);
+    calculator.setStreamName("energy");
+    calculator.execute(target);
+  }
 }

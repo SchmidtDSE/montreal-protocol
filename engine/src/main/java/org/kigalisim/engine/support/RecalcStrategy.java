@@ -24,4 +24,15 @@ public interface RecalcStrategy {
    * @param target The engine on which to execute the recalculation
    */
   void execute(Engine target);
+
+  /**
+   * Execute the recalculation strategy with the given engine and RecalcKit.
+   *
+   * @param target The engine on which to execute the recalculation
+   * @param kit The RecalcKit containing required dependencies
+   */
+  default void execute(Engine target, RecalcKit kit) {
+    // Default implementation delegates to the original method for backward compatibility
+    execute(target);
+  }
 }

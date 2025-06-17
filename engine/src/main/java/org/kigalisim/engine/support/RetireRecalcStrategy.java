@@ -95,4 +95,69 @@ public class RetireRecalcStrategy implements RecalcStrategy {
     engine.recalcSales(null);
     engine.recalcConsumption(null);
   }
+
+  @Override
+  public void execute(Engine target, RecalcKit kit) {
+    // Move the logic from SingleThreadEngine.recalcRetire
+    // Setup
+    OverridingConverterStateGetter stateGetter =
+        new OverridingConverterStateGetter(kit.getStateGetter().orElseThrow(
+            () -> new IllegalStateException("StateGetter required for retire recalculation")));
+    UnitConverter unitConverter = new UnitConverter(stateGetter);
+    Scope scopeEffective = scope != null ? scope : target.getScope();
+    String application = scopeEffective.getApplication();
+    String substance = scopeEffective.getSubstance();
+
+    // Check allowed
+    if (application == null || substance == null) {
+      ExceptionsGenerator.raiseNoAppOrSubstance("recalculating population change", "");
+    }
+
+    // Get StreamKeeper from kit
+    var streamKeeper = kit.getStreamKeeper().orElseThrow(
+        () -> new IllegalStateException("StreamKeeper required for retire recalculation"));
+
+    // Calculate change
+    EngineNumber currentPriorRaw = streamKeeper.getStream(
+        application,
+        substance,
+        "priorEquipment"
+    );
+    EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
+
+    EngineNumber currentEquipmentRaw = streamKeeper.getStream(
+        application,
+        substance,
+        "equipment"
+    );
+    EngineNumber currentEquipment = unitConverter.convert(currentEquipmentRaw, "units");
+
+    stateGetter.setPopulation(currentPrior);
+    EngineNumber amountRaw = streamKeeper.getRetirementRate(application, substance);
+    EngineNumber amount = unitConverter.convert(amountRaw, "units");
+    stateGetter.clearPopulation();
+
+    // Calculate new values
+    BigDecimal newPriorValue = currentPrior.getValue().subtract(amount.getValue());
+    BigDecimal newEquipmentValue = currentEquipment.getValue().subtract(amount.getValue());
+
+    EngineNumber newPrior = new EngineNumber(newPriorValue, "units");
+    EngineNumber newEquipment = new EngineNumber(newEquipmentValue, "units");
+
+    // Update equipment streams
+    streamKeeper.setStream(application, substance, "priorEquipment", newPrior);
+    streamKeeper.setStream(application, substance, "equipment", newEquipment);
+
+    // Update GHG accounting
+    EolEmissionsRecalcStrategy eolStrategy = new EolEmissionsRecalcStrategy(scopeEffective);
+    eolStrategy.execute(target, kit);
+
+    // Propagate
+    PopulationChangeRecalcStrategy populationStrategy = new PopulationChangeRecalcStrategy(null, null);
+    populationStrategy.execute(target, kit);
+    SalesRecalcStrategy salesStrategy = new SalesRecalcStrategy(null);
+    salesStrategy.execute(target, kit);
+    ConsumptionRecalcStrategy consumptionStrategy = new ConsumptionRecalcStrategy(null);
+    consumptionStrategy.execute(target, kit);
+  }
 }

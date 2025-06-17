@@ -22,6 +22,7 @@ public class RecalcOperationBuilder {
 
   private Optional<Scope> scopeEffective;
   private Optional<Boolean> subtractRecharge;
+  private Optional<RecalcKit> recalcKit;
   private final List<RecalcStrategy> strategies;
   private boolean hasInitialRecalc;
 
@@ -31,6 +32,7 @@ public class RecalcOperationBuilder {
   public RecalcOperationBuilder() {
     this.scopeEffective = Optional.empty();
     this.subtractRecharge = Optional.empty();
+    this.recalcKit = Optional.empty();
     this.strategies = new ArrayList<>();
     this.hasInitialRecalc = false;
   }
@@ -54,6 +56,17 @@ public class RecalcOperationBuilder {
    */
   public RecalcOperationBuilder setSubtractRecharge(Boolean subtractRecharge) {
     this.subtractRecharge = Optional.ofNullable(subtractRecharge);
+    return this;
+  }
+
+  /**
+   * Set the RecalcKit containing dependencies for recalculation operations.
+   *
+   * @param recalcKit The recalc kit to use
+   * @return This builder for method chaining
+   */
+  public RecalcOperationBuilder setRecalcKit(RecalcKit recalcKit) {
+    this.recalcKit = Optional.ofNullable(recalcKit);
     return this;
   }
 
@@ -252,6 +265,10 @@ public class RecalcOperationBuilder {
     if (strategies.isEmpty()) {
       throw new IllegalStateException("Must configure at least one recalculation strategy");
     }
-    return new RecalcOperation(new ArrayList<>(strategies));
+    if (recalcKit.isPresent()) {
+      return new RecalcOperation(new ArrayList<>(strategies), recalcKit.get());
+    } else {
+      return new RecalcOperation(new ArrayList<>(strategies));
+    }
   }
 }
