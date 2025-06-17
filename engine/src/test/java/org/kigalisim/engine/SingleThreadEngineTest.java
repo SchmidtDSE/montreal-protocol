@@ -251,4 +251,39 @@ public class SingleThreadEngineTest {
     assertEquals(BigDecimal.valueOf(15), result2.getValue(), 
         "Should not apply change when year doesn't match");
   }
+
+  /**
+   * Test that mirrors the JavaScript "change stream alternative notation" test.
+   */
+  @Test
+  public void testChangeStreamAlternativeNotation() {
+    SingleThreadEngine engine = new SingleThreadEngine(1, 3);
+    
+    engine.setStanza("default");
+    engine.setApplication("test app");
+    engine.setSubstance("test substance");
+    
+    // Set initial value
+    EngineNumber initialValue = new EngineNumber(BigDecimal.valueOf(10), "kg");
+    engine.setStream("manufacture", initialValue, new YearMatcher(null, null));
+    
+    // Change by 10% when year doesn't match (should not apply)
+    EngineNumber percentChange = new EngineNumber(BigDecimal.valueOf(10), "%");
+    engine.changeStream("manufacture", percentChange, new YearMatcher(2, null));
+    
+    EngineNumber result1 = engine.getStream("manufacture");
+    assertEquals(BigDecimal.valueOf(10), result1.getValue(), "Should remain 10 when year doesn't match");
+    assertEquals("kg", result1.getUnits(), "Should maintain kg units");
+    
+    // Increment year to 2
+    engine.incrementYear();
+    
+    // Change by 10% when year matches (should apply)
+    engine.changeStream("manufacture", percentChange, new YearMatcher(null, null));
+    
+    EngineNumber result2 = engine.getStream("manufacture");
+    assertEquals(0, BigDecimal.valueOf(11).compareTo(result2.getValue()), 
+        "Should be 11 after 10% increase");
+    assertEquals("kg", result2.getUnits(), "Should maintain kg units");
+  }
 }
