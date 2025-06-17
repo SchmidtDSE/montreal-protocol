@@ -13,6 +13,7 @@ import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.SingleThreadEngine;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.state.Scope;
+import org.kigalisim.engine.state.StreamKeeper;
 
 /**
  * Strategy for recalculating consumption.
@@ -52,15 +53,18 @@ public class ConsumptionRecalcStrategy implements RecalcStrategy {
     // Update streams using ConsumptionCalculator
     ConsumptionCalculator calculator = new ConsumptionCalculator();
 
+    // Get stream keeper
+    StreamKeeper streamKeeper = engine.getStreamKeeper();
+
     // Get GHG intensity and calculate consumption
-    EngineNumber ghgIntensity = engine.getStreamKeeper().getGhgIntensity(application, substance);
+    EngineNumber ghgIntensity = streamKeeper.getGhgIntensity(application, substance);
     calculator.setConsumptionRaw(ghgIntensity);
     calculator.setStreamName("consumption");
     calculator.execute(engine);
 
     // Get energy intensity and calculate energy
     calculator = new ConsumptionCalculator();
-    EngineNumber energyIntensity = engine.getStreamKeeper().getEnergyIntensity(application, substance);
+    EngineNumber energyIntensity = streamKeeper.getEnergyIntensity(application, substance);
     calculator.setConsumptionRaw(energyIntensity);
     calculator.setStreamName("energy");
     calculator.execute(engine);

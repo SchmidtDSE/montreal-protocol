@@ -164,7 +164,11 @@ public class RecalcOperationBuilder {
       throw new IllegalStateException(
           "Must call a recalc method before using thenPropagate methods");
     }
-    strategies.add(new PopulationChangeRecalcStrategy(scopeEffective.orElse(null), subtractRecharge.orElse(null)));
+    RecalcStrategy newStrategy = new PopulationChangeRecalcStrategy(
+        scopeEffective.orElse(null),
+        subtractRecharge.orElse(null)
+    );
+    strategies.add(newStrategy);
     return this;
   }
 

@@ -31,11 +31,11 @@ import org.kigalisim.engine.support.ConsumptionCalculator;
 import org.kigalisim.engine.support.ConsumptionRecalcStrategy;
 import org.kigalisim.engine.support.EolEmissionsRecalcStrategy;
 import org.kigalisim.engine.support.PopulationChangeRecalcStrategy;
+import org.kigalisim.engine.support.RecalcOperation;
+import org.kigalisim.engine.support.RecalcOperationBuilder;
 import org.kigalisim.engine.support.RechargeEmissionsRecalcStrategy;
 import org.kigalisim.engine.support.RetireRecalcStrategy;
 import org.kigalisim.engine.support.SalesRecalcStrategy;
-import org.kigalisim.engine.support.RecalcOperation;
-import org.kigalisim.engine.support.RecalcOperationBuilder;
 
 /**
  * Single-threaded implementation of the Engine interface.
@@ -914,7 +914,10 @@ public class SingleThreadEngine implements Engine {
    */
   public void recalcPopulationChange(Scope scope, Boolean subtractRecharge) {
     // Delegate to strategy
-    PopulationChangeRecalcStrategy strategy = new PopulationChangeRecalcStrategy(scope, subtractRecharge);
+    PopulationChangeRecalcStrategy strategy = new PopulationChangeRecalcStrategy(
+        scope,
+        subtractRecharge
+    );
     strategy.execute(this);
   }
 

@@ -17,6 +17,7 @@ import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
 import org.kigalisim.engine.state.OverridingConverterStateGetter;
 import org.kigalisim.engine.state.Scope;
+import org.kigalisim.engine.state.StreamKeeper;
 
 /**
  * Strategy for recalculating sales.
@@ -56,10 +57,15 @@ public class SalesRecalcStrategy implements RecalcStrategy {
       engine.raiseNoAppOrSubstance("recalculating sales", "");
     }
 
+    StreamKeeper streamKeeper = engine.getStreamKeeper();
+
     // Get recharge population
     EngineNumber basePopulation = engine.getStream("priorEquipment", scopeEffective, null);
     stateGetter.setPopulation(basePopulation);
-    EngineNumber rechargePopRaw = engine.getStreamKeeper().getRechargePopulation(application, substance);
+    EngineNumber rechargePopRaw = streamKeeper.getRechargePopulation(
+        application,
+        substance
+    );
     EngineNumber rechargePop = unitConverter.convert(rechargePopRaw, "units");
     stateGetter.clearPopulation();
 
@@ -67,7 +73,7 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     stateGetter.setPopulation(rechargePop);
 
     // Get recharge amount
-    EngineNumber rechargeIntensityRaw = engine.getStreamKeeper().getRechargeIntensity(
+    EngineNumber rechargeIntensityRaw = streamKeeper.getRechargeIntensity(
         application,
         substance
     );
@@ -79,20 +85,20 @@ public class SalesRecalcStrategy implements RecalcStrategy {
 
     // Get recycling volume
     stateGetter.setVolume(rechargeVolume);
-    EngineNumber recoveryVolumeRaw = engine.getStreamKeeper().getRecoveryRate(application, substance);
+    EngineNumber recoveryVolumeRaw = streamKeeper.getRecoveryRate(application, substance);
     EngineNumber recoveryVolume = unitConverter.convert(recoveryVolumeRaw, "kg");
     stateGetter.clearVolume();
 
     // Get recycling amount
     stateGetter.setVolume(recoveryVolume);
-    EngineNumber recycledVolumeRaw = engine.getStreamKeeper().getYieldRate(application, substance);
+    EngineNumber recycledVolumeRaw = streamKeeper.getYieldRate(application, substance);
     EngineNumber recycledVolume = unitConverter.convert(recycledVolumeRaw, "kg");
     stateGetter.clearVolume();
 
     // Get recycling displaced
     BigDecimal recycledKg = recycledVolume.getValue();
 
-    EngineNumber displacementRateRaw = engine.getStreamKeeper().getDisplacementRate(
+    EngineNumber displacementRateRaw = streamKeeper.getDisplacementRate(
         application,
         substance
     );
@@ -164,7 +170,7 @@ public class SalesRecalcStrategy implements RecalcStrategy {
 
     // Recycle
     EngineNumber newRecycleValue = new EngineNumber(recycledDisplacedKg, "kg");
-    engine.getStreamKeeper().setStream(application, substance, "recycle", newRecycleValue);
+    streamKeeper.setStream(application, substance, "recycle", newRecycleValue);
 
     // New values
     BigDecimal requiredKgUnbound = kgForRecharge.add(kgForNew);
@@ -174,8 +180,8 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     BigDecimal newImportKg = percentImport.multiply(requiredKg);
     EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
     EngineNumber newImport = new EngineNumber(newImportKg, "kg");
-    engine.getStreamKeeper().setStream(application, substance, "manufacture", newManufacture);
-    engine.getStreamKeeper().setStream(application, substance, "import", newImport);
+    streamKeeper.setStream(application, substance, "manufacture", newManufacture);
+    streamKeeper.setStream(application, substance, "import", newImport);
   }
 
   /**
