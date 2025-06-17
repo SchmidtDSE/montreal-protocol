@@ -20,10 +20,12 @@ import java.util.function.BiConsumer;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
 import org.kigalisim.engine.serializer.EngineResult;
+import org.kigalisim.engine.serializer.EngineResultSerializer;
 import org.kigalisim.engine.state.ConverterStateGetter;
 import org.kigalisim.engine.state.OverridingConverterStateGetter;
 import org.kigalisim.engine.state.Scope;
 import org.kigalisim.engine.state.StreamKeeper;
+import org.kigalisim.engine.state.SubstanceInApplicationId;
 import org.kigalisim.engine.state.YearMatcher;
 
 /**
@@ -648,9 +650,19 @@ public class SingleThreadEngine implements Engine {
 
   @Override
   public List<EngineResult> getResults() {
-    // TODO: Implement full getResults logic to collect results from all years
-    // For now, return empty list as placeholder
-    return new ArrayList<>();
+    List<SubstanceInApplicationId> substances = this.streamKeeper.getRegisteredSubstances();
+    EngineResultSerializer serializer = new EngineResultSerializer(this, this.stateGetter);
+    
+    List<EngineResult> results = new ArrayList<>();
+    for (SubstanceInApplicationId substanceId : substances) {
+      String application = substanceId.getApplication();
+      String substance = substanceId.getSubstance();
+      int year = this.currentYear;
+      EngineResult result = serializer.getResult(application, substance, year);
+      results.add(result);
+    }
+    
+    return results;
   }
 
   /**
