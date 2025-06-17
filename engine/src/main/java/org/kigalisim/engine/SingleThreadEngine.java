@@ -255,8 +255,17 @@ public class SingleThreadEngine implements Engine {
   // Placeholder implementations for remaining methods - to be completed
   @Override
   public EngineNumber getInitialCharge(String stream) {
-    // TODO: Implement complex initial charge calculation logic
-    throw new UnsupportedOperationException("Not yet implemented");
+    if ("sales".equals(stream)) {
+      // For now, implement a simplified version - the full implementation is complex
+      // and involves pooling initial charges from manufacture and import
+      String application = this.scope.getApplication();
+      String substance = this.scope.getSubstance();
+      return getRawInitialChargeFor(application, substance, "manufacture");
+    } else {
+      String application = this.scope.getApplication();
+      String substance = this.scope.getSubstance();
+      return getRawInitialChargeFor(application, substance, stream);
+    }
   }
 
   @Override
@@ -370,7 +379,19 @@ public class SingleThreadEngine implements Engine {
   @Override
   public void changeStream(String stream, EngineNumber amount, YearMatcher yearMatcher,
       Scope scope) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    if (!getIsInRange(yearMatcher)) {
+      return;
+    }
+
+    EngineNumber currentValue = getStream(stream, scope, null);
+    UnitConverter unitConverter = createUnitConverterWithTotal(stream);
+
+    EngineNumber convertedDelta = unitConverter.convert(amount, currentValue.getUnits());
+    BigDecimal newAmount = currentValue.getValue().add(convertedDelta.getValue());
+    EngineNumber outputWithUnits = new EngineNumber(newAmount, currentValue.getUnits());
+
+    // Pass the original user-specified units for tracking
+    setStream(stream, outputWithUnits, null, scope, true, amount.getUnits());
   }
 
   @Override
@@ -409,6 +430,29 @@ public class SingleThreadEngine implements Engine {
    */
   private boolean getIsInRange(YearMatcher yearMatcher) {
     return yearMatcher == null || yearMatcher.getInRange(this.currentYear);
+  }
+
+  /**
+   * Creates a unit converter with total values initialized.
+   *
+   * @param stream The stream identifier to create converter for
+   * @return A configured unit converter instance
+   */
+  private UnitConverter createUnitConverterWithTotal(String stream) {
+    OverridingConverterStateGetter stateGetter =
+        new OverridingConverterStateGetter(this.stateGetter);
+    UnitConverter unitConverter = new UnitConverter(stateGetter);
+
+    EngineNumber currentValue = getStream(stream);
+    stateGetter.setTotal(stream, currentValue);
+
+    boolean isSalesSubstream = "manufacture".equals(stream) || "import".equals(stream);
+    if (isSalesSubstream) {
+      EngineNumber initialCharge = getInitialCharge(stream);
+      stateGetter.setAmortizedUnitVolume(initialCharge);
+    }
+
+    return unitConverter;
   }
 
   /**

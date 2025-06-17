@@ -1,6 +1,7 @@
 /**
  * Tests for the SingleThreadEngine class.
  */
+
 package org.kigalisim.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,22 +48,22 @@ public class SingleThreadEngineTest {
   @Test
   public void testYearManagement() {
     SingleThreadEngine engine = new SingleThreadEngine(1, 3);
-    
+
     assertEquals(1, engine.getYear(), "Should start at year 1");
     assertFalse(engine.getIsDone(), "Should not be done initially");
-    
+
     engine.incrementYear();
     assertEquals(2, engine.getYear(), "Should be at year 2 after increment");
     assertFalse(engine.getIsDone(), "Should not be done at year 2");
-    
+
     engine.incrementYear();
     assertEquals(3, engine.getYear(), "Should be at year 3 after second increment");
     assertFalse(engine.getIsDone(), "Should not be done at year 3");
-    
+
     engine.incrementYear();
     assertEquals(4, engine.getYear(), "Should be at year 4 after third increment");
     assertTrue(engine.getIsDone(), "Should be done at year 4");
-    
+
     assertThrows(RuntimeException.class, () -> engine.incrementYear(),
         "Should throw error when trying to increment past end");
   }
@@ -73,11 +74,11 @@ public class SingleThreadEngineTest {
   @Test
   public void testScopeManagement() {
     SingleThreadEngine engine = new SingleThreadEngine(1, 3);
-    
+
     engine.setStanza("default");
     engine.setApplication("test app");
     engine.setSubstance("test substance");
-    
+
     Scope scope = engine.getScope();
     assertEquals("default", scope.getStanza(), "Should have correct stanza");
     assertEquals("test app", scope.getApplication(), "Should have correct application");
@@ -90,23 +91,23 @@ public class SingleThreadEngineTest {
   @Test
   public void testProtectedVariables() {
     SingleThreadEngine engine = new SingleThreadEngine(1, 3);
-    
+
     // Test getting protected variables
     EngineNumber yearsElapsed = engine.getVariable("yearsElapsed");
     assertEquals(BigDecimal.ZERO, yearsElapsed.getValue(), "Should have 0 years elapsed initially");
-    
+
     EngineNumber yearAbsolute = engine.getVariable("yearAbsolute");
     assertEquals(BigDecimal.valueOf(1), yearAbsolute.getValue(), "Should have year 1 absolute");
-    
+
     // Test that protected variables cannot be defined or set
     assertThrows(RuntimeException.class, () -> engine.defineVariable("yearsElapsed"),
         "Should not allow defining yearsElapsed");
     assertThrows(RuntimeException.class, () -> engine.defineVariable("yearAbsolute"),
         "Should not allow defining yearAbsolute");
-    assertThrows(RuntimeException.class, 
+    assertThrows(RuntimeException.class,
         () -> engine.setVariable("yearsElapsed", new EngineNumber(BigDecimal.ONE, "years")),
         "Should not allow setting yearsElapsed");
-    assertThrows(RuntimeException.class, 
+    assertThrows(RuntimeException.class,
         () -> engine.setVariable("yearAbsolute", new EngineNumber(BigDecimal.ONE, "year")),
         "Should not allow setting yearAbsolute");
   }
@@ -117,12 +118,12 @@ public class SingleThreadEngineTest {
   @Test
   public void testProtectedVariablesUpdate() {
     SingleThreadEngine engine = new SingleThreadEngine(1, 3);
-    
+
     engine.incrementYear();
-    
+
     EngineNumber yearsElapsed = engine.getVariable("yearsElapsed");
     assertEquals(BigDecimal.valueOf(1), yearsElapsed.getValue(), "Should have 1 year elapsed");
-    
+
     EngineNumber yearAbsolute = engine.getVariable("yearAbsolute");
     assertEquals(BigDecimal.valueOf(2), yearAbsolute.getValue(), "Should have year 2 absolute");
   }
@@ -133,21 +134,21 @@ public class SingleThreadEngineTest {
   @Test
   public void testBasicStreamOperations() {
     SingleThreadEngine engine = new SingleThreadEngine(1, 3);
-    
+
     engine.setStanza("default");
     engine.setApplication("test app");
     engine.setSubstance("test substance");
-    
+
     // Test getting a stream (should return zero initially)
     EngineNumber manufacture = engine.getStream("manufacture");
     assertNotNull(manufacture, "Should return a value for manufacture stream");
     assertEquals(BigDecimal.ZERO, manufacture.getValue(), "Should be zero initially");
     assertEquals("kg", manufacture.getUnits(), "Should have kg units");
-    
+
     // Test setting a stream
     EngineNumber newValue = new EngineNumber(BigDecimal.valueOf(10), "kg");
     engine.setStream("manufacture", newValue, null);
-    
+
     EngineNumber updated = engine.getStream("manufacture");
     assertEquals(BigDecimal.valueOf(10), updated.getValue(), "Should have updated value");
     assertEquals("kg", updated.getUnits(), "Should maintain units");
@@ -159,7 +160,7 @@ public class SingleThreadEngineTest {
   @Test
   public void testStreamWithoutScope() {
     SingleThreadEngine engine = new SingleThreadEngine(1, 3);
-    
+
     EngineNumber value = new EngineNumber(BigDecimal.valueOf(10), "kg");
     assertThrows(RuntimeException.class, () -> engine.setStream("manufacture", value, null),
         "Should throw error when setting stream without application and substance");
@@ -171,25 +172,83 @@ public class SingleThreadEngineTest {
   @Test
   public void testYearMatcher() {
     SingleThreadEngine engine = new SingleThreadEngine(1, 3);
+
+    engine.setStanza("default");
+    engine.setApplication("test app");
+    engine.setSubstance("test substance");
+
+    // Set a stream with year matcher that should apply
+    EngineNumber value = new EngineNumber(BigDecimal.valueOf(10), "kg");
+    YearMatcher matcher = new YearMatcher(1, null);
+    engine.setStream("manufacture", value, matcher);
+
+    EngineNumber result = engine.getStream("manufacture");
+    assertEquals(BigDecimal.valueOf(10), result.getValue(), "Should set value when year matches");
+
+    // Set a stream with year matcher that should not apply
+    EngineNumber value2 = new EngineNumber(BigDecimal.valueOf(20), "kg");
+    YearMatcher matcher2 = new YearMatcher(2, null);
+    engine.setStream("manufacture", value2, matcher2);
+
+    EngineNumber result2 = engine.getStream("manufacture");
+    assertEquals(BigDecimal.valueOf(10), result2.getValue(),
+        "Should not change value when year doesn't match");
+  }
+
+  /**
+   * Test changeStream functionality.
+   */
+  @Test
+  public void testChangeStream() {
+    SingleThreadEngine engine = new SingleThreadEngine(1, 3);
     
     engine.setStanza("default");
     engine.setApplication("test app");
     engine.setSubstance("test substance");
     
-    // Set a stream with year matcher that should apply
-    EngineNumber value = new EngineNumber(BigDecimal.valueOf(10), "kg");
-    YearMatcher matcher = new YearMatcher(1, null);
-    engine.setStream("manufacture", value, matcher);
+    // Set initial value
+    EngineNumber initialValue = new EngineNumber(BigDecimal.valueOf(10), "kg");
+    engine.setStream("manufacture", initialValue, null);
+    
+    // Change stream by a delta
+    EngineNumber delta = new EngineNumber(BigDecimal.valueOf(5), "kg");
+    engine.changeStream("manufacture", delta, null);
     
     EngineNumber result = engine.getStream("manufacture");
-    assertEquals(BigDecimal.valueOf(10), result.getValue(), "Should set value when year matches");
+    assertEquals(BigDecimal.valueOf(15), result.getValue(), "Should add delta to original value");
+    assertEquals("kg", result.getUnits(), "Should maintain original units");
+  }
+
+  /**
+   * Test changeStream with year matcher.
+   */
+  @Test
+  public void testChangeStreamWithYearMatcher() {
+    SingleThreadEngine engine = new SingleThreadEngine(1, 3);
     
-    // Set a stream with year matcher that should not apply
-    EngineNumber value2 = new EngineNumber(BigDecimal.valueOf(20), "kg");
+    engine.setStanza("default");
+    engine.setApplication("test app");
+    engine.setSubstance("test substance");
+    
+    // Set initial value
+    EngineNumber initialValue = new EngineNumber(BigDecimal.valueOf(10), "kg");
+    engine.setStream("manufacture", initialValue, null);
+    
+    // Change stream with year matcher that should apply
+    EngineNumber delta = new EngineNumber(BigDecimal.valueOf(5), "kg");
+    YearMatcher matcher = new YearMatcher(1, null);
+    engine.changeStream("manufacture", delta, matcher);
+    
+    EngineNumber result = engine.getStream("manufacture");
+    assertEquals(BigDecimal.valueOf(15), result.getValue(), "Should apply change when year matches");
+    
+    // Try to change stream with year matcher that should not apply
+    EngineNumber delta2 = new EngineNumber(BigDecimal.valueOf(10), "kg");
     YearMatcher matcher2 = new YearMatcher(2, null);
-    engine.setStream("manufacture", value2, matcher2);
+    engine.changeStream("manufacture", delta2, matcher2);
     
     EngineNumber result2 = engine.getStream("manufacture");
-    assertEquals(BigDecimal.valueOf(10), result2.getValue(), "Should not change value when year doesn't match");
+    assertEquals(BigDecimal.valueOf(15), result2.getValue(), 
+        "Should not apply change when year doesn't match");
   }
 }
