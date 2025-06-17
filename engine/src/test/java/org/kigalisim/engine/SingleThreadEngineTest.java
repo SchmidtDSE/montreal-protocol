@@ -102,7 +102,11 @@ public class SingleThreadEngineTest {
     
     Scope newScope = engine.getScope();
     assertEquals("default", newScope.getStanza(), "Should maintain stanza after substance change");
-    assertEquals("test app", newScope.getApplication(), "Should maintain application after substance change");
+    assertEquals(
+        "test app",
+        newScope.getApplication(),
+        "Should maintain application after substance change"
+    );
     assertEquals("test substance 2", newScope.getSubstance(), "Should have updated substance");
   }
 
