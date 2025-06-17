@@ -28,6 +28,8 @@ import org.kigalisim.engine.state.StreamKeeper;
 import org.kigalisim.engine.state.SubstanceInApplicationId;
 import org.kigalisim.engine.state.YearMatcher;
 import org.kigalisim.engine.support.ConsumptionCalculator;
+import org.kigalisim.engine.support.RecalcOperation;
+import org.kigalisim.engine.support.RecalcOperationBuilder;
 
 /**
  * Single-threaded implementation of the Engine interface.
@@ -187,25 +189,48 @@ public class SingleThreadEngine implements Engine {
     }
 
     if ("sales".equals(name) || "manufacture".equals(name) || "import".equals(name)) {
-      recalcPopulationChange(scopeEffective, !value.hasEquipmentUnits());
-      recalcConsumption(scopeEffective);
+      RecalcOperationBuilder builder = new RecalcOperationBuilder()
+          .setScopeEffective(scopeEffective)
+          .setSubtractRecharge(!value.hasEquipmentUnits())
+          .recalcPopulationChange()
+          .thenPropagateToConsumption();
+      
       if (!OPTIMIZE_RECALCS) {
-        recalcSales(scopeEffective);
+        builder = builder.thenPropagateToSales();
       }
+      
+      RecalcOperation operation = builder.build();
+      operation.execute(this);
     } else if ("consumption".equals(name)) {
-      recalcSales(scopeEffective);
-      recalcPopulationChange(scopeEffective, null);
+      RecalcOperationBuilder builder = new RecalcOperationBuilder()
+          .setScopeEffective(scopeEffective)
+          .recalcSales()
+          .thenPropagateToPopulationChange();
+      
       if (!OPTIMIZE_RECALCS) {
-        recalcConsumption(scopeEffective);
+        builder = builder.thenPropagateToConsumption();
       }
+      
+      RecalcOperation operation = builder.build();
+      operation.execute(this);
     } else if ("equipment".equals(name)) {
-      recalcSales(scopeEffective);
-      recalcConsumption(scopeEffective);
+      RecalcOperationBuilder builder = new RecalcOperationBuilder()
+          .setScopeEffective(scopeEffective)
+          .recalcSales()
+          .thenPropagateToConsumption();
+      
       if (!OPTIMIZE_RECALCS) {
-        recalcPopulationChange(scopeEffective, null);
+        builder = builder.thenPropagateToPopulationChange();
       }
+      
+      RecalcOperation operation = builder.build();
+      operation.execute(this);
     } else if ("priorEquipment".equals(name)) {
-      recalcRetire(scopeEffective);
+      RecalcOperation operation = new RecalcOperationBuilder()
+          .setScopeEffective(scopeEffective)
+          .recalcRetire()
+          .build();
+      operation.execute(this);
     }
   }
 
@@ -309,7 +334,11 @@ public class SingleThreadEngine implements Engine {
     }
 
     boolean subtractRecharge = getShouldSubtractRecharge(stream);
-    recalcPopulationChange(null, subtractRecharge);
+    RecalcOperation operation = new RecalcOperationBuilder()
+        .setSubtractRecharge(subtractRecharge)
+        .recalcPopulationChange()
+        .build();
+    operation.execute(this);
   }
 
   /**
@@ -403,9 +432,12 @@ public class SingleThreadEngine implements Engine {
     this.streamKeeper.setRechargeIntensity(application, substance, intensity);
 
     // Recalculate
-    recalcPopulationChange(null, null);
-    recalcSales(null);
-    recalcConsumption(null);
+    RecalcOperation operation = new RecalcOperationBuilder()
+        .recalcPopulationChange()
+        .thenPropagateToSales()
+        .thenPropagateToConsumption()
+        .build();
+    operation.execute(this);
   }
 
   @Override
@@ -417,7 +449,10 @@ public class SingleThreadEngine implements Engine {
     String application = this.scope.getApplication();
     String substance = this.scope.getSubstance();
     this.streamKeeper.setRetirementRate(application, substance, amount);
-    recalcRetire(null);
+    RecalcOperation operation = new RecalcOperationBuilder()
+        .recalcRetire()
+        .build();
+    operation.execute(this);
   }
 
   @Override
@@ -443,9 +478,12 @@ public class SingleThreadEngine implements Engine {
       this.streamKeeper.setDisplacementRate(application, substance, displaceLevel);
     }
 
-    recalcSales(null);
-    recalcPopulationChange(null, null);
-    recalcConsumption(null);
+    RecalcOperation operation = new RecalcOperationBuilder()
+        .recalcSales()
+        .thenPropagateToPopulationChange()
+        .thenPropagateToConsumption()
+        .build();
+    operation.execute(this);
   }
 
   @Override
@@ -463,15 +501,22 @@ public class SingleThreadEngine implements Engine {
 
     if (isGhg) {
       this.streamKeeper.setGhgIntensity(application, substance, amount);
-      recalcRechargeEmissions(this.scope);
-      recalcEolEmissions(this.scope);
+      RecalcOperation operation = new RecalcOperationBuilder()
+          .setScopeEffective(this.scope)
+          .recalcRechargeEmissions()
+          .thenPropagateToEolEmissions()
+          .build();
+      operation.execute(this);
     } else if (isKwh) {
       this.streamKeeper.setEnergyIntensity(application, substance, amount);
     } else {
       throw new RuntimeException("Cannot equals " + amount.getUnits());
     }
 
-    recalcConsumption(null);
+    RecalcOperation operation = new RecalcOperationBuilder()
+        .recalcConsumption()
+        .build();
+    operation.execute(this);
   }
 
   @Override
@@ -843,7 +888,7 @@ public class SingleThreadEngine implements Engine {
    * @param scope The scope to recalculate for
    * @param subtractRecharge Whether to subtract recharge
    */
-  private void recalcPopulationChange(Scope scope, Boolean subtractRecharge) {
+  public void recalcPopulationChange(Scope scope, Boolean subtractRecharge) {
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
@@ -901,7 +946,7 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope in which to set the recharge emissions
    */
-  private void recalcRechargeEmissions(Scope scope) {
+  public void recalcRechargeEmissions(Scope scope) {
     Scope scopeEffective = scope != null ? scope : this.scope;
     EngineNumber rechargeVolume = calculateRechargeVolume();
     EngineNumber rechargeGhg = this.unitConverter.convert(rechargeVolume, "tCO2e");
@@ -913,7 +958,7 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope in which to recalculate EOL emissions
    */
-  private void recalcEolEmissions(Scope scope) {
+  public void recalcEolEmissions(Scope scope) {
     // Setup
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
@@ -950,7 +995,7 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope to recalculate for
    */
-  private void recalcConsumption(Scope scope) {
+  public void recalcConsumption(Scope scope) {
     Scope scopeEffective = scope != null ? scope : this.scope;
 
     String application = scopeEffective.getApplication();
@@ -982,7 +1027,7 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope to recalculate for
    */
-  private void recalcSales(Scope scope) {
+  public void recalcSales(Scope scope) {
     Scope scopeEffective = scope != null ? scope : this.scope;
 
     OverridingConverterStateGetter stateGetter =
@@ -1138,7 +1183,7 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope to recalculate for
    */
-  private void recalcRetire(Scope scope) {
+  public void recalcRetire(Scope scope) {
     // Setup
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
