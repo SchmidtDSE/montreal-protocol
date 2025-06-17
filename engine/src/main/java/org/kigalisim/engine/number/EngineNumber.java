@@ -17,10 +17,6 @@ import java.math.BigDecimal;
  * <p>This class encapsulates a numeric value (using BigDecimal for precision) and its
  * associated units string. It provides methods to access the value, units, and check
  * for specific unit types.</p>
- * 
- * <p>Key difference from JavaScript implementation: Uses BigDecimal instead of JavaScript's
- * floating-point numbers for better numerical precision and stability. The API and
- * functionality are otherwise identical.</p>
  */
 public class EngineNumber {
   private final BigDecimal value;

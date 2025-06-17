@@ -19,13 +19,6 @@ import org.kigalisim.engine.number.EngineNumber;
  * Object defining a scope within the engine including variables accessible from that scope.
  *
  * <p>Manages scope hierarchy and variable access across different context levels in the engine.</p>
- * 
- * <p>Key differences from JavaScript implementation:
- * - Uses IllegalArgumentException instead of throwing string literals
- * - Has additional convenience constructor for easier scope creation
- * - Uses static calculateContextLevel method instead of inline array operations
- * - Type safety with String types instead of JavaScript dynamic typing
- * The scope hierarchy logic and variable management are otherwise identical.</p>
  */
 public class Scope {
 

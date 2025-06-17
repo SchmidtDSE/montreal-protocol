@@ -29,21 +29,13 @@ import org.kigalisim.engine.state.YearMatcher;
  * <p>This implementation provides the core simulation engine functionality
  * without thread safety considerations. It manages substance streams, equipment
  * populations, and various calculations related to the Montreal Protocol simulation.</p>
- * 
- * <p>Key differences from JavaScript Engine implementation:
- * - Uses BigDecimal throughout for numerical precision instead of JavaScript floats
- * - Uses Java Optional pattern in state getters instead of null/undefined checking  
- * - Uses typed exceptions (RuntimeException) instead of throwing string literals
- * - Uses Java Set and BiConsumer instead of JavaScript Set and arrow functions
- * - Method signatures use typed parameters instead of JavaScript dynamic typing
- * - Uses clear() methods on state getters instead of setting to null
- * - All recalc methods and core functionality logic are otherwise identical to JS
- * - getResults() is not yet implemented pending EngineResult Java conversion</p>
  */
 public class SingleThreadEngine implements Engine {
 
   private static final Set<String> STREAM_NAMES = new HashSet<>();
   private static final boolean OPTIMIZE_RECALCS = true;
+  private static final String NO_APP_OR_SUBSTANCE_MESSAGE = 
+      "Tried %s without application and substance%s.";
 
   static {
     STREAM_NAMES.add("priorEquipment");
@@ -164,8 +156,7 @@ public class SingleThreadEngine implements Engine {
     String substance = scopeEffective.getSubstance();
 
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried setting stream without application and substance specified.");
+      raiseNoAppOrSubstance("setting stream", " specified");
     }
 
     this.streamKeeper.setStream(application, substance, name, value);
@@ -370,8 +361,7 @@ public class SingleThreadEngine implements Engine {
     String substance = this.scope.getSubstance();
 
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried setting last specified units without application and substance specified.");
+      raiseNoAppOrSubstance("setting last specified units", " specified");
     }
 
     this.streamKeeper.setLastSpecifiedUnits(application, substance, units);
@@ -390,8 +380,7 @@ public class SingleThreadEngine implements Engine {
 
     // Check allowed
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried recalculating population change without application and substance specified.");
+      raiseNoAppOrSubstance("recalculating population change", " specified");
     }
 
     // Set values
@@ -550,8 +539,7 @@ public class SingleThreadEngine implements Engine {
     String application = scope.getApplication();
     String substance = scope.getSubstance();
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried setting stream without application and substance specified.");
+      raiseNoAppOrSubstance("setting stream", " specified");
     }
     this.streamKeeper.setLastSpecifiedUnits(application, substance, amount.getUnits());
 
@@ -605,8 +593,7 @@ public class SingleThreadEngine implements Engine {
     String application = scope.getApplication();
     String substance = scope.getSubstance();
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried setting stream without application and substance specified.");
+      raiseNoAppOrSubstance("setting stream", " specified");
     }
     this.streamKeeper.setLastSpecifiedUnits(application, substance, amount.getUnits());
 
@@ -638,8 +625,7 @@ public class SingleThreadEngine implements Engine {
     String application = currentScope.getApplication();
     String currentSubstance = currentScope.getSubstance();
     if (application == null || currentSubstance == null) {
-      throw new RuntimeException(
-          "Tried setting stream without application and substance specified.");
+      raiseNoAppOrSubstance("setting stream", " specified");
     }
     this.streamKeeper.setLastSpecifiedUnits(application, currentSubstance, amountRaw.getUnits());
 
@@ -689,8 +675,7 @@ public class SingleThreadEngine implements Engine {
     String substance = this.scope.getSubstance();
 
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried calculating recharge volume without application and substance.");
+      raiseNoAppOrSubstance("calculating recharge volume", "");
     }
 
     // Get prior population for recharge calculation
@@ -783,8 +768,7 @@ public class SingleThreadEngine implements Engine {
     String substance = scopeEffective.getSubstance();
 
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried recalculating population change without application and substance.");
+      raiseNoAppOrSubstance("recalculating population change", "");
     }
 
     // Get prior population
@@ -857,8 +841,7 @@ public class SingleThreadEngine implements Engine {
 
     // Check allowed
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried recalculating EOL emissions change without application and substance.");
+      raiseNoAppOrSubstance("recalculating EOL emissions change", "");
     }
 
     // Calculate change
@@ -894,9 +877,7 @@ public class SingleThreadEngine implements Engine {
     String substance = scopeEffective.getSubstance();
 
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried recalculating consumption without application and substance."
-      );
+      raiseNoAppOrSubstance("recalculating consumption", "");
     }
 
     // Determine sales
@@ -944,7 +925,7 @@ public class SingleThreadEngine implements Engine {
     String substance = scopeEffective.getSubstance();
 
     if (application == null || substance == null) {
-      throw new RuntimeException("Tried recalculating sales without application and substance.");
+      raiseNoAppOrSubstance("recalculating sales", "");
     }
 
     // Get recharge population
@@ -1101,8 +1082,7 @@ public class SingleThreadEngine implements Engine {
 
     // Check allowed
     if (application == null || substance == null) {
-      throw new RuntimeException(
-          "Tried recalculating population change without application and substance.");
+      raiseNoAppOrSubstance("recalculating population change", "");
     }
 
     // Calculate change
@@ -1141,5 +1121,15 @@ public class SingleThreadEngine implements Engine {
     recalcPopulationChange(null, null);
     recalcSales(null);
     recalcConsumption(null);
+  }
+
+  /**
+   * Helper method to raise exception for missing application or substance.
+   *
+   * @param operation The operation being attempted
+   * @param suffix Additional suffix for the error message (usually " specified")
+   */
+  private void raiseNoAppOrSubstance(String operation, String suffix) {
+    throw new RuntimeException(String.format(NO_APP_OR_SUBSTANCE_MESSAGE, operation, suffix));
   }
 }

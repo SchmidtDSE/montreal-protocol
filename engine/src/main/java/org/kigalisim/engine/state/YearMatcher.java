@@ -11,13 +11,6 @@ package org.kigalisim.engine.state;
 
 /**
  * Class representing a range of years where inclusion can be tested.
- *
- * <p>Supports testing year inclusion within a range where null values
- * represent positive or negative infinity bounds. This implementation is
- * functionally equivalent to the JavaScript YearMatcher, with the main 
- * difference being the use of Integer for type safety instead of JavaScript's 
- * dynamic typing. The logic for handling null values, special strings
- * ("beginning", "onwards"), and range validation is identical.</p>
  */
 public class YearMatcher {
 
