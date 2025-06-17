@@ -11,6 +11,7 @@
 package org.kigalisim.engine;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -632,9 +633,6 @@ public class SingleThreadEngine implements Engine {
       return;
     }
 
-    UnitConverter unitConverter = createUnitConverterWithTotal(stream);
-    EngineNumber amount = unitConverter.convert(amountRaw, "kg");
-
     // Track the original user-specified units for the current substance
     Scope currentScope = this.scope;
     String application = currentScope.getApplication();
@@ -646,6 +644,9 @@ public class SingleThreadEngine implements Engine {
     this.streamKeeper.setLastSpecifiedUnits(application, currentSubstance, amountRaw.getUnits());
 
     // Track the original user-specified units for the destination substance
+    UnitConverter unitConverter = createUnitConverterWithTotal(stream);
+    EngineNumber amount = unitConverter.convert(amountRaw, "kg");
+
     String lastUnits = amountRaw.getUnits();
     this.streamKeeper.setLastSpecifiedUnits(application, destinationSubstance, lastUnits);
 
@@ -660,7 +661,9 @@ public class SingleThreadEngine implements Engine {
   public Object[] getResults() {
     // TODO: This will return EngineResult[] after that object is converted to Java
     // For now, we'll return a placeholder implementation
-    throw new UnsupportedOperationException("getResults will be implemented when EngineResult is converted to Java");
+    throw new UnsupportedOperationException(
+        "getResults will be implemented when EngineResult is converted to Java"
+    );
   }
 
   /**
@@ -704,7 +707,10 @@ public class SingleThreadEngine implements Engine {
     stateGetter.setPopulation(rechargePop);
 
     // Get recharge amount
-    EngineNumber rechargeIntensityRaw = this.streamKeeper.getRechargeIntensity(application, substance);
+    EngineNumber rechargeIntensityRaw = this.streamKeeper.getRechargeIntensity(
+        application,
+        substance
+    );
     EngineNumber rechargeVolume = unitConverter.convert(rechargeIntensityRaw, "kg");
 
     // Return to prior population
@@ -812,7 +818,8 @@ public class SingleThreadEngine implements Engine {
     // Find new total
     BigDecimal priorPopulationUnits = priorPopulation.getValue();
     BigDecimal newUnits = priorPopulationUnits.add(deltaUnits);
-    BigDecimal newUnitsAllowed = newUnits.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : newUnits;
+    boolean newUnitsNegative = newUnits.compareTo(BigDecimal.ZERO) < 0;
+    BigDecimal newUnitsAllowed = newUnitsNegative ? BigDecimal.ZERO : newUnits;
     EngineNumber newUnitsEffective = new EngineNumber(newUnitsAllowed, "units");
 
     // Save
@@ -855,7 +862,11 @@ public class SingleThreadEngine implements Engine {
     }
 
     // Calculate change
-    EngineNumber currentPriorRaw = this.streamKeeper.getStream(application, substance, "priorEquipment");
+    EngineNumber currentPriorRaw = this.streamKeeper.getStream(
+        application,
+        substance,
+        "priorEquipment"
+    );
     EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
 
     stateGetter.setPopulation(currentPrior);
@@ -883,7 +894,9 @@ public class SingleThreadEngine implements Engine {
     String substance = scopeEffective.getSubstance();
 
     if (application == null || substance == null) {
-      throw new RuntimeException("Tried recalculating consumption without application and substance.");
+      throw new RuntimeException(
+          "Tried recalculating consumption without application and substance."
+      );
     }
 
     // Determine sales
@@ -945,7 +958,10 @@ public class SingleThreadEngine implements Engine {
     stateGetter.setPopulation(rechargePop);
 
     // Get recharge amount
-    EngineNumber rechargeIntensityRaw = this.streamKeeper.getRechargeIntensity(application, substance);
+    EngineNumber rechargeIntensityRaw = this.streamKeeper.getRechargeIntensity(
+        application,
+        substance
+    );
     EngineNumber rechargeVolume = unitConverter.convert(rechargeIntensityRaw, "kg");
 
     // Determine initial charge
@@ -967,10 +983,13 @@ public class SingleThreadEngine implements Engine {
     // Get recycling displaced
     BigDecimal recycledKg = recycledVolume.getValue();
 
-    EngineNumber displacementRateRaw = this.streamKeeper.getDisplacementRate(application, substance);
+    EngineNumber displacementRateRaw = this.streamKeeper.getDisplacementRate(
+        application,
+        substance
+    );
     EngineNumber displacementRate = unitConverter.convert(displacementRateRaw, "%");
     BigDecimal displacementRateRatio = displacementRate.getValue().divide(BigDecimal.valueOf(100));
-    BigDecimal recycledDisplacedKg = recycledKg.multiply(displacementRateRatio);
+    final BigDecimal recycledDisplacedKg = recycledKg.multiply(displacementRateRatio);
 
     // Switch out of recharge population
     stateGetter.clearPopulation();
@@ -987,8 +1006,8 @@ public class SingleThreadEngine implements Engine {
     stateGetter.setPopulation(priorPopulation);
 
     // Determine sales prior to recycling
-    BigDecimal kgForRecharge = rechargeVolume.getValue();
-    BigDecimal kgForNew = volumeForNew.getValue();
+    final BigDecimal kgForRecharge = rechargeVolume.getValue();
+    final BigDecimal kgForNew = volumeForNew.getValue();
 
     // Return to original initial charge
     stateGetter.clearAmortizedUnitVolume();
@@ -1026,14 +1045,12 @@ public class SingleThreadEngine implements Engine {
         percentManufacture = BigDecimal.ONE;
         percentImport = BigDecimal.ZERO;
       } else {
-        percentManufacture = manufactureInitialChargeVal.divide(totalInitialChargeVal, 10, java.math.RoundingMode.HALF_UP);
-        percentImport = importInitialChargeVal.divide(totalInitialChargeVal, 10, java.math.RoundingMode.HALF_UP);
+        percentManufacture = divideWithZero(manufactureInitialChargeVal, totalInitialChargeVal);
+        percentImport = divideWithZero(importInitialChargeVal, totalInitialChargeVal);
       }
     } else {
-      percentManufacture = totalNonRecycleKg.compareTo(BigDecimal.ZERO) == 0 
-          ? BigDecimal.ZERO : manufactureSalesKg.divide(totalNonRecycleKg, 10, java.math.RoundingMode.HALF_UP);
-      percentImport = totalNonRecycleKg.compareTo(BigDecimal.ZERO) == 0 
-          ? BigDecimal.ZERO : importSalesKg.divide(totalNonRecycleKg, 10, java.math.RoundingMode.HALF_UP);
+      percentManufacture = divideWithZero(manufactureSalesKg, totalNonRecycleKg);
+      percentImport = divideWithZero(importSalesKg, totalNonRecycleKg);
     }
 
     // Recycle
@@ -1042,13 +1059,30 @@ public class SingleThreadEngine implements Engine {
 
     // New values
     BigDecimal requiredKgUnbound = kgForRecharge.add(kgForNew);
-    BigDecimal requiredKg = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : requiredKgUnbound;
+    boolean requiredKgNegative = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0;
+    BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
     BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
     BigDecimal newImportKg = percentImport.multiply(requiredKg);
     EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
     EngineNumber newImport = new EngineNumber(newImportKg, "kg");
     this.streamKeeper.setStream(application, substance, "manufacture", newManufacture);
     this.streamKeeper.setStream(application, substance, "import", newImport);
+  }
+
+  /**
+   * Divide with a check for division by zero.
+   *
+   * @param numerator The numerator to use in the operation.
+   * @param denominator The numerator to use in the operation.
+   * @return Zero if denominator is zero, otherwise the result of regular division.
+   */
+  private BigDecimal divideWithZero(BigDecimal numerator, BigDecimal denominator) {
+    boolean denominatorIsZero = denominator.compareTo(BigDecimal.ZERO) == 0;
+    if (denominatorIsZero) {
+      return BigDecimal.ZERO;
+    } else {
+      return numerator.divide(denominator, 10, RoundingMode.HALF_UP);
+    }
   }
 
   /**
@@ -1072,10 +1106,18 @@ public class SingleThreadEngine implements Engine {
     }
 
     // Calculate change
-    EngineNumber currentPriorRaw = this.streamKeeper.getStream(application, substance, "priorEquipment");
+    EngineNumber currentPriorRaw = this.streamKeeper.getStream(
+        application,
+        substance,
+        "priorEquipment"
+    );
     EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
 
-    EngineNumber currentEquipmentRaw = this.streamKeeper.getStream(application, substance, "equipment");
+    EngineNumber currentEquipmentRaw = this.streamKeeper.getStream(
+        application,
+        substance,
+        "equipment"
+    );
     EngineNumber currentEquipment = unitConverter.convert(currentEquipmentRaw, "units");
 
     stateGetter.setPopulation(currentPrior);
