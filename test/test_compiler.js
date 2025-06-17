@@ -749,6 +749,28 @@ function buildCompilerTests() {
       },
     ]);
 
+    buildTest("tests cap with units displacement", "/test/qta/cap_displace_units.qta", [
+      (result, assert) => {
+        // Check that sub_a manufacture was capped
+        const recordSubA = getResult(result, "result", 1, 0, "test", "sub_a");
+        const manufactureSubA = recordSubA.getManufacture();
+        
+        // Cap is 5 units, with recharge: 5 units * 10 kg/unit + (20 units * 10% * 10 kg/unit) = 50 + 20 = 70 kg
+        // Original was 100 kg, so should be capped to 70 kg
+        assert.closeTo(manufactureSubA.getValue(), 70, 0.0001);
+        assert.deepEqual(manufactureSubA.getUnits(), "kg");
+
+        // Check displacement to sub_b
+        const recordSubB = getResult(result, "result", 1, 0, "test", "sub_b");
+        const manufactureSubB = recordSubB.getManufacture();
+        
+        // Displacement should add the capped amount (30 kg) to sub_b
+        // Original sub_b manufacture was 200 kg, so should become 200 + 30 = 230 kg
+        assert.closeTo(manufactureSubB.getValue(), 230, 0.0001);
+        assert.deepEqual(manufactureSubB.getUnits(), "kg");
+      },
+    ]);
+
     buildTest("tests floor with units includes recharge on top", "/test/qta/floor_units.qta", [
       (result, assert) => {
         const record = getResult(result, "result", 1, 0, "test", "test");

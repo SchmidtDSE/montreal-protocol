@@ -385,6 +385,48 @@ function buildEngineTests() {
       assert.deepEqual(displaceVal.getUnits(), "kg");
     });
 
+    QUnit.test("applies cap displace with units", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+
+      // Set up sub1 with 10 kg/unit initial charge
+      engine.setSubstance("sub1");
+      engine.setInitialCharge(
+        new EngineNumber(10, "kg / unit"),
+        "manufacture",
+        new YearMatcher(null, null),
+      );
+      engine.setStream("manufacture", new EngineNumber(100, "kg"), new YearMatcher(null, null));
+      engine.setStream("priorEquipment", new EngineNumber(20, "units"), new YearMatcher(null, null));
+      engine.recharge(new EngineNumber(10, "%"), new EngineNumber(10, "kg / unit"), new YearMatcher(null, null));
+
+      // Set up sub2 with 20 kg/unit initial charge
+      engine.setSubstance("sub2");
+      engine.setInitialCharge(
+        new EngineNumber(20, "kg / unit"),
+        "manufacture",
+        new YearMatcher(null, null),
+      );
+      engine.setStream("manufacture", new EngineNumber(200, "kg"), new YearMatcher(null, null));
+
+      // Apply cap with displacement
+      engine.setSubstance("sub1");
+      engine.cap("manufacture", new EngineNumber(5, "units"), new YearMatcher(null, null), "sub2");
+
+      // Check sub1 was capped: 5 units * 10 kg/unit + recharge (20 units * 10% * 10 kg/unit) = 50 + 20 = 70 kg
+      const capVal = engine.getStream("manufacture");
+      assert.closeTo(capVal.getValue(), 70, 0.0001);
+      assert.deepEqual(capVal.getUnits(), "kg");
+
+      // Check sub2 received displacement: original 200 kg + displaced 30 kg = 230 kg
+      engine.setSubstance("sub2");
+      const displaceVal = engine.getStream("manufacture");
+      assert.closeTo(displaceVal.getValue(), 230, 0.0001);
+      assert.deepEqual(displaceVal.getUnits(), "kg");
+    });
+
     QUnit.test("applies floor", function (assert) {
       const engine = new Engine(1, 3);
 
@@ -500,6 +542,48 @@ function buildEngineTests() {
       const sub2Manufacture = engine.getStream("manufacture");
       assert.closeTo(sub2Manufacture.getValue(), 3, 0.0001);
       assert.deepEqual(sub2Manufacture.getUnits(), "kg");
+    });
+
+    QUnit.test("applies floor displace with units", function (assert) {
+      const engine = new Engine(1, 3);
+
+      engine.setStanza("default");
+      engine.setApplication("test app");
+
+      // Set up sub1 with 10 kg/unit initial charge
+      engine.setSubstance("sub1");
+      engine.setInitialCharge(
+        new EngineNumber(10, "kg / unit"),
+        "manufacture",
+        new YearMatcher(null, null),
+      );
+      engine.setStream("manufacture", new EngineNumber(10, "kg"), new YearMatcher(null, null));
+      engine.setStream("priorEquipment", new EngineNumber(20, "units"), new YearMatcher(null, null));
+      engine.recharge(new EngineNumber(10, "%"), new EngineNumber(10, "kg / unit"), new YearMatcher(null, null));
+
+      // Set up sub2 with 20 kg/unit initial charge
+      engine.setSubstance("sub2");
+      engine.setInitialCharge(
+        new EngineNumber(20, "kg / unit"),
+        "manufacture",
+        new YearMatcher(null, null),
+      );
+      engine.setStream("manufacture", new EngineNumber(200, "kg"), new YearMatcher(null, null));
+
+      // Apply floor with displacement
+      engine.setSubstance("sub1");
+      engine.floor("manufacture", new EngineNumber(10, "units"), new YearMatcher(null, null), "sub2");
+
+      // Check sub1 was floored: 10 units * 10 kg/unit + recharge (20 units * 10% * 10 kg/unit) = 100 + 20 = 120 kg
+      const floorVal = engine.getStream("manufacture");
+      assert.closeTo(floorVal.getValue(), 120, 0.0001);
+      assert.deepEqual(floorVal.getUnits(), "kg");
+
+      // Check sub2 received displacement: original 200 kg - displaced 110 kg = 90 kg
+      engine.setSubstance("sub2");
+      const displaceVal = engine.getStream("manufacture");
+      assert.closeTo(displaceVal.getValue(), 90, 0.0001);
+      assert.deepEqual(displaceVal.getUnits(), "kg");
     });
 
     QUnit.test("different initial charges", function (assert) {
