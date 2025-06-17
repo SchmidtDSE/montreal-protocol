@@ -27,6 +27,7 @@ import org.kigalisim.engine.state.Scope;
 import org.kigalisim.engine.state.StreamKeeper;
 import org.kigalisim.engine.state.SubstanceInApplicationId;
 import org.kigalisim.engine.state.YearMatcher;
+import org.kigalisim.engine.support.ConsumptionCalculator;
 
 /**
  * Single-threaded implementation of the Engine interface.
@@ -128,6 +129,15 @@ public class SingleThreadEngine implements Engine {
   @Override
   public Scope getScope() {
     return scope;
+  }
+
+  /**
+   * Get the state getter used by this engine instance.
+   *
+   * @return The ConverterStateGetter instance
+   */
+  public ConverterStateGetter getStateGetter() {
+    return stateGetter;
   }
 
   @Override
@@ -879,9 +889,6 @@ public class SingleThreadEngine implements Engine {
   private void recalcConsumption(Scope scope) {
     Scope scopeEffective = scope != null ? scope : this.scope;
 
-    OverridingConverterStateGetter stateGetter =
-        new OverridingConverterStateGetter(this.stateGetter);
-    UnitConverter unitConverter = new UnitConverter(stateGetter);
     String application = scopeEffective.getApplication();
     String substance = scopeEffective.getSubstance();
 
@@ -889,34 +896,21 @@ public class SingleThreadEngine implements Engine {
       raiseNoAppOrSubstance("recalculating consumption", "");
     }
 
-    // Determine sales
-    EngineNumber salesRaw = getStream("sales", scopeEffective, null);
-    EngineNumber sales = unitConverter.convert(salesRaw, "kg");
+    // Update streams using ConsumptionCalculator
+    ConsumptionCalculator calculator = new ConsumptionCalculator();
 
-    // Helper method to calculate and save a consumption stream
-    BiConsumer<EngineNumber, String> calcAndSave = (consumptionRaw, streamName) -> {
-      // Determine consumption
-      stateGetter.setVolume(sales);
-      String targetUnits = streamName.equals("consumption") ? "tCO2e" : "kwh";
-      EngineNumber consumption = unitConverter.convert(consumptionRaw, targetUnits);
-      stateGetter.clearVolume();
-
-      // Ensure in range
-      boolean isNegative = consumption.getValue().compareTo(BigDecimal.ZERO) < 0;
-      EngineNumber consumptionAllowed = isNegative
-          ? new EngineNumber(BigDecimal.ZERO, consumption.getUnits()) : consumption;
-
-      // Save
-      setStream(streamName, consumptionAllowed, null, scopeEffective, false, null);
-    };
-
-    // Get intensities
+    // Get GHG intensity and calculate consumption
     EngineNumber ghgIntensity = this.streamKeeper.getGhgIntensity(application, substance);
-    EngineNumber energyIntensity = this.streamKeeper.getEnergyIntensity(application, substance);
+    calculator.setConsumptionRaw(ghgIntensity);
+    calculator.setStreamName("consumption");
+    calculator.execute(this);
 
-    // Update streams
-    calcAndSave.accept(ghgIntensity, "consumption");
-    calcAndSave.accept(energyIntensity, "energy");
+    // Get energy intensity and calculate energy
+    calculator = new ConsumptionCalculator();
+    EngineNumber energyIntensity = this.streamKeeper.getEnergyIntensity(application, substance);
+    calculator.setConsumptionRaw(energyIntensity);
+    calculator.setStreamName("energy");
+    calculator.execute(this);
   }
 
   /**
