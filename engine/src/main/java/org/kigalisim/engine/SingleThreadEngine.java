@@ -12,12 +12,14 @@ package org.kigalisim.engine;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
-import org.kigalisim.engine.result.EngineResult;
+import org.kigalisim.engine.serializer.EngineResult;
 import org.kigalisim.engine.state.ConverterStateGetter;
 import org.kigalisim.engine.state.OverridingConverterStateGetter;
 import org.kigalisim.engine.state.Scope;
@@ -645,10 +647,10 @@ public class SingleThreadEngine implements Engine {
   }
 
   @Override
-  public EngineResult[] getResults() {
+  public List<EngineResult> getResults() {
     // TODO: Implement full getResults logic to collect results from all years
-    // For now, return empty array as placeholder
-    return new EngineResult[0];
+    // For now, return empty list as placeholder
+    return new ArrayList<>();
   }
 
   /**
@@ -667,7 +669,7 @@ public class SingleThreadEngine implements Engine {
    * @return The recharge volume in kg
    */
   private EngineNumber calculateRechargeVolume() {
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     String application = this.scope.getApplication();
@@ -735,7 +737,7 @@ public class SingleThreadEngine implements Engine {
    * @return A configured unit converter instance
    */
   private UnitConverter createUnitConverterWithTotal(String stream) {
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
 
@@ -758,7 +760,7 @@ public class SingleThreadEngine implements Engine {
    * @param subtractRecharge Whether to subtract recharge
    */
   private void recalcPopulationChange(Scope scope, Boolean subtractRecharge) {
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : this.scope;
@@ -829,7 +831,7 @@ public class SingleThreadEngine implements Engine {
    */
   private void recalcEolEmissions(Scope scope) {
     // Setup
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : this.scope;
@@ -867,7 +869,7 @@ public class SingleThreadEngine implements Engine {
   private void recalcConsumption(Scope scope) {
     Scope scopeEffective = scope != null ? scope : this.scope;
 
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     String application = scopeEffective.getApplication();
@@ -915,7 +917,7 @@ public class SingleThreadEngine implements Engine {
   private void recalcSales(Scope scope) {
     Scope scopeEffective = scope != null ? scope : this.scope;
 
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     String application = scopeEffective.getApplication();
@@ -1070,7 +1072,7 @@ public class SingleThreadEngine implements Engine {
    */
   private void recalcRetire(Scope scope) {
     // Setup
-    OverridingConverterStateGetter stateGetter = 
+    OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : this.scope;
