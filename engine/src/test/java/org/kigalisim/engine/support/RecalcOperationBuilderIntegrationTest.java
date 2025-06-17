@@ -5,14 +5,16 @@
 
 package org.kigalisim.engine.support;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.engine.SingleThreadEngine;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.state.Scope;
 import org.kigalisim.engine.state.YearMatcher;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration test demonstrating the RecalcOperationBuilder pattern usage.
@@ -21,6 +23,9 @@ public class RecalcOperationBuilderIntegrationTest {
 
   private SingleThreadEngine engine;
 
+  /**
+   * Set up test engine with application and substance context.
+   */
   @BeforeEach
   public void setUp() {
     engine = new SingleThreadEngine(1, 10);

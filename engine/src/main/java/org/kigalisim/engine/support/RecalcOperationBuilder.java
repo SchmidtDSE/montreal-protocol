@@ -62,7 +62,8 @@ public class RecalcOperationBuilder {
   public RecalcOperationBuilder recalcPopulationChange() {
     if (hasInitialRecalc) {
       throw new IllegalStateException(
-          "Only one recalc method can be called - use thenPropagate methods for subsequent operations");
+          "Only one recalc method can be called - use thenPropagate methods "
+          + "for subsequent operations");
     }
     strategies.add(new PopulationChangeRecalcStrategy(scopeEffective, subtractRecharge));
     hasInitialRecalc = true;
@@ -77,7 +78,8 @@ public class RecalcOperationBuilder {
   public RecalcOperationBuilder recalcConsumption() {
     if (hasInitialRecalc) {
       throw new IllegalStateException(
-          "Only one recalc method can be called - use thenPropagate methods for subsequent operations");
+          "Only one recalc method can be called - use thenPropagate methods "
+          + "for subsequent operations");
     }
     strategies.add(new ConsumptionRecalcStrategy(scopeEffective));
     hasInitialRecalc = true;
@@ -92,7 +94,8 @@ public class RecalcOperationBuilder {
   public RecalcOperationBuilder recalcSales() {
     if (hasInitialRecalc) {
       throw new IllegalStateException(
-          "Only one recalc method can be called - use thenPropagate methods for subsequent operations");
+          "Only one recalc method can be called - use thenPropagate methods "
+          + "for subsequent operations");
     }
     strategies.add(new SalesRecalcStrategy(scopeEffective));
     hasInitialRecalc = true;
@@ -107,7 +110,8 @@ public class RecalcOperationBuilder {
   public RecalcOperationBuilder recalcRechargeEmissions() {
     if (hasInitialRecalc) {
       throw new IllegalStateException(
-          "Only one recalc method can be called - use thenPropagate methods for subsequent operations");
+          "Only one recalc method can be called - use thenPropagate methods "
+          + "for subsequent operations");
     }
     strategies.add(new RechargeEmissionsRecalcStrategy(scopeEffective));
     hasInitialRecalc = true;
@@ -122,7 +126,8 @@ public class RecalcOperationBuilder {
   public RecalcOperationBuilder recalcEolEmissions() {
     if (hasInitialRecalc) {
       throw new IllegalStateException(
-          "Only one recalc method can be called - use thenPropagate methods for subsequent operations");
+          "Only one recalc method can be called - use thenPropagate methods "
+          + "for subsequent operations");
     }
     strategies.add(new EolEmissionsRecalcStrategy(scopeEffective));
     hasInitialRecalc = true;
@@ -137,7 +142,8 @@ public class RecalcOperationBuilder {
   public RecalcOperationBuilder recalcRetire() {
     if (hasInitialRecalc) {
       throw new IllegalStateException(
-          "Only one recalc method can be called - use thenPropagate methods for subsequent operations");
+          "Only one recalc method can be called - use thenPropagate methods "
+          + "for subsequent operations");
     }
     strategies.add(new RetireRecalcStrategy(scopeEffective));
     hasInitialRecalc = true;

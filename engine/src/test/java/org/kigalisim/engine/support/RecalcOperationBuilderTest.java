@@ -4,12 +4,15 @@
 
 package org.kigalisim.engine.support;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.engine.SingleThreadEngine;
 import org.kigalisim.engine.state.Scope;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class for RecalcOperationBuilder and related classes.
@@ -19,6 +22,9 @@ public class RecalcOperationBuilderTest {
   private SingleThreadEngine engine;
   private Scope testScope;
 
+  /**
+   * Set up test engine with application and substance context.
+   */
   @BeforeEach
   public void setUp() {
     engine = new SingleThreadEngine(1, 10);
@@ -56,7 +62,8 @@ public class RecalcOperationBuilderTest {
       builder.build();
     });
     
-    assertTrue(exception.getMessage().contains("Must configure at least one recalculation strategy"));
+    assertTrue(exception.getMessage().contains(
+        "Must configure at least one recalculation strategy"));
   }
 
   @Test
