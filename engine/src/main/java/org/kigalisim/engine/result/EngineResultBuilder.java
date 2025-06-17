@@ -263,7 +263,8 @@ public class EngineResultBuilder {
    */
   private void checkValid(Object value, String name) {
     if (value == null) {
-      throw new RuntimeException("Could not make engine result because " + name + " was not given.");
+      throw new RuntimeException(
+          "Could not make engine result because " + name + " was not given.");
     }
   }
 }

@@ -6,13 +6,16 @@
 
 package org.kigalisim.engine.result;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.serializer.ImportSupplement;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class for EngineResult and EngineResultBuilder.

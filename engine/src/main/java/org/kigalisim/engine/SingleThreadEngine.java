@@ -667,7 +667,8 @@ public class SingleThreadEngine implements Engine {
    * @return The recharge volume in kg
    */
   private EngineNumber calculateRechargeVolume() {
-    OverridingConverterStateGetter stateGetter = new OverridingConverterStateGetter(this.stateGetter);
+    OverridingConverterStateGetter stateGetter = 
+        new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     String application = this.scope.getApplication();
     String substance = this.scope.getSubstance();
@@ -734,7 +735,8 @@ public class SingleThreadEngine implements Engine {
    * @return A configured unit converter instance
    */
   private UnitConverter createUnitConverterWithTotal(String stream) {
-    OverridingConverterStateGetter stateGetter = new OverridingConverterStateGetter(this.stateGetter);
+    OverridingConverterStateGetter stateGetter = 
+        new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
 
     EngineNumber currentValue = getStream(stream);
@@ -756,7 +758,8 @@ public class SingleThreadEngine implements Engine {
    * @param subtractRecharge Whether to subtract recharge
    */
   private void recalcPopulationChange(Scope scope, Boolean subtractRecharge) {
-    OverridingConverterStateGetter stateGetter = new OverridingConverterStateGetter(this.stateGetter);
+    OverridingConverterStateGetter stateGetter = 
+        new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : this.scope;
     boolean subtractRechargeEffective = subtractRecharge != null ? subtractRecharge : true;
@@ -826,7 +829,8 @@ public class SingleThreadEngine implements Engine {
    */
   private void recalcEolEmissions(Scope scope) {
     // Setup
-    OverridingConverterStateGetter stateGetter = new OverridingConverterStateGetter(this.stateGetter);
+    OverridingConverterStateGetter stateGetter = 
+        new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : this.scope;
     String application = scopeEffective.getApplication();
@@ -863,7 +867,8 @@ public class SingleThreadEngine implements Engine {
   private void recalcConsumption(Scope scope) {
     Scope scopeEffective = scope != null ? scope : this.scope;
 
-    OverridingConverterStateGetter stateGetter = new OverridingConverterStateGetter(this.stateGetter);
+    OverridingConverterStateGetter stateGetter = 
+        new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     String application = scopeEffective.getApplication();
     String substance = scopeEffective.getSubstance();
@@ -910,7 +915,8 @@ public class SingleThreadEngine implements Engine {
   private void recalcSales(Scope scope) {
     Scope scopeEffective = scope != null ? scope : this.scope;
 
-    OverridingConverterStateGetter stateGetter = new OverridingConverterStateGetter(this.stateGetter);
+    OverridingConverterStateGetter stateGetter = 
+        new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     String application = scopeEffective.getApplication();
     String substance = scopeEffective.getSubstance();
@@ -1064,7 +1070,8 @@ public class SingleThreadEngine implements Engine {
    */
   private void recalcRetire(Scope scope) {
     // Setup
-    OverridingConverterStateGetter stateGetter = new OverridingConverterStateGetter(this.stateGetter);
+    OverridingConverterStateGetter stateGetter = 
+        new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : this.scope;
     String application = scopeEffective.getApplication();
