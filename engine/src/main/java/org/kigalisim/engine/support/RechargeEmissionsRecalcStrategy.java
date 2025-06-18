@@ -34,8 +34,8 @@ public class RechargeEmissionsRecalcStrategy implements RecalcStrategy {
   public void execute(Engine target, RecalcKit kit) {
     Scope scopeEffective = scope != null ? scope : target.getScope();
     EngineNumber rechargeVolume = RechargeVolumeCalculator.calculateRechargeVolume(
-        scopeEffective, 
-        kit.getStateGetter(), 
+        scopeEffective,
+        kit.getStateGetter(),
         kit.getStreamKeeper(),
         target
     );
