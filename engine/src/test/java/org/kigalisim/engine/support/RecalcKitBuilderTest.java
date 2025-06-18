@@ -24,7 +24,7 @@ public class RecalcKitBuilderTest {
   @Test
   public void testDefaultConstructorThrowsOnBuild() {
     RecalcKitBuilder builder = new RecalcKitBuilder();
-    
+
     assertThrows(IllegalStateException.class, builder::build);
   }
 
