@@ -145,7 +145,10 @@ public class EngineResultSerializer {
 
     // Offset recharge emissions
     EngineNumber rechargeEmissions = engine.getStreamRaw(
-        application, substance, "rechargeEmissions");
+        application,
+        substance,
+        "rechargeEmissions"
+    );
     OverridingConverterStateGetter clearStateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter clearUnitConverter = new UnitConverter(clearStateGetter);
