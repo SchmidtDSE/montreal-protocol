@@ -11,6 +11,7 @@ package org.kigalisim.engine.support;
 
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.number.EngineNumber;
+import org.kigalisim.engine.number.UnitConverter;
 import org.kigalisim.engine.state.Scope;
 
 /**
@@ -36,9 +37,10 @@ public class RechargeEmissionsRecalcStrategy implements RecalcStrategy {
         scopeEffective, 
         kit.getStateGetter(), 
         kit.getStreamKeeper(),
-        target);
-    EngineNumber rechargeGhg = kit.getUnitConverter()
-        .convert(rechargeVolume, "tCO2e");
+        target
+    );
+    UnitConverter unitConverter = kit.getUnitConverter();
+    EngineNumber rechargeGhg = unitConverter.convert(rechargeVolume, "tCO2e");
     target.setStream("rechargeEmissions", rechargeGhg, null, scopeEffective, false, null);
   }
 }

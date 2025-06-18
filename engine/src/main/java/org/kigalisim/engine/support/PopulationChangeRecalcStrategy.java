@@ -65,7 +65,8 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
         scopeEffective, 
         kit.getStateGetter(), 
         kit.getStreamKeeper(),
-        target);
+        target
+    );
 
     // Get total volume available for new units
     BigDecimal salesKg = substanceSales.getValue();
@@ -98,8 +99,9 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
     target.setStream("newEquipment", newUnitsMarginal, null, scopeEffective, false, null);
 
     // Recalc recharge emissions - need to create a new operation
-    RechargeEmissionsRecalcStrategy rechargeStrategy = 
-        new RechargeEmissionsRecalcStrategy(scopeEffective);
+    RechargeEmissionsRecalcStrategy rechargeStrategy = new RechargeEmissionsRecalcStrategy(
+        scopeEffective
+    );
     rechargeStrategy.execute(target, kit);
   }
 }
