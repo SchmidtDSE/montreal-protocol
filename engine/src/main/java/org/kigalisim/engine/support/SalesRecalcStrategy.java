@@ -255,8 +255,10 @@ public class SalesRecalcStrategy implements RecalcStrategy {
 
     // Determine needs for new equipment deployment
     stateGetter.setAmortizedUnitVolume(initialCharge);
-    EngineNumber populationChangeRaw = stateGetter.getPopulationChange(kit.getUnitConverter().orElseThrow(
-        () -> new IllegalStateException("UnitConverter required for sales recalculation")));
+    var converter = kit.getUnitConverter().orElseThrow(
+        () -> new IllegalStateException("UnitConverter required for sales"
+        ));
+    EngineNumber populationChangeRaw = stateGetter.getPopulationChange(converter);
     EngineNumber populationChange = unitConverter.convert(populationChangeRaw, "units");
     EngineNumber volumeForNew = unitConverter.convert(populationChange, "kg");
 

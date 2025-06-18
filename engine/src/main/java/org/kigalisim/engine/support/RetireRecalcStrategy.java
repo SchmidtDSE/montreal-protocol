@@ -153,7 +153,8 @@ public class RetireRecalcStrategy implements RecalcStrategy {
     eolStrategy.execute(target, kit);
 
     // Propagate
-    PopulationChangeRecalcStrategy populationStrategy = new PopulationChangeRecalcStrategy(null, null);
+    PopulationChangeRecalcStrategy populationStrategy = 
+        new PopulationChangeRecalcStrategy(null, null);
     populationStrategy.execute(target, kit);
     SalesRecalcStrategy salesStrategy = new SalesRecalcStrategy(null);
     salesStrategy.execute(target, kit);

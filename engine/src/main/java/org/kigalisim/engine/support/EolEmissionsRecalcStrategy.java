@@ -75,7 +75,8 @@ public class EolEmissionsRecalcStrategy implements RecalcStrategy {
     // Setup
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(kit.getStateGetter().orElseThrow(
-            () -> new IllegalStateException("StateGetter required for EOL emissions recalculation")));
+            () -> new IllegalStateException("StateGetter required for EOL emissions recalculation"
+            )));
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : target.getScope();
     String application = scopeEffective.getApplication();

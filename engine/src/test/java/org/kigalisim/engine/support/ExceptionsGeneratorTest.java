@@ -42,7 +42,8 @@ public class ExceptionsGeneratorTest {
       ExceptionsGenerator.raiseNoAppOrSubstance("recalculating consumption", " specified");
     });
 
-    assertEquals("Error recalculating consumption because application and / or substance not specified",
+    assertEquals(
+        "Error recalculating consumption because application and / or substance not specified",
         exception.getMessage());
   }
 }

@@ -41,8 +41,10 @@ public class RechargeVolumeCalculatorTest {
     EngineNumber rechargeIntensity = new EngineNumber(new BigDecimal("10.0"), "kg");
 
     when(engine.getStream("priorEquipment")).thenReturn(priorEquipment);
-    when(streamKeeper.getRechargePopulation("testApp", "testSubstance")).thenReturn(rechargePopulation);
-    when(streamKeeper.getRechargeIntensity("testApp", "testSubstance")).thenReturn(rechargeIntensity);
+    when(streamKeeper.getRechargePopulation("testApp", "testSubstance"))
+        .thenReturn(rechargePopulation);
+    when(streamKeeper.getRechargeIntensity("testApp", "testSubstance"))
+        .thenReturn(rechargeIntensity);
 
     // Call the method
     EngineNumber result = RechargeVolumeCalculator.calculateRechargeVolume(
@@ -68,8 +70,10 @@ public class RechargeVolumeCalculatorTest {
     EngineNumber zeroRechargeIntensity = new EngineNumber(BigDecimal.ZERO, "kg");
 
     when(engine.getStream("priorEquipment")).thenReturn(zeroPriorEquipment);
-    when(streamKeeper.getRechargePopulation("testApp", "testSubstance")).thenReturn(zeroRechargePopulation);
-    when(streamKeeper.getRechargeIntensity("testApp", "testSubstance")).thenReturn(zeroRechargeIntensity);
+    when(streamKeeper.getRechargePopulation("testApp", "testSubstance"))
+        .thenReturn(zeroRechargePopulation);
+    when(streamKeeper.getRechargeIntensity("testApp", "testSubstance"))
+        .thenReturn(zeroRechargeIntensity);
 
     // Call the method
     EngineNumber result = RechargeVolumeCalculator.calculateRechargeVolume(

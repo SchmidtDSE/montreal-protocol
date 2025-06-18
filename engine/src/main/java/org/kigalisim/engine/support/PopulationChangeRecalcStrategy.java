@@ -105,7 +105,8 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
     // Move the logic from SingleThreadEngine.recalcPopulationChange
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(kit.getStateGetter().orElseThrow(
-            () -> new IllegalStateException("StateGetter required for population change recalculation")));
+            () -> new IllegalStateException("StateGetter required for population change"
+            )));
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : target.getScope();
     boolean subtractRechargeEffective = subtractRecharge != null ? subtractRecharge : true;
@@ -130,7 +131,8 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
         scopeEffective, 
         kit.getStateGetter().get(), 
         kit.getStreamKeeper().orElseThrow(
-            () -> new IllegalStateException("StreamKeeper required for population change recalculation")),
+            () -> new IllegalStateException("StreamKeeper required for population change"
+            )),
         target);
 
     // Get total volume available for new units
@@ -159,7 +161,8 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
     target.setStream("newEquipment", newUnitsMarginal, null, scopeEffective, false, null);
 
     // Recalc recharge emissions - need to create a new operation
-    RechargeEmissionsRecalcStrategy rechargeStrategy = new RechargeEmissionsRecalcStrategy(scopeEffective);
+    RechargeEmissionsRecalcStrategy rechargeStrategy = 
+        new RechargeEmissionsRecalcStrategy(scopeEffective);
     rechargeStrategy.execute(target, kit);
   }
 
