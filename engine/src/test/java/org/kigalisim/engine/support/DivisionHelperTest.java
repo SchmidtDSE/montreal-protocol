@@ -30,7 +30,8 @@ public class DivisionHelperTest {
     BigDecimal numerator = new BigDecimal("10.0");
     BigDecimal denominator = new BigDecimal("3.0");
     BigDecimal result = DivisionHelper.divideWithZero(numerator, denominator);
-    BigDecimal expected = new BigDecimal("10.0").divide(new BigDecimal("3.0"), 10, RoundingMode.HALF_UP);
+    BigDecimal expected = new BigDecimal("10.0")
+        .divide(new BigDecimal("3.0"), 10, RoundingMode.HALF_UP);
     assertEquals(expected, result);
   }
 

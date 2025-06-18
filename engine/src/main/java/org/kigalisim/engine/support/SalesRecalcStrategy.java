@@ -152,8 +152,10 @@ public class SalesRecalcStrategy implements RecalcStrategy {
         percentManufacture = BigDecimal.ONE;
         percentImport = BigDecimal.ZERO;
       } else {
-        percentManufacture = DivisionHelper.divideWithZero(manufactureInitialChargeVal, totalInitialChargeVal);
-        percentImport = DivisionHelper.divideWithZero(importInitialChargeVal, totalInitialChargeVal);
+        percentManufacture = DivisionHelper.divideWithZero(
+            manufactureInitialChargeVal, totalInitialChargeVal);
+        percentImport = DivisionHelper.divideWithZero(
+            importInitialChargeVal, totalInitialChargeVal);
       }
     } else {
       percentManufacture = DivisionHelper.divideWithZero(manufactureSalesKg, totalNonRecycleKg);
