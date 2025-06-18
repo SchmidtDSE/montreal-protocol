@@ -9,7 +9,6 @@
 
 package org.kigalisim.engine.support;
 
-import java.util.Optional;
 import org.kigalisim.engine.number.UnitConverter;
 import org.kigalisim.engine.state.ConverterStateGetter;
 import org.kigalisim.engine.state.StreamKeeper;
@@ -19,19 +18,19 @@ import org.kigalisim.engine.state.StreamKeeper;
  */
 public class RecalcKit {
 
-  private final Optional<StreamKeeper> streamKeeper;
-  private final Optional<UnitConverter> unitConverter;
-  private final Optional<ConverterStateGetter> stateGetter;
+  private final StreamKeeper streamKeeper;
+  private final UnitConverter unitConverter;
+  private final ConverterStateGetter stateGetter;
 
   /**
    * Create a new RecalcKit.
    *
-   * @param streamKeeper The stream keeper instance
-   * @param unitConverter The unit converter instance
-   * @param stateGetter The state getter instance
+   * @param streamKeeper The stream keeper instance (required)
+   * @param unitConverter The unit converter instance (required)
+   * @param stateGetter The state getter instance (required)
    */
-  public RecalcKit(Optional<StreamKeeper> streamKeeper, Optional<UnitConverter> unitConverter,
-      Optional<ConverterStateGetter> stateGetter) {
+  public RecalcKit(StreamKeeper streamKeeper, UnitConverter unitConverter,
+      ConverterStateGetter stateGetter) {
     this.streamKeeper = streamKeeper;
     this.unitConverter = unitConverter;
     this.stateGetter = stateGetter;
@@ -40,27 +39,27 @@ public class RecalcKit {
   /**
    * Get the stream keeper.
    *
-   * @return The stream keeper wrapped in Optional
+   * @return The stream keeper
    */
-  public Optional<StreamKeeper> getStreamKeeper() {
+  public StreamKeeper getStreamKeeper() {
     return streamKeeper;
   }
 
   /**
    * Get the unit converter.
    *
-   * @return The unit converter wrapped in Optional
+   * @return The unit converter
    */
-  public Optional<UnitConverter> getUnitConverter() {
+  public UnitConverter getUnitConverter() {
     return unitConverter;
   }
 
   /**
    * Get the state getter.
    *
-   * @return The state getter wrapped in Optional
+   * @return The state getter
    */
-  public Optional<ConverterStateGetter> getStateGetter() {
+  public ConverterStateGetter getStateGetter() {
     return stateGetter;
   }
 }

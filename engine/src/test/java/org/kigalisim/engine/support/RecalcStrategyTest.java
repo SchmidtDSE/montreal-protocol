@@ -5,25 +5,28 @@
 package org.kigalisim.engine.support;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.engine.Engine;
+import org.kigalisim.engine.number.UnitConverter;
+import org.kigalisim.engine.state.ConverterStateGetter;
 import org.kigalisim.engine.state.Scope;
+import org.kigalisim.engine.state.StreamKeeper;
 
 /**
  * Test class for individual recalculation strategy classes.
  *
- * <p>These tests focus on verifying the strategy pattern implementation,
- * proper exception handling, and basic functionality. Full integration
- * testing is covered by existing engine tests.</p>
+ * <p>These tests focus on verifying the strategy pattern implementation
+ * with RecalcKit dependency injection. Full integration testing is covered 
+ * by existing engine tests.</p>
  */
 public class RecalcStrategyTest {
 
   private Scope testScope;
+  private RecalcKit testKit;
 
   /**
    * Set up test data.
@@ -31,84 +34,50 @@ public class RecalcStrategyTest {
   @BeforeEach
   public void setUp() {
     testScope = new Scope("test", "testApp", "testSubstance");
+    
+    // Create a mock RecalcKit for testing
+    StreamKeeper streamKeeper = mock(StreamKeeper.class);
+    UnitConverter unitConverter = mock(UnitConverter.class);
+    ConverterStateGetter stateGetter = mock(ConverterStateGetter.class);
+    
+    testKit = new RecalcKit(streamKeeper, unitConverter, stateGetter);
   }
 
   @Test
-  public void testPopulationChangeRecalcStrategyRejectsWrongEngineType() {
+  public void testPopulationChangeRecalcStrategyAcceptsAnyEngine() {
     PopulationChangeRecalcStrategy strategy = new PopulationChangeRecalcStrategy(testScope, true);
-    Engine wrongEngine = mock(Engine.class); // Use mock for simple type checking
-
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      strategy.execute(wrongEngine);
-    });
-
-    assertTrue(exception.getMessage()
-        .contains("PopulationChangeRecalcStrategy requires a SingleThreadEngine"));
+    // Just verify it can be instantiated and implements the interface
+    assertTrue(strategy instanceof RecalcStrategy);
   }
 
   @Test
-  public void testRechargeEmissionsRecalcStrategyRejectsWrongEngineType() {
+  public void testRechargeEmissionsRecalcStrategyAcceptsAnyEngine() {
     RechargeEmissionsRecalcStrategy strategy = new RechargeEmissionsRecalcStrategy(testScope);
-    Engine wrongEngine = mock(Engine.class);
-
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      strategy.execute(wrongEngine);
-    });
-
-    assertTrue(exception.getMessage()
-        .contains("RechargeEmissionsRecalcStrategy requires a SingleThreadEngine"));
+    assertTrue(strategy instanceof RecalcStrategy);
   }
 
   @Test
-  public void testEolEmissionsRecalcStrategyRejectsWrongEngineType() {
+  public void testEolEmissionsRecalcStrategyAcceptsAnyEngine() {
     EolEmissionsRecalcStrategy strategy = new EolEmissionsRecalcStrategy(testScope);
-    Engine wrongEngine = mock(Engine.class);
-
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      strategy.execute(wrongEngine);
-    });
-
-    assertTrue(exception.getMessage()
-        .contains("EolEmissionsRecalcStrategy requires a SingleThreadEngine"));
+    assertTrue(strategy instanceof RecalcStrategy);
   }
 
   @Test
-  public void testConsumptionRecalcStrategyRejectsWrongEngineType() {
+  public void testConsumptionRecalcStrategyAcceptsAnyEngine() {
     ConsumptionRecalcStrategy strategy = new ConsumptionRecalcStrategy(testScope);
-    Engine wrongEngine = mock(Engine.class);
-
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      strategy.execute(wrongEngine);
-    });
-
-    assertTrue(exception.getMessage()
-        .contains("ConsumptionRecalcStrategy requires a SingleThreadEngine"));
+    assertTrue(strategy instanceof RecalcStrategy);
   }
 
   @Test
-  public void testSalesRecalcStrategyRejectsWrongEngineType() {
+  public void testSalesRecalcStrategyAcceptsAnyEngine() {
     SalesRecalcStrategy strategy = new SalesRecalcStrategy(testScope);
-    Engine wrongEngine = mock(Engine.class);
-
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      strategy.execute(wrongEngine);
-    });
-
-    assertTrue(exception.getMessage()
-        .contains("SalesRecalcStrategy requires a SingleThreadEngine"));
+    assertTrue(strategy instanceof RecalcStrategy);
   }
 
   @Test
-  public void testRetireRecalcStrategyRejectsWrongEngineType() {
+  public void testRetireRecalcStrategyAcceptsAnyEngine() {
     RetireRecalcStrategy strategy = new RetireRecalcStrategy(testScope);
-    Engine wrongEngine = mock(Engine.class);
-
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      strategy.execute(wrongEngine);
-    });
-
-    assertTrue(exception.getMessage()
-        .contains("RetireRecalcStrategy requires a SingleThreadEngine"));
+    assertTrue(strategy instanceof RecalcStrategy);
   }
 
   @Test

@@ -10,7 +10,6 @@
 package org.kigalisim.engine.support;
 
 import org.kigalisim.engine.Engine;
-import org.kigalisim.engine.SingleThreadEngine;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
 import org.kigalisim.engine.state.OverridingConverterStateGetter;
@@ -33,50 +32,11 @@ public class EolEmissionsRecalcStrategy implements RecalcStrategy {
   }
 
   @Override
-  public void execute(Engine target) {
-    if (!(target instanceof SingleThreadEngine)) {
-      throw new IllegalArgumentException(
-          "EolEmissionsRecalcStrategy requires a SingleThreadEngine");
-    }
-
-    SingleThreadEngine engine = (SingleThreadEngine) target;
-
-    // Move the logic from SingleThreadEngine.recalcEolEmissions
-    // Setup
-    OverridingConverterStateGetter stateGetter =
-        new OverridingConverterStateGetter(engine.getStateGetter());
-    UnitConverter unitConverter = new UnitConverter(stateGetter);
-    Scope scopeEffective = scope != null ? scope : engine.getScope();
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
-
-    // Check allowed
-    if (application == null || substance == null) {
-      engine.raiseNoAppOrSubstance("recalculating EOL emissions change", "");
-    }
-
-    // Calculate change
-    EngineNumber currentPriorRaw = engine.getStreamRaw(application, substance, "priorEquipment");
-    EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
-
-    stateGetter.setPopulation(currentPrior);
-    EngineNumber amountRaw = engine.getStreamKeeper().getRetirementRate(application, substance);
-    EngineNumber amount = unitConverter.convert(amountRaw, "units");
-    stateGetter.clearPopulation();
-
-    // Update GHG accounting
-    EngineNumber eolGhg = unitConverter.convert(amount, "tCO2e");
-    engine.getStreamKeeper().setStream(application, substance, "eolEmissions", eolGhg);
-  }
-
-  @Override
   public void execute(Engine target, RecalcKit kit) {
     // Move the logic from SingleThreadEngine.recalcEolEmissions
     // Setup
     OverridingConverterStateGetter stateGetter =
-        new OverridingConverterStateGetter(kit.getStateGetter().orElseThrow(
-            () -> new IllegalStateException("StateGetter required for EOL emissions recalculation"
-            )));
+        new OverridingConverterStateGetter(kit.getStateGetter());
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : target.getScope();
     String application = scopeEffective.getApplication();
@@ -92,14 +52,13 @@ public class EolEmissionsRecalcStrategy implements RecalcStrategy {
     EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
 
     stateGetter.setPopulation(currentPrior);
-    EngineNumber amountRaw = kit.getStreamKeeper().orElseThrow(
-        () -> new IllegalStateException("StreamKeeper required for EOL emissions recalculation"))
+    EngineNumber amountRaw = kit.getStreamKeeper()
         .getRetirementRate(application, substance);
     EngineNumber amount = unitConverter.convert(amountRaw, "units");
     stateGetter.clearPopulation();
 
     // Update GHG accounting
     EngineNumber eolGhg = unitConverter.convert(amount, "tCO2e");
-    kit.getStreamKeeper().get().setStream(application, substance, "eolEmissions", eolGhg);
+    kit.getStreamKeeper().setStream(application, substance, "eolEmissions", eolGhg);
   }
 }

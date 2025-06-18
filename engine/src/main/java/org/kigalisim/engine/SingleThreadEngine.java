@@ -35,6 +35,7 @@ import org.kigalisim.engine.support.RecalcKitBuilder;
 import org.kigalisim.engine.support.RecalcOperation;
 import org.kigalisim.engine.support.RecalcOperationBuilder;
 import org.kigalisim.engine.support.RechargeEmissionsRecalcStrategy;
+import org.kigalisim.engine.support.RechargeVolumeCalculator;
 import org.kigalisim.engine.support.RetireRecalcStrategy;
 import org.kigalisim.engine.support.SalesRecalcStrategy;
 
@@ -618,7 +619,8 @@ public class SingleThreadEngine implements Engine {
     if (amount.hasEquipmentUnits()) {
       // For equipment units, convert to kg and add recharge volume on top
       EngineNumber amountInKg = unitConverter.convert(amount, "kg");
-      EngineNumber rechargeVolume = calculateRechargeVolume();
+      EngineNumber rechargeVolume = RechargeVolumeCalculator.calculateRechargeVolume(
+          this.scope, this.stateGetter, this.streamKeeper, this);
       BigDecimal totalWithRecharge = amountInKg.getValue().add(rechargeVolume.getValue());
       convertedMax = new EngineNumber(totalWithRecharge, "kg");
     } else {
@@ -662,7 +664,8 @@ public class SingleThreadEngine implements Engine {
     if (amount.hasEquipmentUnits()) {
       // For equipment units, convert to kg and add recharge volume on top
       EngineNumber amountInKg = unitConverter.convert(amount, "kg");
-      EngineNumber rechargeVolume = calculateRechargeVolume();
+      EngineNumber rechargeVolume = RechargeVolumeCalculator.calculateRechargeVolume(
+          this.scope, this.stateGetter, this.streamKeeper, this);
       BigDecimal totalWithRecharge = amountInKg.getValue().add(rechargeVolume.getValue());
       convertedMin = new EngineNumber(totalWithRecharge, "kg");
     } else {
@@ -773,7 +776,7 @@ public class SingleThreadEngine implements Engine {
    *
    * @return The recharge volume in kg
    */
-  public EngineNumber calculateRechargeVolume() {
+  private EngineNumber calculateRechargeVolume() {
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
@@ -923,13 +926,13 @@ public class SingleThreadEngine implements Engine {
    * @param scope The scope to recalculate for
    * @param subtractRecharge Whether to subtract recharge
    */
-  public void recalcPopulationChange(Scope scope, Boolean subtractRecharge) {
-    // Delegate to strategy
+  private void recalcPopulationChange(Scope scope, Boolean subtractRecharge) {
+    // Delegate to strategy with RecalcKit
     PopulationChangeRecalcStrategy strategy = new PopulationChangeRecalcStrategy(
         scope,
         subtractRecharge
     );
-    strategy.execute(this);
+    strategy.execute(this, createRecalcKit());
   }
 
   /**
@@ -937,10 +940,10 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope in which to set the recharge emissions
    */
-  public void recalcRechargeEmissions(Scope scope) {
-    // Delegate to strategy
+  private void recalcRechargeEmissions(Scope scope) {
+    // Delegate to strategy with RecalcKit
     RechargeEmissionsRecalcStrategy strategy = new RechargeEmissionsRecalcStrategy(scope);
-    strategy.execute(this);
+    strategy.execute(this, createRecalcKit());
   }
 
   /**
@@ -948,10 +951,10 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope in which to recalculate EOL emissions
    */
-  public void recalcEolEmissions(Scope scope) {
-    // Delegate to strategy
+  private void recalcEolEmissions(Scope scope) {
+    // Delegate to strategy with RecalcKit
     EolEmissionsRecalcStrategy strategy = new EolEmissionsRecalcStrategy(scope);
-    strategy.execute(this);
+    strategy.execute(this, createRecalcKit());
   }
 
   /**
@@ -959,10 +962,10 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope to recalculate for
    */
-  public void recalcConsumption(Scope scope) {
-    // Delegate to strategy
+  private void recalcConsumption(Scope scope) {
+    // Delegate to strategy with RecalcKit
     ConsumptionRecalcStrategy strategy = new ConsumptionRecalcStrategy(scope);
-    strategy.execute(this);
+    strategy.execute(this, createRecalcKit());
   }
 
   /**
@@ -970,26 +973,10 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope to recalculate for
    */
-  public void recalcSales(Scope scope) {
-    // Delegate to strategy
+  private void recalcSales(Scope scope) {
+    // Delegate to strategy with RecalcKit
     SalesRecalcStrategy strategy = new SalesRecalcStrategy(scope);
-    strategy.execute(this);
-  }
-
-  /**
-   * Divide with a check for division by zero.
-   *
-   * @param numerator The numerator to use in the operation.
-   * @param denominator The numerator to use in the operation.
-   * @return Zero if denominator is zero, otherwise the result of regular division.
-   */
-  private BigDecimal divideWithZero(BigDecimal numerator, BigDecimal denominator) {
-    boolean denominatorIsZero = denominator.compareTo(BigDecimal.ZERO) == 0;
-    if (denominatorIsZero) {
-      return BigDecimal.ZERO;
-    } else {
-      return numerator.divide(denominator, 10, RoundingMode.HALF_UP);
-    }
+    strategy.execute(this, createRecalcKit());
   }
 
   /**
@@ -997,10 +984,10 @@ public class SingleThreadEngine implements Engine {
    *
    * @param scope The scope to recalculate for
    */
-  public void recalcRetire(Scope scope) {
-    // Delegate to strategy
+  private void recalcRetire(Scope scope) {
+    // Delegate to strategy with RecalcKit
     RetireRecalcStrategy strategy = new RetireRecalcStrategy(scope);
-    strategy.execute(this);
+    strategy.execute(this, createRecalcKit());
   }
 
   /**
@@ -1009,7 +996,7 @@ public class SingleThreadEngine implements Engine {
    * @param operation The operation being attempted
    * @param suffix Additional suffix for the error message (usually " specified")
    */
-  public void raiseNoAppOrSubstance(String operation, String suffix) {
+  private void raiseNoAppOrSubstance(String operation, String suffix) {
     ExceptionsGenerator.raiseNoAppOrSubstance(operation, suffix);
   }
 

@@ -67,12 +67,30 @@ public class RecalcOperationBuilderTest {
   }
 
   @Test
+  public void testBuilderRequiresRecalcKit() {
+    RecalcOperationBuilder builder = new RecalcOperationBuilder();
+
+    Exception exception = assertThrows(IllegalStateException.class, () -> {
+      builder.recalcPopulationChange().build();
+    });
+
+    assertTrue(exception.getMessage().contains("RecalcKit is required"));
+  }
+
+  @Test
   public void testBuilderFluentInterface() {
+    RecalcKit recalcKit = new RecalcKitBuilder()
+        .setStreamKeeper(engine.getStreamKeeper())
+        .setUnitConverter(engine.getUnitConverter())
+        .setStateGetter(engine.getStateGetter())
+        .build();
+
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
 
     RecalcOperation operation = builder
         .setScopeEffective(testScope)
         .setSubtractRecharge(true)
+        .setRecalcKit(recalcKit)
         .recalcPopulationChange()
         .thenPropagateToConsumption()
         .thenPropagateToSales()
@@ -88,9 +106,17 @@ public class RecalcOperationBuilderTest {
     engine.setApplication("testApp");
     engine.setSubstance("testSubstance");
 
+    // Create RecalcKit for the operation
+    RecalcKit recalcKit = new RecalcKitBuilder()
+        .setStreamKeeper(engine.getStreamKeeper())
+        .setUnitConverter(engine.getUnitConverter())
+        .setStateGetter(engine.getStateGetter())
+        .build();
+
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
 
     RecalcOperation operation = builder
+        .setRecalcKit(recalcKit)
         .recalcConsumption()
         .build();
 
@@ -105,57 +131,89 @@ public class RecalcOperationBuilderTest {
     engine.setApplication("testApp");
     engine.setSubstance("testSubstance");
 
+    // Create a RecalcKit for the strategies
+    RecalcKit recalcKit = new RecalcKitBuilder()
+        .setStreamKeeper(engine.getStreamKeeper())
+        .setUnitConverter(engine.getUnitConverter())
+        .setStateGetter(engine.getStateGetter())
+        .build();
+
     // Test individual strategy creation and execution
     PopulationChangeRecalcStrategy popStrategy =
         new PopulationChangeRecalcStrategy(testScope, true);
-    assertDoesNotThrow(() -> popStrategy.execute(engine));
+    assertDoesNotThrow(() -> popStrategy.execute(engine, recalcKit));
 
     ConsumptionRecalcStrategy consumptionStrategy =
         new ConsumptionRecalcStrategy(testScope);
-    assertDoesNotThrow(() -> consumptionStrategy.execute(engine));
+    assertDoesNotThrow(() -> consumptionStrategy.execute(engine, recalcKit));
 
     SalesRecalcStrategy salesStrategy =
         new SalesRecalcStrategy(testScope);
-    assertDoesNotThrow(() -> salesStrategy.execute(engine));
+    assertDoesNotThrow(() -> salesStrategy.execute(engine, recalcKit));
 
     RechargeEmissionsRecalcStrategy rechargeStrategy =
         new RechargeEmissionsRecalcStrategy(testScope);
-    assertDoesNotThrow(() -> rechargeStrategy.execute(engine));
+    assertDoesNotThrow(() -> rechargeStrategy.execute(engine, recalcKit));
 
     EolEmissionsRecalcStrategy eolStrategy =
         new EolEmissionsRecalcStrategy(testScope);
-    assertDoesNotThrow(() -> eolStrategy.execute(engine));
+    assertDoesNotThrow(() -> eolStrategy.execute(engine, recalcKit));
 
     RetireRecalcStrategy retireStrategy =
         new RetireRecalcStrategy(testScope);
-    assertDoesNotThrow(() -> retireStrategy.execute(engine));
+    assertDoesNotThrow(() -> retireStrategy.execute(engine, recalcKit));
   }
 
   @Test
   public void testAllRecalcMethods() {
+    // Create a RecalcKit for the tests
+    RecalcKit recalcKit = new RecalcKitBuilder()
+        .setStreamKeeper(engine.getStreamKeeper())
+        .setUnitConverter(engine.getUnitConverter())
+        .setStateGetter(engine.getStateGetter())
+        .build();
+
     // Test each recalc method can be used as the initial method
     assertDoesNotThrow(() -> {
-      new RecalcOperationBuilder().recalcPopulationChange().build();
+      new RecalcOperationBuilder()
+          .setRecalcKit(recalcKit)
+          .recalcPopulationChange()
+          .build();
     });
 
     assertDoesNotThrow(() -> {
-      new RecalcOperationBuilder().recalcConsumption().build();
+      new RecalcOperationBuilder()
+          .setRecalcKit(recalcKit)
+          .recalcConsumption()
+          .build();
     });
 
     assertDoesNotThrow(() -> {
-      new RecalcOperationBuilder().recalcSales().build();
+      new RecalcOperationBuilder()
+          .setRecalcKit(recalcKit)
+          .recalcSales()
+          .build();
     });
 
     assertDoesNotThrow(() -> {
-      new RecalcOperationBuilder().recalcRechargeEmissions().build();
+      new RecalcOperationBuilder()
+          .setRecalcKit(recalcKit)
+          .recalcRechargeEmissions()
+          .build();
     });
 
     assertDoesNotThrow(() -> {
-      new RecalcOperationBuilder().recalcEolEmissions().build();
+      new RecalcOperationBuilder()
+          .setRecalcKit(recalcKit)
+          .recalcEolEmissions()
+          .build();
     });
 
     assertDoesNotThrow(() -> {
-      new RecalcOperationBuilder().recalcRetire().build();
+      new RecalcOperationBuilder()
+          .setRecalcKit(recalcKit)
+          .recalcRetire()
+          .build();
     });
   }
 
@@ -166,9 +224,17 @@ public class RecalcOperationBuilderTest {
     engine.setApplication("testApp");
     engine.setSubstance("testSubstance");
 
+    // Create RecalcKit for the operation
+    RecalcKit recalcKit = new RecalcKitBuilder()
+        .setStreamKeeper(engine.getStreamKeeper())
+        .setUnitConverter(engine.getUnitConverter())
+        .setStateGetter(engine.getStateGetter())
+        .build();
+
     RecalcOperationBuilder builder = new RecalcOperationBuilder();
 
     RecalcOperation operation = builder
+        .setRecalcKit(recalcKit)
         .recalcPopulationChange()
         .thenPropagateToConsumption()
         .thenPropagateToSales()

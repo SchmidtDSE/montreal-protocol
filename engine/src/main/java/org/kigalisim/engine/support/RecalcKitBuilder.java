@@ -9,7 +9,6 @@
 
 package org.kigalisim.engine.support;
 
-import java.util.Optional;
 import org.kigalisim.engine.number.UnitConverter;
 import org.kigalisim.engine.state.ConverterStateGetter;
 import org.kigalisim.engine.state.StreamKeeper;
@@ -19,17 +18,17 @@ import org.kigalisim.engine.state.StreamKeeper;
  */
 public class RecalcKitBuilder {
 
-  private Optional<StreamKeeper> streamKeeper;
-  private Optional<UnitConverter> unitConverter;
-  private Optional<ConverterStateGetter> stateGetter;
+  private StreamKeeper streamKeeper;
+  private UnitConverter unitConverter;
+  private ConverterStateGetter stateGetter;
 
   /**
-   * Create a new RecalcKitBuilder with default empty values.
+   * Create a new RecalcKitBuilder.
    */
   public RecalcKitBuilder() {
-    this.streamKeeper = Optional.empty();
-    this.unitConverter = Optional.empty();
-    this.stateGetter = Optional.empty();
+    this.streamKeeper = null;
+    this.unitConverter = null;
+    this.stateGetter = null;
   }
 
   /**
@@ -39,7 +38,7 @@ public class RecalcKitBuilder {
    * @return This builder for chaining
    */
   public RecalcKitBuilder setStreamKeeper(StreamKeeper streamKeeper) {
-    this.streamKeeper = Optional.ofNullable(streamKeeper);
+    this.streamKeeper = streamKeeper;
     return this;
   }
 
@@ -50,7 +49,7 @@ public class RecalcKitBuilder {
    * @return This builder for chaining
    */
   public RecalcKitBuilder setUnitConverter(UnitConverter unitConverter) {
-    this.unitConverter = Optional.ofNullable(unitConverter);
+    this.unitConverter = unitConverter;
     return this;
   }
 
@@ -61,7 +60,7 @@ public class RecalcKitBuilder {
    * @return This builder for chaining
    */
   public RecalcKitBuilder setStateGetter(ConverterStateGetter stateGetter) {
-    this.stateGetter = Optional.ofNullable(stateGetter);
+    this.stateGetter = stateGetter;
     return this;
   }
 
@@ -69,8 +68,18 @@ public class RecalcKitBuilder {
    * Build the RecalcKit.
    *
    * @return A new RecalcKit instance
+   * @throws IllegalStateException if any required field is missing
    */
   public RecalcKit build() {
+    if (streamKeeper == null) {
+      throw new IllegalStateException("StreamKeeper is required");
+    }
+    if (unitConverter == null) {
+      throw new IllegalStateException("UnitConverter is required");
+    }
+    if (stateGetter == null) {
+      throw new IllegalStateException("ConverterStateGetter is required");
+    }
     return new RecalcKit(streamKeeper, unitConverter, stateGetter);
   }
 }

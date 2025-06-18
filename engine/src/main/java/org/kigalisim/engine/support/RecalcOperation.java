@@ -22,22 +22,15 @@ public class RecalcOperation {
   private final RecalcKit recalcKit;
 
   /**
-   * Create a new RecalcOperation with the given strategies.
-   *
-   * @param strategies The list of strategies to execute in order
-   */
-  public RecalcOperation(List<RecalcStrategy> strategies) {
-    this.strategies = strategies;
-    this.recalcKit = null;
-  }
-
-  /**
    * Create a new RecalcOperation with the given strategies and RecalcKit.
    *
    * @param strategies The list of strategies to execute in order
    * @param recalcKit The RecalcKit containing dependencies for strategies
    */
   public RecalcOperation(List<RecalcStrategy> strategies, RecalcKit recalcKit) {
+    if (recalcKit == null) {
+      throw new IllegalArgumentException("RecalcKit is required");
+    }
     this.strategies = strategies;
     this.recalcKit = recalcKit;
   }
@@ -49,11 +42,7 @@ public class RecalcOperation {
    */
   public void execute(Engine target) {
     for (RecalcStrategy strategy : strategies) {
-      if (recalcKit != null) {
-        strategy.execute(target, recalcKit);
-      } else {
-        strategy.execute(target);
-      }
+      strategy.execute(target, recalcKit);
     }
   }
 }

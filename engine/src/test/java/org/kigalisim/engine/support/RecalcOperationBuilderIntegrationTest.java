@@ -45,6 +45,13 @@ public class RecalcOperationBuilderIntegrationTest {
     // This demonstrates the new pattern as specified in the issue
     Scope scopeEffective = engine.getScope();
 
+    // Create RecalcKit for the operations
+    RecalcKit recalcKit = new RecalcKitBuilder()
+        .setStreamKeeper(engine.getStreamKeeper())
+        .setUnitConverter(engine.getUnitConverter())
+        .setStateGetter(engine.getStateGetter())
+        .build();
+
     // Old way (still works but should be replaced):
     // engine.recalcPopulationChange(scopeEffective, true);
     // engine.recalcConsumption(scopeEffective);
@@ -54,6 +61,7 @@ public class RecalcOperationBuilderIntegrationTest {
     RecalcOperationBuilder recalcBuilder = new RecalcOperationBuilder();
     recalcBuilder.setScopeEffective(scopeEffective)
         .setSubtractRecharge(true)
+        .setRecalcKit(recalcKit)
         .recalcPopulationChange()
         .thenPropagateToConsumption()
         .thenPropagateToSales();
@@ -69,11 +77,19 @@ public class RecalcOperationBuilderIntegrationTest {
   public void testDifferentRecalcSequences() {
     Scope scopeEffective = engine.getScope();
 
+    // Create RecalcKit for the operations
+    RecalcKit recalcKit = new RecalcKitBuilder()
+        .setStreamKeeper(engine.getStreamKeeper())
+        .setUnitConverter(engine.getUnitConverter())
+        .setStateGetter(engine.getStateGetter())
+        .build();
+
     // Test various recalc sequences as would be used in different scenarios
 
     // Sequence 1: Start with consumption, propagate to sales and population
     RecalcOperation operation1 = new RecalcOperationBuilder()
         .setScopeEffective(scopeEffective)
+        .setRecalcKit(recalcKit)
         .recalcConsumption()
         .thenPropagateToSales()
         .thenPropagateToPopulationChange()
@@ -84,6 +100,7 @@ public class RecalcOperationBuilderIntegrationTest {
     // Sequence 2: Start with sales, propagate to consumption
     RecalcOperation operation2 = new RecalcOperationBuilder()
         .setScopeEffective(scopeEffective)
+        .setRecalcKit(recalcKit)
         .recalcSales()
         .thenPropagateToConsumption()
         .build();
@@ -93,6 +110,7 @@ public class RecalcOperationBuilderIntegrationTest {
     // Sequence 3: Start with retire (no propagation needed)
     RecalcOperation operation3 = new RecalcOperationBuilder()
         .setScopeEffective(scopeEffective)
+        .setRecalcKit(recalcKit)
         .recalcRetire()
         .build();
 

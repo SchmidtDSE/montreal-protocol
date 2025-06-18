@@ -259,16 +259,15 @@ public class RecalcOperationBuilder {
    * Build the RecalcOperation from the configured strategies.
    *
    * @return A RecalcOperation containing all configured strategies
-   * @throws IllegalStateException if no strategies have been configured
+   * @throws IllegalStateException if no strategies have been configured or RecalcKit not provided
    */
   public RecalcOperation build() {
     if (strategies.isEmpty()) {
       throw new IllegalStateException("Must configure at least one recalculation strategy");
     }
-    if (recalcKit.isPresent()) {
-      return new RecalcOperation(new ArrayList<>(strategies), recalcKit.get());
-    } else {
-      return new RecalcOperation(new ArrayList<>(strategies));
+    if (!recalcKit.isPresent()) {
+      throw new IllegalStateException("RecalcKit is required");
     }
+    return new RecalcOperation(new ArrayList<>(strategies), recalcKit.get());
   }
 }
