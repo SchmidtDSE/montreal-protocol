@@ -153,7 +153,7 @@ public class Scope {
    */
   public Scope getWithApplication(String newApplication) {
     if (stanza.isEmpty()) {
-      throw new IllegalStateException("Not able to set substance without stanza.");
+      throw new IllegalStateException("Not able to set application without stanza.");
     }
 
     return new Scope(
