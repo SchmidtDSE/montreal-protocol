@@ -21,7 +21,7 @@ import org.kigalisim.engine.state.Scope;
  */
 public class RetireRecalcStrategy implements RecalcStrategy {
 
-  private Scope scope;
+  private final Scope scope;
 
   /**
    * Create a new RetireRecalcStrategy.
@@ -34,7 +34,6 @@ public class RetireRecalcStrategy implements RecalcStrategy {
 
   @Override
   public void execute(Engine target, RecalcKit kit) {
-    // Move the logic from SingleThreadEngine.recalcRetire
     // Setup
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(kit.getStateGetter());

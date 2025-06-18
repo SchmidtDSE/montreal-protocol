@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
+import org.kigalisim.engine.state.ConverterStateGetter;
 import org.kigalisim.engine.state.OverridingConverterStateGetter;
 import org.kigalisim.engine.state.Scope;
 
@@ -21,8 +22,8 @@ import org.kigalisim.engine.state.Scope;
  */
 public class PopulationChangeRecalcStrategy implements RecalcStrategy {
 
-  private Scope scope;
-  private Boolean subtractRecharge;
+  private final Scope scope;
+  private final Boolean subtractRecharge;
 
   /**
    * Create a new PopulationChangeRecalcStrategy.
@@ -37,9 +38,9 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
 
   @Override
   public void execute(Engine target, RecalcKit kit) {
-    // Move the logic from SingleThreadEngine.recalcPopulationChange
-    OverridingConverterStateGetter stateGetter =
-        new OverridingConverterStateGetter(kit.getStateGetter());
+    ConverterStateGetter baseStateGetter = kit.getStateGetter();
+    OverridingConverterStateGetter stateGetter = 
+        new OverridingConverterStateGetter(baseStateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : target.getScope();
     boolean subtractRechargeEffective = subtractRecharge != null ? subtractRecharge : true;
@@ -76,10 +77,14 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
     EngineNumber initialCharge = unitConverter.convert(initialChargeRaw, "kg / unit");
     BigDecimal initialChargeKgUnit = initialCharge.getValue();
     BigDecimal deltaUnitsRaw = DivisionHelper.divideWithZero(
-        availableForNewUnitsKg, initialChargeKgUnit);
+        availableForNewUnitsKg, 
+        initialChargeKgUnit
+    );
     BigDecimal deltaUnits = deltaUnitsRaw;
     EngineNumber newUnitsMarginal = new EngineNumber(
-        deltaUnits.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : deltaUnits, "units");
+        deltaUnits.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : deltaUnits, 
+        "units"
+    );
 
     // Find new total
     BigDecimal priorPopulationUnits = priorPopulation.getValue();

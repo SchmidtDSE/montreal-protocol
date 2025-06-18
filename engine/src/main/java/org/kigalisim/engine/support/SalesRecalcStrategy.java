@@ -22,7 +22,7 @@ import org.kigalisim.engine.state.StreamKeeper;
  */
 public class SalesRecalcStrategy implements RecalcStrategy {
 
-  private Scope scope;
+  private final Scope scope;
 
   /**
    * Create a new SalesRecalcStrategy.
@@ -35,7 +35,6 @@ public class SalesRecalcStrategy implements RecalcStrategy {
 
   @Override
   public void execute(Engine target, RecalcKit kit) {
-    // Move the logic from SingleThreadEngine.recalcSales
     Scope scopeEffective = scope != null ? scope : target.getScope();
 
     OverridingConverterStateGetter stateGetter =

@@ -19,7 +19,7 @@ import org.kigalisim.engine.state.StreamKeeper;
  */
 public class ConsumptionRecalcStrategy implements RecalcStrategy {
 
-  private Scope scope;
+  private final Scope scope;
 
   /**
    * Create a new ConsumptionRecalcStrategy.
@@ -32,7 +32,6 @@ public class ConsumptionRecalcStrategy implements RecalcStrategy {
 
   @Override
   public void execute(Engine target, RecalcKit kit) {
-    // Move the logic from SingleThreadEngine.recalcConsumption
     Scope scopeEffective = scope != null ? scope : target.getScope();
 
     String application = scopeEffective.getApplication();

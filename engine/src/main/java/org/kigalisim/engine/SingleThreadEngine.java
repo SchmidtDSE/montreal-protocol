@@ -620,7 +620,11 @@ public class SingleThreadEngine implements Engine {
       // For equipment units, convert to kg and add recharge volume on top
       EngineNumber amountInKg = unitConverter.convert(amount, "kg");
       EngineNumber rechargeVolume = RechargeVolumeCalculator.calculateRechargeVolume(
-          this.scope, this.stateGetter, this.streamKeeper, this);
+          this.scope, 
+          this.stateGetter, 
+          this.streamKeeper, 
+          this
+      );
       BigDecimal totalWithRecharge = amountInKg.getValue().add(rechargeVolume.getValue());
       convertedMax = new EngineNumber(totalWithRecharge, "kg");
     } else {
@@ -665,7 +669,11 @@ public class SingleThreadEngine implements Engine {
       // For equipment units, convert to kg and add recharge volume on top
       EngineNumber amountInKg = unitConverter.convert(amount, "kg");
       EngineNumber rechargeVolume = RechargeVolumeCalculator.calculateRechargeVolume(
-          this.scope, this.stateGetter, this.streamKeeper, this);
+          this.scope, 
+          this.stateGetter, 
+          this.streamKeeper, 
+          this
+      );
       BigDecimal totalWithRecharge = amountInKg.getValue().add(rechargeVolume.getValue());
       convertedMin = new EngineNumber(totalWithRecharge, "kg");
     } else {

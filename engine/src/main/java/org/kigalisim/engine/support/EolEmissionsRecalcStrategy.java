@@ -14,13 +14,14 @@ import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.number.UnitConverter;
 import org.kigalisim.engine.state.OverridingConverterStateGetter;
 import org.kigalisim.engine.state.Scope;
+import org.kigalisim.engine.state.StreamKeeper;
 
 /**
  * Strategy for recalculating end-of-life emissions.
  */
 public class EolEmissionsRecalcStrategy implements RecalcStrategy {
 
-  private Scope scope;
+  private final Scope scope;
 
   /**
    * Create a new EolEmissionsRecalcStrategy.
@@ -33,7 +34,6 @@ public class EolEmissionsRecalcStrategy implements RecalcStrategy {
 
   @Override
   public void execute(Engine target, RecalcKit kit) {
-    // Move the logic from SingleThreadEngine.recalcEolEmissions
     // Setup
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(kit.getStateGetter());
@@ -52,13 +52,13 @@ public class EolEmissionsRecalcStrategy implements RecalcStrategy {
     EngineNumber currentPrior = unitConverter.convert(currentPriorRaw, "units");
 
     stateGetter.setPopulation(currentPrior);
-    EngineNumber amountRaw = kit.getStreamKeeper()
-        .getRetirementRate(application, substance);
+    StreamKeeper streamKeeper = kit.getStreamKeeper();
+    EngineNumber amountRaw = streamKeeper.getRetirementRate(application, substance);
     EngineNumber amount = unitConverter.convert(amountRaw, "units");
     stateGetter.clearPopulation();
 
     // Update GHG accounting
     EngineNumber eolGhg = unitConverter.convert(amount, "tCO2e");
-    kit.getStreamKeeper().setStream(application, substance, "eolEmissions", eolGhg);
+    streamKeeper.setStream(application, substance, "eolEmissions", eolGhg);
   }
 }

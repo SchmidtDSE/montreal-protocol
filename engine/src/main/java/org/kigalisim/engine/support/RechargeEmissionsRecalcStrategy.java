@@ -18,7 +18,7 @@ import org.kigalisim.engine.state.Scope;
  */
 public class RechargeEmissionsRecalcStrategy implements RecalcStrategy {
 
-  private Scope scope;
+  private final Scope scope;
 
   /**
    * Create a new RechargeEmissionsRecalcStrategy.
@@ -31,7 +31,6 @@ public class RechargeEmissionsRecalcStrategy implements RecalcStrategy {
 
   @Override
   public void execute(Engine target, RecalcKit kit) {
-    // Move the logic from SingleThreadEngine.recalcRechargeEmissions
     Scope scopeEffective = scope != null ? scope : target.getScope();
     EngineNumber rechargeVolume = RechargeVolumeCalculator.calculateRechargeVolume(
         scopeEffective, 
