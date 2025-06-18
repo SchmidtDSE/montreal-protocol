@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.engine.number.EngineNumber;
 
@@ -35,9 +36,11 @@ public class ScopeTest {
   @Test
   public void testGetters() {
     Scope scope = new Scope("default", "test app", "test substance");
-    assertEquals("default", scope.getStanza(), "Should return correct stanza");
-    assertEquals("test app", scope.getApplication(), "Should return correct application");
-    assertEquals("test substance", scope.getSubstance(), "Should return correct substance");
+    assertEquals(Optional.of("default"), scope.getStanza(), "Should return correct stanza");
+    assertEquals(Optional.of("test app"), scope.getApplication(),
+        "Should return correct application");
+    assertEquals(Optional.of("test substance"), scope.getSubstance(),
+        "Should return correct substance");
   }
 
   /**
@@ -48,9 +51,10 @@ public class ScopeTest {
     Scope scopeOld = new Scope("default", "test app", "test substance");
     Scope scopeNew = scopeOld.getWithSubstance("test substance 2");
 
-    assertEquals("default", scopeNew.getStanza(), "Should preserve stanza");
-    assertEquals("test app", scopeNew.getApplication(), "Should preserve application");
-    assertEquals("test substance 2", scopeNew.getSubstance(), "Should update substance");
+    assertEquals(Optional.of("default"), scopeNew.getStanza(), "Should preserve stanza");
+    assertEquals(Optional.of("test app"), scopeNew.getApplication(), "Should preserve application");
+    assertEquals(Optional.of("test substance 2"), scopeNew.getSubstance(),
+        "Should update substance");
   }
 
   /**
@@ -61,9 +65,9 @@ public class ScopeTest {
     Scope scopeOld = new Scope("default", "test app", "test substance");
     Scope scopeNew = scopeOld.getWithApplication("test app 2");
 
-    assertEquals("default", scopeNew.getStanza(), "Should preserve stanza");
-    assertEquals("test app 2", scopeNew.getApplication(), "Should update application");
-    assertNull(scopeNew.getSubstance(), "Should reset substance to null");
+    assertEquals(Optional.of("default"), scopeNew.getStanza(), "Should preserve stanza");
+    assertEquals(Optional.of("test app 2"), scopeNew.getApplication(), "Should update application");
+    assertEquals(Optional.empty(), scopeNew.getSubstance(), "Should reset substance to null");
   }
 
   /**
@@ -74,9 +78,10 @@ public class ScopeTest {
     Scope scopeOld = new Scope("default", "test app", "test substance");
     Scope scopeNew = scopeOld.getWithStanza("policy \"test policy\"");
 
-    assertEquals("policy \"test policy\"", scopeNew.getStanza(), "Should update stanza");
-    assertNull(scopeNew.getApplication(), "Should reset application to null");
-    assertNull(scopeNew.getSubstance(), "Should reset substance to null");
+    assertEquals(Optional.of("policy \"test policy\""), scopeNew.getStanza(),
+        "Should update stanza");
+    assertEquals(Optional.empty(), scopeNew.getApplication(), "Should reset application to null");
+    assertEquals(Optional.empty(), scopeNew.getSubstance(), "Should reset substance to null");
   }
 
   /**

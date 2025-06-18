@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.serializer.EngineResult;
@@ -95,21 +96,25 @@ public class SingleThreadEngineTest {
     engine.setSubstance("test substance");
 
     Scope scope = engine.getScope();
-    assertEquals("default", scope.getStanza(), "Should have correct stanza");
-    assertEquals("test app", scope.getApplication(), "Should have correct application");
-    assertEquals("test substance", scope.getSubstance(), "Should have correct substance");
+    assertEquals(Optional.of("default"), scope.getStanza(), "Should have correct stanza");
+    assertEquals(Optional.of("test app"), scope.getApplication(),
+        "Should have correct application");
+    assertEquals(Optional.of("test substance"), scope.getSubstance(),
+        "Should have correct substance");
 
     // Test scope changes like JavaScript test does
     engine.setSubstance("test substance 2");
 
     Scope newScope = engine.getScope();
-    assertEquals("default", newScope.getStanza(), "Should maintain stanza after substance change");
+    assertEquals(Optional.of("default"), newScope.getStanza(),
+        "Should maintain stanza after substance change");
     assertEquals(
-        "test app",
+        Optional.of("test app"),
         newScope.getApplication(),
         "Should maintain application after substance change"
     );
-    assertEquals("test substance 2", newScope.getSubstance(), "Should have updated substance");
+    assertEquals(Optional.of("test substance 2"), newScope.getSubstance(),
+        "Should have updated substance");
   }
 
   /**

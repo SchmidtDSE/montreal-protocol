@@ -44,8 +44,8 @@ public class PopulationChangeRecalcStrategy implements RecalcStrategy {
     UnitConverter unitConverter = new UnitConverter(stateGetter);
     Scope scopeEffective = scope != null ? scope : target.getScope();
     boolean subtractRechargeEffective = subtractRecharge != null ? subtractRecharge : true;
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
+    String application = scopeEffective.getApplication().orElse(null);
+    String substance = scopeEffective.getSubstance().orElse(null);
 
     if (application == null || substance == null) {
       ExceptionsGenerator.raiseNoAppOrSubstance("recalculating population change", "");

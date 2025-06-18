@@ -40,8 +40,8 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(kit.getStateGetter());
     UnitConverter unitConverter = new UnitConverter(stateGetter);
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
+    String application = scopeEffective.getApplication().orElse(null);
+    String substance = scopeEffective.getSubstance().orElse(null);
 
     if (application == null || substance == null) {
       ExceptionsGenerator.raiseNoAppOrSubstance("recalculating sales", "");

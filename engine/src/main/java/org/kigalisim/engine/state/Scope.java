@@ -13,6 +13,7 @@ import static org.kigalisim.engine.state.EngineConstants.APPLICATION_CONTEXT;
 import static org.kigalisim.engine.state.EngineConstants.STANZA_CONTEXT;
 import static org.kigalisim.engine.state.EngineConstants.SUBSTANCE_CONTEXT;
 
+import java.util.Optional;
 import org.kigalisim.engine.number.EngineNumber;
 
 /**
@@ -22,9 +23,9 @@ import org.kigalisim.engine.number.EngineNumber;
  */
 public class Scope {
 
-  private final String stanza;
-  private final String application;
-  private final String substance;
+  private final Optional<String> stanza;
+  private final Optional<String> application;
+  private final Optional<String> substance;
   private final VariableManager variableManager;
 
   /**
@@ -38,9 +39,9 @@ public class Scope {
    */
   public Scope(String stanza, String application, String substance,
                VariableManager variableManager) {
-    this.stanza = stanza;
-    this.application = application;
-    this.substance = substance;
+    this.stanza = Optional.ofNullable(stanza);
+    this.application = Optional.ofNullable(application);
+    this.substance = Optional.ofNullable(substance);
 
     if (substance != null && application == null) {
       throw new IllegalArgumentException("Cannot specify substance without application.");
@@ -72,28 +73,96 @@ public class Scope {
   /**
    * Get the name of the stanza where this scope resides.
    *
-   * @return The name of the current stanza or null if in global scope
+   * @return The name of the current stanza or empty if in global scope
    */
-  public String getStanza() {
+  public Optional<String> getStanza() {
     return stanza;
   }
 
   /**
    * Get the name of the application where this scope resides.
    *
-   * @return The name of the current application or null if in stanza or higher scope
+   * @return The name of the current application or empty if in stanza or higher scope
    */
-  public String getApplication() {
+  public Optional<String> getApplication() {
     return application;
   }
 
   /**
    * Get the name of the substance where this scope resides.
    *
-   * @return The name of the current substance or null if in application or higher scope
+   * @return The name of the current substance or empty if in application or higher scope
    */
-  public String getSubstance() {
+  public Optional<String> getSubstance() {
     return substance;
+  }
+
+  /**
+   * Set the stanza name for this scope.
+   *
+   * @param stanza The stanza name (must not be null)
+   * @throws IllegalArgumentException if stanza is null
+   */
+  public void setStanza(String stanza) {
+    if (stanza == null) {
+      throw new IllegalArgumentException("Stanza cannot be null");
+    }
+    // This would create a new scope in practice - current implementation is immutable
+    throw new UnsupportedOperationException("Scope is immutable - use getWithStanza instead");
+  }
+
+  /**
+   * Set the application name for this scope.
+   *
+   * @param application The application name (must not be null)
+   * @throws IllegalArgumentException if application is null
+   */
+  public void setApplication(String application) {
+    if (application == null) {
+      throw new IllegalArgumentException("Application cannot be null");
+    }
+    // This would create a new scope in practice - current implementation is immutable
+    throw new UnsupportedOperationException("Scope is immutable - use getWithApplication instead");
+  }
+
+  /**
+   * Set the substance name for this scope.
+   *
+   * @param substance The substance name (must not be null)
+   * @throws IllegalArgumentException if substance is null
+   */
+  public void setSubstance(String substance) {
+    if (substance == null) {
+      throw new IllegalArgumentException("Substance cannot be null");
+    }
+    // This would create a new scope in practice - current implementation is immutable
+    throw new UnsupportedOperationException("Scope is immutable - use getWithSubstance instead");
+  }
+
+  /**
+   * Clear the stanza, setting it to empty.
+   */
+  public void clearStanza() {
+    // This would create a new scope in practice - current implementation is immutable
+    throw new UnsupportedOperationException("Scope is immutable - use getWithStanza(null) instead");
+  }
+
+  /**
+   * Clear the application, setting it to empty.
+   */
+  public void clearApplication() {
+    // This would create a new scope in practice - current implementation is immutable
+    throw new UnsupportedOperationException(
+        "Scope is immutable - use getWithApplication(null) instead");
+  }
+
+  /**
+   * Clear the substance, setting it to empty.
+   */
+  public void clearSubstance() {
+    // This would create a new scope in practice - current implementation is immutable
+    throw new UnsupportedOperationException(
+        "Scope is immutable - use getWithSubstance(null) instead");
   }
 
   /**
@@ -103,13 +172,13 @@ public class Scope {
    * @return New scope at the given substance
    */
   public Scope getWithSubstance(String newSubstance) {
-    if (application == null) {
+    if (application.isEmpty()) {
       throw new IllegalStateException("Not able to set substance without application.");
     }
 
     return new Scope(
-        stanza,
-        application,
+        stanza.orElse(null),
+        application.orElse(null),
         newSubstance,
         variableManager.getWithLevel(SUBSTANCE_CONTEXT)
     );
@@ -122,12 +191,12 @@ public class Scope {
    * @return New scope at the given application
    */
   public Scope getWithApplication(String newApplication) {
-    if (stanza == null) {
+    if (stanza.isEmpty()) {
       throw new IllegalStateException("Not able to set substance without stanza.");
     }
 
     return new Scope(
-        stanza,
+        stanza.orElse(null),
         newApplication,
         null,
         variableManager.getWithLevel(APPLICATION_CONTEXT)

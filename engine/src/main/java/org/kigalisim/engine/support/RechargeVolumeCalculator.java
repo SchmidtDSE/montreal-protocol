@@ -35,8 +35,8 @@ public class RechargeVolumeCalculator {
     OverridingConverterStateGetter overridingStateGetter =
         new OverridingConverterStateGetter(stateGetter);
     UnitConverter unitConverter = new UnitConverter(overridingStateGetter);
-    String application = scope.getApplication();
-    String substance = scope.getSubstance();
+    String application = scope.getApplication().orElse(null);
+    String substance = scope.getSubstance().orElse(null);
 
     if (application == null || substance == null) {
       ExceptionsGenerator.raiseNoAppOrSubstance("calculating recharge volume", "");

@@ -118,7 +118,7 @@ public class SingleThreadEngine implements Engine {
     this.scope = this.scope.getWithSubstance(newSubstance);
 
     boolean checkValidEffective = checkValid != null && checkValid;
-    String application = this.scope.getApplication();
+    String application = this.scope.getApplication().orElse(null);
 
     if (checkValidEffective) {
       boolean knownSubstance = this.streamKeeper.hasSubstance(application, newSubstance);
@@ -195,8 +195,8 @@ public class SingleThreadEngine implements Engine {
     }
 
     Scope scopeEffective = scope != null ? scope : this.scope;
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
+    String application = scopeEffective.getApplication().orElse(null);
+    String substance = scopeEffective.getSubstance().orElse(null);
 
     if (application == null || substance == null) {
       raiseNoAppOrSubstance("setting stream", " specified");
@@ -272,8 +272,8 @@ public class SingleThreadEngine implements Engine {
   @Override
   public EngineNumber getStream(String name, Scope scope, String conversion) {
     Scope scopeEffective = scope != null ? scope : this.scope;
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
+    String application = scopeEffective.getApplication().orElse(null);
+    String substance = scopeEffective.getSubstance().orElse(null);
     EngineNumber value = this.streamKeeper.getStream(application, substance, name);
 
     if (conversion == null) {
@@ -331,12 +331,12 @@ public class SingleThreadEngine implements Engine {
     if ("sales".equals(stream)) {
       // For now, implement a simplified version - the full implementation is complex
       // and involves pooling initial charges from manufacture and import
-      String application = this.scope.getApplication();
-      String substance = this.scope.getSubstance();
+      String application = this.scope.getApplication().orElse(null);
+      String substance = this.scope.getSubstance().orElse(null);
       return getRawInitialChargeFor(application, substance, "manufacture");
     } else {
-      String application = this.scope.getApplication();
-      String substance = this.scope.getSubstance();
+      String application = this.scope.getApplication().orElse(null);
+      String substance = this.scope.getSubstance().orElse(null);
       return getRawInitialChargeFor(application, substance, stream);
     }
   }
@@ -352,8 +352,8 @@ public class SingleThreadEngine implements Engine {
       return;
     }
 
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
 
     if ("sales".equals(stream)) {
       // For sales, set both manufacture and import but don't recalculate yet
@@ -379,8 +379,8 @@ public class SingleThreadEngine implements Engine {
    * @return true if recharge should be subtracted, false if added on top
    */
   private boolean getShouldSubtractRecharge(String stream) {
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
 
     if ("sales".equals(stream)) {
       // For sales, check if either manufacture or import were last specified in units
@@ -401,15 +401,15 @@ public class SingleThreadEngine implements Engine {
 
   @Override
   public EngineNumber getRechargeVolume() {
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
     return this.streamKeeper.getRechargePopulation(application, substance);
   }
 
   @Override
   public EngineNumber getRechargeIntensity() {
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
     return getRechargeIntensityFor(application, substance);
   }
 
@@ -420,8 +420,8 @@ public class SingleThreadEngine implements Engine {
 
   @Override
   public String getLastSpecifiedUnits(String stream) {
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
     return getLastSpecifiedInUnits(application, substance, stream);
   }
 
@@ -432,8 +432,8 @@ public class SingleThreadEngine implements Engine {
 
   @Override
   public void setLastSpecifiedUnits(String stream, String units) {
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
 
     if (application == null || substance == null) {
       raiseNoAppOrSubstance("setting last specified units", " specified");
@@ -450,8 +450,8 @@ public class SingleThreadEngine implements Engine {
     }
 
     // Setup
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
 
     // Check allowed
     if (application == null || substance == null) {
@@ -478,8 +478,8 @@ public class SingleThreadEngine implements Engine {
       return;
     }
 
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
     this.streamKeeper.setRetirementRate(application, substance, amount);
     RecalcOperation operation = new RecalcOperationBuilder()
         .setRecalcKit(createRecalcKit())
@@ -490,8 +490,8 @@ public class SingleThreadEngine implements Engine {
 
   @Override
   public EngineNumber getRetirementRate() {
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
     return this.streamKeeper.getRetirementRate(application, substance);
   }
 
@@ -502,8 +502,8 @@ public class SingleThreadEngine implements Engine {
       return;
     }
 
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
     this.streamKeeper.setRecoveryRate(application, substance, recoveryWithUnits);
     this.streamKeeper.setYieldRate(application, substance, yieldWithUnits);
 
@@ -526,8 +526,8 @@ public class SingleThreadEngine implements Engine {
       return;
     }
 
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
 
     String units = amount.getUnits();
     boolean isGhg = units.startsWith("tCO2e");
@@ -557,8 +557,8 @@ public class SingleThreadEngine implements Engine {
 
   @Override
   public EngineNumber getEqualsGhgIntensity() {
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
     return getEqualsGhgIntensityFor(application, substance);
   }
 
@@ -569,8 +569,8 @@ public class SingleThreadEngine implements Engine {
 
   @Override
   public EngineNumber getEqualsEnergyIntensity() {
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
     return getEqualsEnergyIntensityFor(application, substance);
   }
 
@@ -637,8 +637,8 @@ public class SingleThreadEngine implements Engine {
 
     // Record units regardless of whether change is made
     Scope scope = this.scope;
-    String application = scope.getApplication();
-    String substance = scope.getSubstance();
+    String application = scope.getApplication().orElse(null);
+    String substance = scope.getSubstance().orElse(null);
     if (application == null || substance == null) {
       raiseNoAppOrSubstance("setting stream", " specified");
     }
@@ -686,8 +686,8 @@ public class SingleThreadEngine implements Engine {
 
     // Record units regardless of whether change is made
     Scope scope = this.scope;
-    String application = scope.getApplication();
-    String substance = scope.getSubstance();
+    String application = scope.getApplication().orElse(null);
+    String substance = scope.getSubstance().orElse(null);
     if (application == null || substance == null) {
       raiseNoAppOrSubstance("setting stream", " specified");
     }
@@ -708,8 +708,8 @@ public class SingleThreadEngine implements Engine {
 
     // Track the original user-specified units for the current substance
     Scope currentScope = this.scope;
-    String application = currentScope.getApplication();
-    String currentSubstance = currentScope.getSubstance();
+    String application = currentScope.getApplication().orElse(null);
+    String currentSubstance = currentScope.getSubstance().orElse(null);
     if (application == null || currentSubstance == null) {
       raiseNoAppOrSubstance("setting stream", " specified");
     }
@@ -788,8 +788,8 @@ public class SingleThreadEngine implements Engine {
     OverridingConverterStateGetter stateGetter =
         new OverridingConverterStateGetter(this.stateGetter);
     UnitConverter unitConverter = new UnitConverter(stateGetter);
-    String application = this.scope.getApplication();
-    String substance = this.scope.getSubstance();
+    String application = this.scope.getApplication().orElse(null);
+    String substance = this.scope.getSubstance().orElse(null);
 
     if (application == null || substance == null) {
       raiseNoAppOrSubstance("calculating recharge volume", "");

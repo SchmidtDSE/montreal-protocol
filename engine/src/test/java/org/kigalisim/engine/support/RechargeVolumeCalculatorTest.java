@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.state.ConverterStateGetter;
@@ -33,8 +34,8 @@ public class RechargeVolumeCalculatorTest {
     StreamKeeper streamKeeper = mock(StreamKeeper.class);
     org.kigalisim.engine.Engine engine = mock(org.kigalisim.engine.Engine.class);
 
-    when(scope.getApplication()).thenReturn("testApp");
-    when(scope.getSubstance()).thenReturn("testSubstance");
+    when(scope.getApplication()).thenReturn(Optional.of("testApp"));
+    when(scope.getSubstance()).thenReturn(Optional.of("testSubstance"));
 
     EngineNumber priorEquipment = new EngineNumber(new BigDecimal("5.0"), "units");
     EngineNumber rechargePopulation = new EngineNumber(new BigDecimal("2.0"), "units");
@@ -62,8 +63,8 @@ public class RechargeVolumeCalculatorTest {
     StreamKeeper streamKeeper = mock(StreamKeeper.class);
     org.kigalisim.engine.Engine engine = mock(org.kigalisim.engine.Engine.class);
 
-    when(scope.getApplication()).thenReturn("testApp");
-    when(scope.getSubstance()).thenReturn("testSubstance");
+    when(scope.getApplication()).thenReturn(Optional.of("testApp"));
+    when(scope.getSubstance()).thenReturn(Optional.of("testSubstance"));
 
     EngineNumber zeroPriorEquipment = new EngineNumber(BigDecimal.ZERO, "units");
     EngineNumber zeroRechargePopulation = new EngineNumber(BigDecimal.ZERO, "units");
@@ -94,7 +95,7 @@ public class RechargeVolumeCalculatorTest {
 
     // Return null for application or substance to trigger exception
     when(scope.getApplication()).thenReturn(null);
-    when(scope.getSubstance()).thenReturn("testSubstance");
+    when(scope.getSubstance()).thenReturn(Optional.of("testSubstance"));
 
     // Should throw RuntimeException from ExceptionsGenerator
     assertThrows(RuntimeException.class, () -> {

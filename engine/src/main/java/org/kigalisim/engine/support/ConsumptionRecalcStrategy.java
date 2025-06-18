@@ -34,8 +34,8 @@ public class ConsumptionRecalcStrategy implements RecalcStrategy {
   public void execute(Engine target, RecalcKit kit) {
     Scope scopeEffective = scope != null ? scope : target.getScope();
 
-    String application = scopeEffective.getApplication();
-    String substance = scopeEffective.getSubstance();
+    String application = scopeEffective.getApplication().orElse(null);
+    String substance = scopeEffective.getSubstance().orElse(null);
 
     if (application == null || substance == null) {
       ExceptionsGenerator.raiseNoAppOrSubstance("recalculating consumption", "");
