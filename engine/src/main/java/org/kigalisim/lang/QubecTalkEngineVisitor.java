@@ -7,11 +7,17 @@
 package org.kigalisim.lang;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.lang.fragment.DuringFragment;
 import org.kigalisim.lang.fragment.Fragment;
 import org.kigalisim.lang.fragment.OperationFragment;
+import org.kigalisim.lang.fragment.ProgramFragment;
+import org.kigalisim.lang.fragment.SimulationFragment;
+import org.kigalisim.lang.fragment.StanzaFragment;
 import org.kigalisim.lang.fragment.UnitFragment;
 import org.kigalisim.lang.operation.AdditionOperation;
 import org.kigalisim.lang.operation.ChangeUnitsOperation;
@@ -410,7 +416,17 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitDefaultStanza(QubecTalkParser.DefaultStanzaContext ctx) {
-    return visitChildren(ctx);
+    List<Fragment> commands = new ArrayList<>();
+    
+    // Visit each child command in the default stanza
+    for (int i = 2; i < ctx.getChildCount() - 2; i++) { // Skip "start default" and "end default"
+      Fragment child = visit(ctx.getChild(i));
+      if (child != null) {
+        commands.add(child);
+      }
+    }
+    
+    return new StanzaFragment("default", commands, null);
   }
 
   /**
@@ -426,7 +442,17 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitSimulationsStanza(QubecTalkParser.SimulationsStanzaContext ctx) {
-    return visitChildren(ctx);
+    List<SimulationFragment> simulations = new ArrayList<>();
+    
+    // Visit each simulation definition in the simulations stanza
+    for (int i = 2; i < ctx.getChildCount() - 2; i++) { // Skip "start simulations" and "end simulations"
+      Fragment child = visit(ctx.getChild(i));
+      if (child instanceof SimulationFragment) {
+        simulations.add((SimulationFragment) child);
+      }
+    }
+    
+    return new StanzaFragment("simulations", new ArrayList<>(), simulations);
   }
 
   /**
@@ -654,7 +680,14 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitBaseSimulation(QubecTalkParser.BaseSimulationContext ctx) {
-    return visitChildren(ctx);
+    String name = removeQuotes(ctx.name.getText());
+    int startYear = Integer.parseInt(ctx.start.getText());
+    int endYear = Integer.parseInt(ctx.end.getText());
+    
+    // For base simulation, use only the default scenario
+    List<String> scenarios = Arrays.asList("default");
+    
+    return new SimulationFragment(name, startYear, endYear, scenarios);
   }
 
   /**
@@ -702,6 +735,26 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitProgram(QubecTalkParser.ProgramContext ctx) {
-    return visitChildren(ctx);
+    List<StanzaFragment> stanzas = new ArrayList<>();
+    
+    // Visit each stanza in the program
+    for (int i = 0; i < ctx.getChildCount(); i++) {
+      Fragment child = visit(ctx.getChild(i));
+      if (child instanceof StanzaFragment) {
+        stanzas.add((StanzaFragment) child);
+      }
+    }
+    
+    return new ProgramFragment(stanzas);
+  }
+
+  /**
+   * Helper method to remove quotes from string literals.
+   */
+  private String removeQuotes(String text) {
+    if (text.startsWith("\"") && text.endsWith("\"")) {
+      return text.substring(1, text.length() - 1);
+    }
+    return text;
   }
 }
