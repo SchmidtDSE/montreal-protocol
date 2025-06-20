@@ -7,6 +7,8 @@
 package org.kigalisim.lang.machine;
 
 import java.util.Stack;
+
+import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.number.EngineNumber;
 
 
@@ -60,4 +62,11 @@ public interface PushDownMachine {
    * @param units The new units for the number at the top of the stack.
    */
   void changeUnits(String units);
+
+  /**
+   * Get the engine in which this machine is running.
+   *
+   * @return The engine in which this machine is running.
+   */
+  Engine getEngine();
 }

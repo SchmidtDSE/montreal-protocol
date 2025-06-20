@@ -82,6 +82,11 @@ public class SingleThreadPushDownMachine implements PushDownMachine {
     push(topWithUnits);
   }
 
+  @Override
+  public Engine getEngine() {
+    return engine;
+  }
+
   /**
    * Pop the top value from the stack.
    *

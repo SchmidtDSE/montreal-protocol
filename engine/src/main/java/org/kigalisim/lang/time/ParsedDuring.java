@@ -7,6 +7,8 @@
 package org.kigalisim.lang.time;
 
 import java.util.Optional;
+import org.kigalisim.engine.state.YearMatcher;
+import org.kigalisim.lang.machine.PushDownMachine;
 
 
 /**
@@ -60,6 +62,15 @@ public class ParsedDuring {
    */
   public Optional<TimePointFuture> getEnd() {
     return end;
+  }
+
+  /**
+   * Build a YearMatcher from this parsed version of a during statement.
+   * 
+   * @return The YearMatcher built from the values parsed and saved to this ParsedDuring.
+   */
+  public YearMatcher buildYearMatcher(PushDownMachine machine) {
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 
 }
