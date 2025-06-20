@@ -49,22 +49,34 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitString(QubecTalkParser.StringContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitString(QubecTalkParser.StringContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitVolumeUnit(QubecTalkParser.VolumeUnitContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitVolumeUnit(QubecTalkParser.VolumeUnitContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRelativeUnit(QubecTalkParser.RelativeUnitContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRelativeUnit(QubecTalkParser.RelativeUnitContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitTemporalUnit(QubecTalkParser.TemporalUnitContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitTemporalUnit(QubecTalkParser.TemporalUnitContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
@@ -126,82 +138,130 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitGetStreamConversion(QubecTalkParser.GetStreamConversionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitGetStreamConversion(QubecTalkParser.GetStreamConversionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitLimitMinExpression(QubecTalkParser.LimitMinExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitLimitMinExpression(QubecTalkParser.LimitMinExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitSimpleExpression(QubecTalkParser.SimpleExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitSimpleExpression(QubecTalkParser.SimpleExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitGetStreamIndirectConversion(QubecTalkParser.GetStreamIndirectConversionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitGetStreamIndirectConversion(QubecTalkParser.GetStreamIndirectConversionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitParenExpression(QubecTalkParser.ParenExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitParenExpression(QubecTalkParser.ParenExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitLimitMaxExpression(QubecTalkParser.LimitMaxExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitLimitMaxExpression(QubecTalkParser.LimitMaxExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitMultiplyExpression(QubecTalkParser.MultiplyExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitMultiplyExpression(QubecTalkParser.MultiplyExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDrawNormalExpression(QubecTalkParser.DrawNormalExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitDrawNormalExpression(QubecTalkParser.DrawNormalExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitLogicalExpression(QubecTalkParser.LogicalExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitLogicalExpression(QubecTalkParser.LogicalExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitGetStreamIndirect(QubecTalkParser.GetStreamIndirectContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitGetStreamIndirect(QubecTalkParser.GetStreamIndirectContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDrawUniformExpression(QubecTalkParser.DrawUniformExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitDrawUniformExpression(QubecTalkParser.DrawUniformExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitSimpleIdentifier(QubecTalkParser.SimpleIdentifierContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitSimpleIdentifier(QubecTalkParser.SimpleIdentifierContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitGetStream(QubecTalkParser.GetStreamContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitGetStream(QubecTalkParser.GetStreamContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitLimitBoundExpression(QubecTalkParser.LimitBoundExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitLimitBoundExpression(QubecTalkParser.LimitBoundExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitStream(QubecTalkParser.StreamContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitStream(QubecTalkParser.StreamContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitIdentifierAsVar(QubecTalkParser.IdentifierAsVarContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitIdentifierAsVar(QubecTalkParser.IdentifierAsVarContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
@@ -331,62 +391,98 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitAboutStanza(QubecTalkParser.AboutStanzaContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitAboutStanza(QubecTalkParser.AboutStanzaContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDefaultStanza(QubecTalkParser.DefaultStanzaContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitDefaultStanza(QubecTalkParser.DefaultStanzaContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitPolicyStanza(QubecTalkParser.PolicyStanzaContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitPolicyStanza(QubecTalkParser.PolicyStanzaContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitSimulationsStanza(QubecTalkParser.SimulationsStanzaContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitSimulationsStanza(QubecTalkParser.SimulationsStanzaContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitApplicationDef(QubecTalkParser.ApplicationDefContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitApplicationDef(QubecTalkParser.ApplicationDefContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitSubstanceDef(QubecTalkParser.SubstanceDefContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitSubstanceDef(QubecTalkParser.SubstanceDefContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitApplicationMod(QubecTalkParser.ApplicationModContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitApplicationMod(QubecTalkParser.ApplicationModContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitSubstanceMod(QubecTalkParser.SubstanceModContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitSubstanceMod(QubecTalkParser.SubstanceModContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitLimitCommandAllYears(QubecTalkParser.LimitCommandAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitLimitCommandAllYears(QubecTalkParser.LimitCommandAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitLimitCommandDisplacingAllYears(QubecTalkParser.LimitCommandDisplacingAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitLimitCommandDisplacingAllYears(QubecTalkParser.LimitCommandDisplacingAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitLimitCommandDuration(QubecTalkParser.LimitCommandDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitLimitCommandDuration(QubecTalkParser.LimitCommandDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitLimitCommandDisplacingDuration(QubecTalkParser.LimitCommandDisplacingDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitLimitCommandDisplacingDuration(QubecTalkParser.LimitCommandDisplacingDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
