@@ -11,14 +11,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.number.EngineNumber;
+import org.kigalisim.engine.state.YearMatcher;
+import org.kigalisim.lang.fragment.CommandFragment;
 import org.kigalisim.lang.fragment.DuringFragment;
+import org.kigalisim.lang.fragment.ExecutableFragment;
 import org.kigalisim.lang.fragment.Fragment;
 import org.kigalisim.lang.fragment.OperationFragment;
 import org.kigalisim.lang.fragment.ProgramFragment;
 import org.kigalisim.lang.fragment.SimulationFragment;
 import org.kigalisim.lang.fragment.StanzaFragment;
 import org.kigalisim.lang.fragment.UnitFragment;
+import org.kigalisim.lang.machine.SingleThreadPushDownMachine;
 import org.kigalisim.lang.operation.AdditionOperation;
 import org.kigalisim.lang.operation.ChangeUnitsOperation;
 import org.kigalisim.lang.operation.Operation;
@@ -417,7 +422,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   @Override
   public Fragment visitDefaultStanza(QubecTalkParser.DefaultStanzaContext ctx) {
     List<Fragment> commands = new ArrayList<>();
-    
+
     // Visit each child command in the default stanza
     for (int i = 2; i < ctx.getChildCount() - 2; i++) { // Skip "start default" and "end default"
       Fragment child = visit(ctx.getChild(i));
@@ -425,7 +430,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
         commands.add(child);
       }
     }
-    
+
     return new StanzaFragment("default", commands, null);
   }
 
@@ -443,7 +448,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   @Override
   public Fragment visitSimulationsStanza(QubecTalkParser.SimulationsStanzaContext ctx) {
     List<SimulationFragment> simulations = new ArrayList<>();
-    
+
     // Visit each simulation definition in the simulations stanza
     for (int i = 2; i < ctx.getChildCount() - 2; i++) { // Skip "start simulations" and "end simulations"
       Fragment child = visit(ctx.getChild(i));
@@ -451,7 +456,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
         simulations.add((SimulationFragment) child);
       }
     }
-    
+
     return new StanzaFragment("simulations", new ArrayList<>(), simulations);
   }
 
@@ -460,7 +465,30 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitApplicationDef(QubecTalkParser.ApplicationDefContext ctx) {
-    return visitChildren(ctx);
+    String appName = removeQuotes(ctx.name.getText());
+
+    // Create a list to hold all commands for this application
+    List<Fragment> commands = new ArrayList<>();
+
+    // Add command to set the application
+    commands.add(new ExecutableFragment(engine -> engine.setApplication(appName)));
+
+    // Visit each child element in the application definition
+    for (int i = 3; i < ctx.getChildCount() - 2; i++) { // Skip "define application name" and "end application"
+      Fragment child = visit(ctx.getChild(i));
+      if (child != null) {
+        commands.add(child);
+      }
+    }
+
+    // Return a compound executable that runs all commands
+    return new ExecutableFragment(engine -> {
+      for (Fragment command : commands) {
+        if (command instanceof ExecutableFragment) {
+          ((ExecutableFragment) command).execute(engine);
+        }
+      }
+    });
   }
 
   /**
@@ -468,7 +496,30 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitSubstanceDef(QubecTalkParser.SubstanceDefContext ctx) {
-    return visitChildren(ctx);
+    String substanceName = removeQuotes(ctx.name.getText());
+
+    // Create a list to hold all commands for this substance
+    List<Fragment> commands = new ArrayList<>();
+
+    // Add command to set the substance
+    commands.add(new ExecutableFragment(engine -> engine.setSubstance(substanceName)));
+
+    // Visit each child element in the substance definition
+    for (int i = 3; i < ctx.getChildCount() - 2; i++) { // Skip "uses substance name" and "end substance"
+      Fragment child = visit(ctx.getChild(i));
+      if (child != null) {
+        commands.add(child);
+      }
+    }
+
+    // Return a compound executable that runs all commands
+    return new ExecutableFragment(engine -> {
+      for (Fragment command : commands) {
+        if (command instanceof ExecutableFragment) {
+          ((ExecutableFragment) command).execute(engine);
+        }
+      }
+    });
   }
 
   /**
@@ -550,7 +601,15 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitEqualsAllYears(QubecTalkParser.EqualsAllYearsContext ctx) {
-    return visitChildren(ctx);
+    // Get the value (Global Warming Potential)
+    OperationFragment valueFragment = (OperationFragment) visit(ctx.value);
+
+    return new ExecutableFragment(engine -> {
+      // Evaluate the value operation to get the EngineNumber
+      EngineNumber value = evaluateOperation(valueFragment.getOperation(), engine);
+      // Set the global warming potential for all years (null YearMatcher)
+      engine.equals(value, null);
+    });
   }
 
   /**
@@ -566,7 +625,16 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitInitialChargeAllYears(QubecTalkParser.InitialChargeAllYearsContext ctx) {
-    return visitChildren(ctx);
+    // Get the value and target stream
+    OperationFragment valueFragment = (OperationFragment) visit(ctx.value);
+    String targetStream = ctx.target.getText();
+
+    return new ExecutableFragment(engine -> {
+      // Evaluate the value operation to get the EngineNumber
+      EngineNumber value = evaluateOperation(valueFragment.getOperation(), engine);
+      // Set initial charge for all years (null YearMatcher)
+      engine.setInitialCharge(value, targetStream, null);
+    });
   }
 
   /**
@@ -664,7 +732,16 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitSetAllYears(QubecTalkParser.SetAllYearsContext ctx) {
-    return visitChildren(ctx);
+    // Get the target stream and value
+    String targetStream = ctx.target.getText();
+    OperationFragment valueFragment = (OperationFragment) visit(ctx.value);
+
+    return new ExecutableFragment(engine -> {
+      // Evaluate the value operation to get the EngineNumber
+      EngineNumber value = evaluateOperation(valueFragment.getOperation(), engine);
+      // Set stream for all years (null YearMatcher)
+      engine.setStream(targetStream, value, null);
+    });
   }
 
   /**
@@ -683,10 +760,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     String name = removeQuotes(ctx.name.getText());
     int startYear = Integer.parseInt(ctx.start.getText());
     int endYear = Integer.parseInt(ctx.end.getText());
-    
+
     // For base simulation, use only the default scenario
     List<String> scenarios = Arrays.asList("default");
-    
+
     return new SimulationFragment(name, startYear, endYear, scenarios);
   }
 
@@ -736,7 +813,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   @Override
   public Fragment visitProgram(QubecTalkParser.ProgramContext ctx) {
     List<StanzaFragment> stanzas = new ArrayList<>();
-    
+
     // Visit each stanza in the program
     for (int i = 0; i < ctx.getChildCount(); i++) {
       Fragment child = visit(ctx.getChild(i));
@@ -744,7 +821,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
         stanzas.add((StanzaFragment) child);
       }
     }
-    
+
     return new ProgramFragment(stanzas);
   }
 
@@ -756,5 +833,14 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
       return text.substring(1, text.length() - 1);
     }
     return text;
+  }
+
+  /**
+   * Helper method to evaluate an operation and get the result.
+   */
+  private EngineNumber evaluateOperation(Operation operation, Engine engine) {
+    SingleThreadPushDownMachine machine = new SingleThreadPushDownMachine(engine);
+    operation.execute(machine);
+    return machine.getResult();
   }
 }

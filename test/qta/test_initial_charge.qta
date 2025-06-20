@@ -1,0 +1,18 @@
+start default
+
+  define application "testApp"
+
+    uses substance "testSubstance"
+      initial charge with 5 kg / unit for manufacture
+    end substance
+
+  end application
+
+end default
+
+
+start simulations
+
+  simulate "business as usual" from years 1 to 3
+
+end simulations

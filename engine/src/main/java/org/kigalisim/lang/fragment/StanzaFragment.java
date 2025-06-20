@@ -60,8 +60,9 @@ public class StanzaFragment extends Fragment {
   public void execute(Engine engine) {
     engine.setStanza(name);
     for (Fragment command : commands) {
-      // Execute the command - for now this is a placeholder
-      // In a full implementation, this would convert fragments to engine operations
+      if (command instanceof ExecutableFragment) {
+        ((ExecutableFragment) command).execute(engine);
+      }
     }
   }
 }
