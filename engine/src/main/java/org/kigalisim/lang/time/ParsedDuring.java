@@ -29,6 +29,7 @@ import org.kigalisim.lang.machine.PushDownMachine;
  *   </li>
  *   <li>Other ranges may have start and end both specified.</li>
  * </ul>
+ * </div>
  */
 public class ParsedDuring {
 
@@ -67,6 +68,7 @@ public class ParsedDuring {
   /**
    * Build a YearMatcher from this parsed version of a during statement.
    * 
+   *
    * @return The YearMatcher built from the values parsed and saved to this ParsedDuring.
    */
   public YearMatcher buildYearMatcher(PushDownMachine machine) {

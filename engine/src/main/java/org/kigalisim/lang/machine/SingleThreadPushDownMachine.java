@@ -24,7 +24,12 @@ public class SingleThreadPushDownMachine implements PushDownMachine {
   private final Engine engine;
   private final Stack<EngineNumber> stack;
   private Optional<String> expectedUnitsMaybe;
-  
+
+  /**
+   * Create a new SingleThreadPushDownMachine.
+   *
+   * @param engine The engine in which this machine will run.
+   */
   public SingleThreadPushDownMachine(Engine engine) {
     this.engine = engine;
     stack = new Stack<>();
@@ -90,9 +95,9 @@ public class SingleThreadPushDownMachine implements PushDownMachine {
   /**
    * Pop the top value from the stack.
    *
-   * @throws RuntimeException If the stack is empty or the value's units do not match the expected
-   *    units.
    * @return The value popped from the stack.
+   * @throws RuntimeException If the stack is empty or the value's units do not match the expected
+   *     units.
    */
   private EngineNumber pop() {
     EngineNumber result = stack.pop();

@@ -7,7 +7,6 @@
 package org.kigalisim.lang.machine;
 
 import java.util.Stack;
-
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.number.EngineNumber;
 
@@ -31,9 +30,9 @@ public interface PushDownMachine {
   /**
    * Get the result of the machine's calculations.
    *
-   * @throws RuntimeException if the machine does not have exactly one result watiting at the top
-   *    of its stack.
    * @return The result of the calculations.
+   * @throws RuntimeException if the machine does not have exactly one result watiting at the top
+   *     of its stack.
    */
   EngineNumber getResult();
 
@@ -57,9 +56,9 @@ public interface PushDownMachine {
   /**
    * Change the units of the number at the top of the stack.
    *
-   * @throws RuntimeException If the stack is empty or the top value already has units which do not
-   *    match the desired units.
    * @param units The new units for the number at the top of the stack.
+   * @throws RuntimeException If the stack is empty or the top value already has units which do not
+   *     match the desired units.
    */
   void changeUnits(String units);
 

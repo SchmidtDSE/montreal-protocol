@@ -16,24 +16,24 @@ import org.kigalisim.lang.machine.PushDownMachine;
  */
 public class AdditionOperation implements Operation {
 
-    private final Operation left;
-    private final Operation right;
+  private final Operation left;
+  private final Operation right;
 
-    /**
-     * Create a new AdditionCalculation.
-     *
-     * @param left The left operand of the addition.
-     * @param right The right operand of the addition.
-     */
-    public AdditionOperation(Operation left, Operation right) {
-        this.left = left;
-        this.right = right;
-    }
+  /**
+   * Create a new AdditionCalculation.
+   *
+   * @param left The left operand of the addition.
+   * @param right The right operand of the addition.
+   */
+  public AdditionOperation(Operation left, Operation right) {
+    this.left = left;
+    this.right = right;
+  }
 
-    @Override
-    public void execute(PushDownMachine machine) {
-        left.execute(machine);
-        right.execute(machine);
-        machine.add();
-    }
+  @Override
+  public void execute(PushDownMachine machine) {
+    left.execute(machine);
+    right.execute(machine);
+    machine.add();
+  }
 }

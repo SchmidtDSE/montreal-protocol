@@ -1,9 +1,7 @@
 package org.kigalisim.lang.time;
 
-
-import org.kigalisim.engine.number.EngineNumber;
-
 import java.util.Optional;
+import org.kigalisim.engine.number.EngineNumber;
 
 /**
  * Description of a time point.
@@ -46,7 +44,7 @@ public class TimePointRealized {
   public boolean isDynamicCap() {
     if (dynamicCap.isPresent()) {
       assert pointValue.isEmpty();
-      reutrn true;
+      return true;
     } else if (pointValue.isPresent()) {
       assert dynamicCap.isEmpty();
       return false;
@@ -60,8 +58,8 @@ public class TimePointRealized {
   /**
    * Get the specific timepoint value.
    *
-   * @throws IllegalStateException If the timepoint is not a specific value (it is a dynamic cap).
    * @return The specific timepoint value.
+   * @throws IllegalStateException If the timepoint is not a specific value (it is a dynamic cap).
    */
   public EngineNumber getPointValue() {
     return pointValue.orElseThrow();
@@ -70,8 +68,8 @@ public class TimePointRealized {
   /**
    * Get the dynamic cap value.
    *
-   * @throws IllegalStateException If the timepoint is not a dynamic cap (it is a specific value).
    * @return The dynamic cap value.
+   * @throws IllegalStateException If the timepoint is not a dynamic cap (it is a specific value).
    */
   public String getDynamicCap() {
     return dynamicCap.orElseThrow();

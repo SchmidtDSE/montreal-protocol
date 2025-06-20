@@ -1,6 +1,7 @@
 /**
  * Time point which resolves to a dynamic cap value.
  * 
+ *
  * @license BSD-3-Clause
  */
 
@@ -16,21 +17,22 @@ import org.kigalisim.lang.machine.PushDownMachine;
  * beginning or onwards.</p>
  */
 public class DynamicCapFuture implements TimePointFuture {
-  
+
   private final String value;
 
   /**
    * Create a new DynamicCapFuture.
    * 
+   *
    * @param value The dynamic cap value to which this should resolve.
    */
   public DynamicCapFuture(String value) {
     this.value = value;
   }
-  
+
   @Override
   public TimePointRealized realize(PushDownMachine machine) {
     return new TimePointRealized(value);
   }
-  
+
 }

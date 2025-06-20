@@ -1,6 +1,7 @@
 /**
  * Description of a time point which can be resolved at QubecTalk runtime.
  * 
+ *
  * @license BSD-3-Clause
  */
 
@@ -20,7 +21,7 @@ public interface TimePointFuture {
   /**
    * Realize the time point using the given machine.
    *
-   * @param machine Mahcine to use for calculations if needed.
+   * @param machine Machine to use for calculations if needed.
    * @return The realized time point.
    */
   TimePointRealized realize(PushDownMachine machine);
