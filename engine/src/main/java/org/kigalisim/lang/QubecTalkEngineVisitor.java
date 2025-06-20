@@ -7,7 +7,9 @@
 package org.kigalisim.lang;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import org.kigalisim.engine.number.EngineNumber;
+import org.kigalisim.lang.fragment.DuringFragment;
 import org.kigalisim.lang.fragment.OperationFragment;
 import org.kigalisim.lang.fragment.Fragment;
 import org.kigalisim.lang.fragment.UnitFragment;
@@ -16,6 +18,11 @@ import org.kigalisim.lang.operation.ChangeUnitsOperation;
 import org.kigalisim.lang.operation.Operation;
 import org.kigalisim.lang.operation.PreCalculatedOperation;
 import org.kigalisim.lang.operation.SubtractionOperation;
+import org.kigalisim.lang.time.CalculatedTimePointFuture;
+import org.kigalisim.lang.time.DynamicCapFuture;
+import org.kigalisim.lang.time.ParsedDuring;
+import org.kigalisim.lang.time.TimePointFuture;
+import org.kigalisim.lang.time.TimePointRealized;
 
 
 /**
@@ -199,32 +206,127 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringSingleYear(QubecTalkParser.DuringSingleYearContext ctx) { return visitChildren(ctx); }
+  @Override public Fragment visitDuringSingleYear(QubecTalkParser.DuringSingleYearContext ctx) {
+    // Get the target expression (the year)
+    Fragment targetFragment = visit(ctx.target);
+    Operation targetOperation = targetFragment.getOperation();
+
+    // Create a CalculatedTimePointFuture for both start and end (same year)
+    TimePointFuture startPoint = new CalculatedTimePointFuture(targetOperation);
+    TimePointFuture endPoint = new CalculatedTimePointFuture(targetOperation);
+
+    // Create a ParsedDuring with the same year for both start and end
+    ParsedDuring during = new ParsedDuring(
+        Optional.of(startPoint),
+        Optional.of(endPoint)
+    );
+
+    return new DuringFragment(during);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringStart(QubecTalkParser.DuringStartContext ctx) { return visitChildren(ctx); }
+  @Override public Fragment visitDuringStart(QubecTalkParser.DuringStartContext ctx) {
+    // Create a DynamicCapFuture with the "beginning" dynamic cap for the start
+    TimePointFuture startPoint = new DynamicCapFuture("beginning");
+
+    // Create a ParsedDuring with a start point but no end point (unbounded)
+    ParsedDuring during = new ParsedDuring(
+        Optional.of(startPoint),
+        Optional.empty()
+    );
+
+    return new DuringFragment(during);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringRange(QubecTalkParser.DuringRangeContext ctx) { return visitChildren(ctx); }
+  @Override public Fragment visitDuringRange(QubecTalkParser.DuringRangeContext ctx) {
+    // Get the lower and upper expressions
+    Fragment lowerFragment = visit(ctx.lower);
+    Fragment upperFragment = visit(ctx.upper);
+    Operation lowerOperation = lowerFragment.getOperation();
+    Operation upperOperation = upperFragment.getOperation();
+
+    // Create CalculatedTimePointFuture objects for both start and end
+    TimePointFuture startPoint = new CalculatedTimePointFuture(lowerOperation);
+    TimePointFuture endPoint = new CalculatedTimePointFuture(upperOperation);
+
+    // Create a ParsedDuring with both start and end points
+    ParsedDuring during = new ParsedDuring(
+        Optional.of(startPoint),
+        Optional.of(endPoint)
+    );
+
+    return new DuringFragment(during);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringWithMin(QubecTalkParser.DuringWithMinContext ctx) { return visitChildren(ctx); }
+  @Override public Fragment visitDuringWithMin(QubecTalkParser.DuringWithMinContext ctx) {
+    // Get the lower expression
+    Fragment lowerFragment = visit(ctx.lower);
+    Operation lowerOperation = lowerFragment.getOperation();
+
+    // Create a CalculatedTimePointFuture for the start
+    TimePointFuture startPoint = new CalculatedTimePointFuture(lowerOperation);
+
+    // Create a DynamicCapFuture with the "onwards" dynamic cap for the end
+    TimePointFuture endPoint = new DynamicCapFuture("onwards");
+
+    // Create a ParsedDuring with a start point and an "onwards" end point
+    ParsedDuring during = new ParsedDuring(
+        Optional.of(startPoint),
+        Optional.of(endPoint)
+    );
+
+    return new DuringFragment(during);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringWithMax(QubecTalkParser.DuringWithMaxContext ctx) { return visitChildren(ctx); }
+  @Override public Fragment visitDuringWithMax(QubecTalkParser.DuringWithMaxContext ctx) {
+    // Get the upper expression
+    Fragment upperFragment = visit(ctx.upper);
+    Operation upperOperation = upperFragment.getOperation();
+
+    // Create a DynamicCapFuture with the "beginning" dynamic cap for the start
+    TimePointFuture startPoint = new DynamicCapFuture("beginning");
+
+    // Create a CalculatedTimePointFuture for the end
+    TimePointFuture endPoint = new CalculatedTimePointFuture(upperOperation);
+
+    // Create a ParsedDuring with a "beginning" start point and an end point
+    ParsedDuring during = new ParsedDuring(
+        Optional.of(startPoint),
+        Optional.of(endPoint)
+    );
+
+    return new DuringFragment(during);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringAll(QubecTalkParser.DuringAllContext ctx) { return visitChildren(ctx); }
+  @Override public Fragment visitDuringAll(QubecTalkParser.DuringAllContext ctx) {
+    // Create a DynamicCapFuture with the "beginning" dynamic cap for the start
+    TimePointFuture startPoint = new DynamicCapFuture("beginning");
+
+    // Create a DynamicCapFuture with the "onwards" dynamic cap for the end
+    TimePointFuture endPoint = new DynamicCapFuture("onwards");
+
+    // Create a ParsedDuring with a "beginning" start point and an "onwards" end point
+    ParsedDuring during = new ParsedDuring(
+        Optional.of(startPoint),
+        Optional.of(endPoint)
+    );
+
+    return new DuringFragment(during);
+  }
 
   /**
    * {@inheritDoc}

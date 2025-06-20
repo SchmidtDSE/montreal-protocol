@@ -30,8 +30,8 @@ import java.util.Optional;
  */
 public class ParsedDuring {
 
-  private final Optional<TimePointRealized> start;
-  private final Optional<TimePointRealized> end;
+  private final Optional<TimePointFuture> start;
+  private final Optional<TimePointFuture> end;
 
   /**
    * Create a description of a "during" time period.
@@ -39,7 +39,7 @@ public class ParsedDuring {
    * @param start The start of the period, or empty if unbounded.
    * @param end The end of the period, or empty if unbounded.
    */
-  public ParsedDuring(Optional<TimePointRealized> start, Optional<TimePointRealized> end) {
+  public ParsedDuring(Optional<TimePointFuture> start, Optional<TimePointFuture> end) {
     this.start = start;
     this.end = end;
   }
@@ -49,7 +49,7 @@ public class ParsedDuring {
    *
    * @return The start of the period, or empty if unbounded.
    */
-  public Optional<TimePointRealized> getStart() {
+  public Optional<TimePointFuture> getStart() {
     return start;
   }
 
@@ -58,7 +58,7 @@ public class ParsedDuring {
    *
    * @return The end of the period, or empty if unbounded.
    */
-  public Optional<TimePointRealized> getEnd() {
+  public Optional<TimePointFuture> getEnd() {
     return end;
   }
 
