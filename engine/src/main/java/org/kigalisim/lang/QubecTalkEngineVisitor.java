@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.number.EngineNumber;
-import org.kigalisim.engine.state.YearMatcher;
-import org.kigalisim.lang.fragment.CommandFragment;
 import org.kigalisim.lang.fragment.DuringFragment;
 import org.kigalisim.lang.fragment.ExecutableFragment;
 import org.kigalisim.lang.fragment.Fragment;

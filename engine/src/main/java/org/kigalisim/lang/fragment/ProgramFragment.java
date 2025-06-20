@@ -70,7 +70,7 @@ public class ProgramFragment extends Fragment {
 
         // Collect results for this year
         yearResults.addAll(engine.getResults());
-        
+
         // Move to next year
         engine.incrementYear();
       }
