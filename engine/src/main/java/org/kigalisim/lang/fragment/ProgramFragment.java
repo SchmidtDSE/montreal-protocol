@@ -58,15 +58,20 @@ public class ProgramFragment extends Fragment {
 
       List<EngineResult> yearResults = new ArrayList<>();
 
-      // Execute default stanza
-      if (stanzasByName.containsKey("default")) {
-        StanzaFragment defaultStanza = stanzasByName.get("default");
-        defaultStanza.execute(engine);
-      }
-
       // Run simulation for each year
       while (!engine.getIsDone()) {
+        // Execute stanzas for this year
+        for (String scenarioName : simulation.getScenarios()) {
+          if (stanzasByName.containsKey(scenarioName)) {
+            StanzaFragment stanza = stanzasByName.get(scenarioName);
+            stanza.execute(engine);
+          }
+        }
+
+        // Collect results for this year
         yearResults.addAll(engine.getResults());
+        
+        // Move to next year
         engine.incrementYear();
       }
 

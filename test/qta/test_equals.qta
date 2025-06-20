@@ -4,6 +4,7 @@ start default
 
     uses substance "testSubstance"
       set manufacture to 100 mt
+      equals 5 tCO2e / mt
     end substance
 
   end application
