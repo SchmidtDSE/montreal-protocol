@@ -18,7 +18,7 @@ public class PreCalculatedOperation implements Operation {
   private final EngineNumber result;
 
   /**
-   * Create a new PreCalculatedCalculation.
+   * Create a new PreCalculatedOperation.
    *
    * @param result The precomputed result of the calculation.
    */

@@ -21,7 +21,7 @@ public class SubtractionOperation implements Operation {
   private final Operation right;
 
   /**
-   * Create a new SubtractionCalculation.
+   * Create a new SubtractionOperation.
    *
    * @param left The left operand of the subtraction.
    * @param right The right operand of the subtraction.

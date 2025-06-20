@@ -31,7 +31,7 @@ public interface PushDownMachine {
    * Get the result of the machine's calculations.
    *
    * @return The result of the calculations.
-   * @throws RuntimeException if the machine does not have exactly one result watiting at the top
+   * @throws RuntimeException if the machine does not have exactly one result waiting at the top
    *     of its stack.
    */
   EngineNumber getResult();

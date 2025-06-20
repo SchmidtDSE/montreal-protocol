@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
 /**
  * Result of parsing (interpreting / compiling) a QubecTalk program.
  *
- * <p>Result of parsing (interpreting / compiling) a QubecTalk program which can be used to eavluate
+ * <p>Result of parsing (interpreting / compiling) a QubecTalk program which can be used to evaluate
  * all of the policies and scenarios found.</p>
  */
 public class ParsedProgram {

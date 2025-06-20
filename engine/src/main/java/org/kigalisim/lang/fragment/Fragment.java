@@ -1,7 +1,7 @@
 /**
  * Interface for a piece of interpreted QubecTalk code.
  *
- * @licesnse BSD-3-Clause
+ * @license BSD-3-Clause
  */
 
 package org.kigalisim.lang.fragment;

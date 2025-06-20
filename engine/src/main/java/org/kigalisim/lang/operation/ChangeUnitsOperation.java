@@ -22,7 +22,7 @@ public class ChangeUnitsOperation implements Operation {
   private final String units;
 
   /**
-   * Create a new ChangeUnitsCalculation.
+   * Create a new ChangeUnitsOperation.
    *
    * @param operand The operand of the calculation.
    * @param units The units to change to.

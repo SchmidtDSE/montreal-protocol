@@ -20,7 +20,7 @@ public class AdditionOperation implements Operation {
   private final Operation right;
 
   /**
-   * Create a new AdditionCalculation.
+   * Create a new AdditionOperation.
    *
    * @param left The left operand of the addition.
    * @param right The right operand of the addition.

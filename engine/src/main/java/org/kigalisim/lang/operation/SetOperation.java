@@ -32,6 +32,13 @@ public class SetOperation implements Operation {
     duringMaybe = Optional.empty();
   }
 
+  /**
+   * Create a new SetOperation that applies to a specific time period.
+   *
+   * @param stream The name of the stream to set.
+   * @param valueOperation The operation that calculates the value to set.
+   * @param during The time period during which this operation applies.
+   */
   public SetOperation(String stream, Operation valueOperation, ParsedDuring during) {
     this.stream = stream;
     this.valueOperation = valueOperation;

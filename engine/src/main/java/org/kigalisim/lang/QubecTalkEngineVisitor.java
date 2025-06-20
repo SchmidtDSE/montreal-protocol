@@ -99,7 +99,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitConditionExpression(QubecTalkParser.ConditionExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitConditionExpression(QubecTalkParser.ConditionExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
@@ -128,12 +131,18 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitPowExpression(QubecTalkParser.PowExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitPowExpression(QubecTalkParser.PowExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitConditionalExpression(QubecTalkParser.ConditionalExpressionContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitConditionalExpression(QubecTalkParser.ConditionalExpressionContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
@@ -163,7 +172,8 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    * {@inheritDoc}
    */
   @Override 
-  public Fragment visitGetStreamIndirectConversion(QubecTalkParser.GetStreamIndirectConversionContext ctx) {
+  public Fragment visitGetStreamIndirectConversion(
+      QubecTalkParser.GetStreamIndirectConversionContext ctx) {
     return visitChildren(ctx);
   }
 
@@ -464,7 +474,8 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    * {@inheritDoc}
    */
   @Override 
-  public Fragment visitLimitCommandDisplacingAllYears(QubecTalkParser.LimitCommandDisplacingAllYearsContext ctx) {
+  public Fragment visitLimitCommandDisplacingAllYears(
+      QubecTalkParser.LimitCommandDisplacingAllYearsContext ctx) {
     return visitChildren(ctx);
   }
 
@@ -480,137 +491,218 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    * {@inheritDoc}
    */
   @Override 
-  public Fragment visitLimitCommandDisplacingDuration(QubecTalkParser.LimitCommandDisplacingDurationContext ctx) {
+  public Fragment visitLimitCommandDisplacingDuration(
+      QubecTalkParser.LimitCommandDisplacingDurationContext ctx) {
     return visitChildren(ctx);
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitChangeAllYears(QubecTalkParser.ChangeAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitChangeAllYears(QubecTalkParser.ChangeAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitChangeDuration(QubecTalkParser.ChangeDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitChangeDuration(QubecTalkParser.ChangeDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDefineVarStatement(QubecTalkParser.DefineVarStatementContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitDefineVarStatement(QubecTalkParser.DefineVarStatementContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitEqualsAllYears(QubecTalkParser.EqualsAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitEqualsAllYears(QubecTalkParser.EqualsAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitEqualsDuration(QubecTalkParser.EqualsDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitEqualsDuration(QubecTalkParser.EqualsDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitInitialChargeAllYears(QubecTalkParser.InitialChargeAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitInitialChargeAllYears(QubecTalkParser.InitialChargeAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitInitialChargeDuration(QubecTalkParser.InitialChargeDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitInitialChargeDuration(QubecTalkParser.InitialChargeDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRechargeAllYears(QubecTalkParser.RechargeAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRechargeAllYears(QubecTalkParser.RechargeAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRechargeDuration(QubecTalkParser.RechargeDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRechargeDuration(QubecTalkParser.RechargeDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRecoverAllYears(QubecTalkParser.RecoverAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRecoverAllYears(QubecTalkParser.RecoverAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRecoverDuration(QubecTalkParser.RecoverDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRecoverDuration(QubecTalkParser.RecoverDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRecoverDisplacementAllYears(QubecTalkParser.RecoverDisplacementAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRecoverDisplacementAllYears(
+      QubecTalkParser.RecoverDisplacementAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRecoverDisplacementDuration(QubecTalkParser.RecoverDisplacementDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRecoverDisplacementDuration(
+      QubecTalkParser.RecoverDisplacementDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitReplaceAllYears(QubecTalkParser.ReplaceAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitReplaceAllYears(QubecTalkParser.ReplaceAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitReplaceDuration(QubecTalkParser.ReplaceDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitReplaceDuration(QubecTalkParser.ReplaceDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRetireAllYears(QubecTalkParser.RetireAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRetireAllYears(QubecTalkParser.RetireAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitRetireDuration(QubecTalkParser.RetireDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitRetireDuration(QubecTalkParser.RetireDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitSetAllYears(QubecTalkParser.SetAllYearsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitSetAllYears(QubecTalkParser.SetAllYearsContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitSetDuration(QubecTalkParser.SetDurationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitSetDuration(QubecTalkParser.SetDurationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitBaseSimulation(QubecTalkParser.BaseSimulationContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitBaseSimulation(QubecTalkParser.BaseSimulationContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitPolicySim(QubecTalkParser.PolicySimContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitPolicySim(QubecTalkParser.PolicySimContext ctx) { 
+    return visitChildren(ctx); 
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitBaseSimulationTrials(QubecTalkParser.BaseSimulationTrialsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitBaseSimulationTrials(QubecTalkParser.BaseSimulationTrialsContext ctx) { 
+    return visitChildren(ctx); 
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitPolicySimTrials(QubecTalkParser.PolicySimTrialsContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitPolicySimTrials(QubecTalkParser.PolicySimTrialsContext ctx) { 
+    return visitChildren(ctx); 
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitGlobalStatement(QubecTalkParser.GlobalStatementContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitGlobalStatement(QubecTalkParser.GlobalStatementContext ctx) { 
+    return visitChildren(ctx); 
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitSubstanceStatement(QubecTalkParser.SubstanceStatementContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitSubstanceStatement(QubecTalkParser.SubstanceStatementContext ctx) { 
+    return visitChildren(ctx); 
+  }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitProgram(QubecTalkParser.ProgramContext ctx) { return visitChildren(ctx); }
+  @Override 
+  public Fragment visitProgram(QubecTalkParser.ProgramContext ctx) { 
+    return visitChildren(ctx); 
+  }
 }
