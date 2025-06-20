@@ -7,6 +7,7 @@
 package org.kigalisim.lang.time;
 
 import java.util.Optional;
+import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.state.YearMatcher;
 import org.kigalisim.lang.machine.PushDownMachine;
 
@@ -68,11 +69,34 @@ public class ParsedDuring {
   /**
    * Build a YearMatcher from this parsed version of a during statement.
    * 
+   * <p>If a TimePointFuture is a dynamic cap (beginning or onwards), it is interpreted as Optional.empty().</p>
    *
+   * @param machine Machine to use for calculations if needed.
    * @return The YearMatcher built from the values parsed and saved to this ParsedDuring.
    */
   public YearMatcher buildYearMatcher(PushDownMachine machine) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    Optional<Integer> startYear = Optional.empty();
+    Optional<Integer> endYear = Optional.empty();
+
+    // Process start time point if present
+    if (start.isPresent()) {
+      TimePointRealized startRealized = start.get().realize(machine);
+      if (!startRealized.isDynamicCap()) {
+        EngineNumber startValue = startRealized.getPointValue();
+        startYear = Optional.of(startValue.getValue().intValue());
+      }
+    }
+
+    // Process end time point if present
+    if (end.isPresent()) {
+      TimePointRealized endRealized = end.get().realize(machine);
+      if (!endRealized.isDynamicCap()) {
+        EngineNumber endValue = endRealized.getPointValue();
+        endYear = Optional.of(endValue.getValue().intValue());
+      }
+    }
+
+    return new YearMatcher(startYear, endYear);
   }
 
 }
