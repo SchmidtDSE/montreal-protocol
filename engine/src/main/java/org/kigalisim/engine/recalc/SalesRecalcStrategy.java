@@ -171,13 +171,32 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     BigDecimal requiredKgUnbound = kgForRecharge.add(kgForNew);
     boolean requiredKgNegative = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0;
     BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
+    
+    // Check if we should preserve existing explicit values (year 1 specific case)
+    // Only preserve in year 1 when there are explicit values and calculated demand is 0
+    boolean shouldPreserveExisting = false;
+    int currentYear = target.getYear();
+    if (requiredKg.compareTo(BigDecimal.ZERO) == 0 && currentYear == 1) {
+      // Only preserve if there are existing non-zero values (indicating explicit setting)
+      BigDecimal existingManufacture = manufactureSalesKg;
+      BigDecimal existingImport = importSalesKg;
+      boolean hasExistingValues = existingManufacture.compareTo(BigDecimal.ZERO) > 0 ||
+                                  existingImport.compareTo(BigDecimal.ZERO) > 0;
+      shouldPreserveExisting = hasExistingValues;
+    }
+    
+    if (shouldPreserveExisting) {
+      // Don't overwrite existing explicit values with calculated zeros in year 1
+      return;
+    }
+    
     BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
     BigDecimal newImportKg = percentImport.multiply(requiredKg);
     EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
     EngineNumber newImport = new EngineNumber(newImportKg, "kg");
     
-    // Call streamKeeper.setStream directly to match JavaScript behavior (bypasses propagation)
-    streamKeeper.setStream(application, substance, "manufacture", newManufacture);
-    streamKeeper.setStream(application, substance, "import", newImport);
+    // Call Engine.setStream with propagateChanges=false to match JavaScript behavior
+    target.setStream("manufacture", newManufacture, null, scopeEffective, false, null);
+    target.setStream("import", newImport, null, scopeEffective, false, null);
   }
 }
