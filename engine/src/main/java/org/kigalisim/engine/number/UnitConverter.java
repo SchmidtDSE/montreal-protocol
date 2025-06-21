@@ -27,7 +27,7 @@ public class UnitConverter {
 
   // Configuration constants
   private static final boolean CONVERT_ZERO_NOOP = true;
-  private static final boolean ZERO_EMPTY_VOLUME_INTENSITY = false;
+  private static final boolean ZERO_EMPTY_VOLUME_INTENSITY = true;
 
   // Math context for BigDecimal operations
   private static final MathContext MATH_CONTEXT = MathContext.DECIMAL128;
@@ -271,6 +271,12 @@ public class UnitConverter {
       String newUnits = total.getUnits();
       BigDecimal newValue = total.getValue().multiply(asRatio);
       return new EngineNumber(newValue, newUnits);
+    } else if ("kg/unit".equals(currentUnits)) {
+      BigDecimal originalValue = target.getValue();
+      EngineNumber population = stateGetter.getPopulation();
+      BigDecimal populationValue = population.getValue();
+      BigDecimal newValue = originalValue.multiply(populationValue);
+      return new EngineNumber(newValue, "kg");
     } else {
       throw new IllegalArgumentException("Unable to convert to volume: " + currentUnits);
     }
