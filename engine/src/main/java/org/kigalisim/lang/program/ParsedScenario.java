@@ -38,18 +38,7 @@ public class ParsedScenario {
     this.endYear = endYear;
     this.trials = trials;
   }
-
-  /**
-   * Create a new record of a scenario with default values for startYear, endYear, and trials.
-   *
-   * @param name The name of the scenario parsed.
-   * @param policies The ordered list of policies which should be applied in this scenario excluding
-   *     default which is always applied first.
-   */
-  public ParsedScenario(String name, List<String> policies) {
-    this(name, policies, 1, 3, 1);
-  }
-
+  
   public String getName() {
     return name;
   }

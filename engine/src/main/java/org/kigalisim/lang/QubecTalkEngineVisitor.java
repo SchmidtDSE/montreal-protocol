@@ -11,13 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.kigalisim.engine.number.EngineNumber;
-import org.kigalisim.lang.fragment.DuringFragment;
-import org.kigalisim.lang.fragment.Fragment;
-import org.kigalisim.lang.fragment.OperationFragment;
-import org.kigalisim.lang.fragment.PolicyFragment;
-import org.kigalisim.lang.fragment.ProgramFragment;
-import org.kigalisim.lang.fragment.ScenariosFragment;
-import org.kigalisim.lang.fragment.UnitFragment;
+import org.kigalisim.lang.fragment.*;
 import org.kigalisim.lang.operation.AdditionOperation;
 import org.kigalisim.lang.operation.ChangeUnitsOperation;
 import org.kigalisim.lang.operation.Operation;
@@ -56,7 +50,8 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitString(QubecTalkParser.StringContext ctx) {
-    return visitChildren(ctx);
+    String text = ctx.getText().replaceAll("\"", "");
+    return new StringFragment(text);
   }
 
   /**
@@ -614,7 +609,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     // Get the policies
     List<String> policies = new ArrayList<>();
     for (int i = 0; i < ctx.string().size() - 1; i++) {
-      policies.add(visit(ctx.string(i + 1)).getUnit());
+      policies.add(visit(ctx.string(i + 1)).getString());
     }
 
     // Create a scenario with the policies
@@ -660,7 +655,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     // Get the policies
     List<String> policies = new ArrayList<>();
     for (int i = 0; i < ctx.string().size() - 1; i++) {
-      policies.add(visit(ctx.string(i + 1)).getUnit());
+      policies.add(visit(ctx.string(i + 1)).getString());
     }
 
     // Create a scenario with the policies

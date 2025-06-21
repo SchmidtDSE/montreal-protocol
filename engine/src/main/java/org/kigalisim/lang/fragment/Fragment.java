@@ -20,6 +20,15 @@ import org.kigalisim.lang.time.ParsedDuring;
 public abstract class Fragment {
 
   /**
+   * Get the string parsed from the source of this fragment.
+   *
+   * @return The string found on this fragment.
+   */
+  public String getString() {
+    throw new RuntimeException("This fragment does not have a string.");
+  }
+
+  /**
    * Get the calculation parsed from the source of this fragment.
    *
    * @return Operation which can be resolved to an EngineNumber at runtime.

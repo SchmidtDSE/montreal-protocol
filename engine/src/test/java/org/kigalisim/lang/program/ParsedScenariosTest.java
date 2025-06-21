@@ -41,8 +41,8 @@ public class ParsedScenariosTest {
     List<String> policies = new ArrayList<>();
     policies.add(POLICY_NAME);
     
-    scenario1 = new ParsedScenario(SCENARIO1_NAME, policies);
-    scenario2 = new ParsedScenario(SCENARIO2_NAME, policies);
+    scenario1 = new ParsedScenario(SCENARIO1_NAME, policies, 1, 3, 1);
+    scenario2 = new ParsedScenario(SCENARIO2_NAME, policies, 1, 3, 1);
 
     // Create list of scenarios
     scenariosList = new ArrayList<>();
