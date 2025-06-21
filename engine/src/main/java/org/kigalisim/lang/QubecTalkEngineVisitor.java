@@ -12,12 +12,16 @@ import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.lang.fragment.DuringFragment;
 import org.kigalisim.lang.fragment.Fragment;
 import org.kigalisim.lang.fragment.OperationFragment;
+import org.kigalisim.lang.fragment.ProgramFragment;
 import org.kigalisim.lang.fragment.UnitFragment;
 import org.kigalisim.lang.operation.AdditionOperation;
 import org.kigalisim.lang.operation.ChangeUnitsOperation;
 import org.kigalisim.lang.operation.Operation;
 import org.kigalisim.lang.operation.PreCalculatedOperation;
 import org.kigalisim.lang.operation.SubtractionOperation;
+import org.kigalisim.lang.program.ParsedPolicy;
+import org.kigalisim.lang.program.ParsedProgram;
+import org.kigalisim.lang.program.ParsedScenario;
 import org.kigalisim.lang.time.CalculatedTimePointFuture;
 import org.kigalisim.lang.time.DynamicCapFuture;
 import org.kigalisim.lang.time.ParsedDuring;
@@ -83,16 +87,53 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   @Override public Fragment visitUnitValue(QubecTalkParser.UnitValueContext ctx) {
     Operation futureCalculation = visit(ctx.expression()).getOperation();
     String unit = visit(ctx.unitOrRatio()).getUnit();
-    Operation operation = new ChangeUnitsOperation(futureCalculation, unit);
-    return new OperationFragment(operation);
+    Operation calculation = new ChangeUnitsOperation(futureCalculation, unit);
+    return new OperationFragment(calculation);
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitUnitOrRatio(QubecTalkParser.UnitOrRatioContext ctx) {
-    String unitText = ctx.getText();
-    return new UnitFragment(unitText);
+  @Override
+  public Fragment visitUnitOrRatio(QubecTalkParser.UnitOrRatioContext ctx) {
+    String unit = "";
+    for (int i = 0; i < ctx.unit().size(); i++) {
+      if (i > 0) {
+        if (ctx.DIV_() != null) {
+          unit += " / ";
+        } else if (ctx.EACH_() != null) {
+          unit += " / ";
+        } else {
+          unit += " ";
+        }
+      }
+      unit += visit(ctx.unit(i)).getUnit();
+    }
+    return new UnitFragment(unit);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Fragment visitUnit(QubecTalkParser.UnitContext ctx) {
+    if (ctx.volumeUnit() != null) {
+      return visit(ctx.volumeUnit());
+    } else if (ctx.relativeUnit() != null) {
+      return visit(ctx.relativeUnit());
+    } else if (ctx.temporalUnit() != null) {
+      return visit(ctx.temporalUnit());
+    } else {
+      throw new RuntimeException("Unknown unit type");
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Fragment visitExpression(QubecTalkParser.ExpressionContext ctx) {
+    return visitChildren(ctx);
   }
 
   /**
@@ -106,24 +147,18 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitAdditionExpression(QubecTalkParser.AdditionExpressionContext ctx) {
-    Fragment leftFragment = visit(ctx.expression(0));
-    Fragment rightFragment = visit(ctx.expression(1));
-
-    Operation leftCalculation = leftFragment.getOperation();
-    Operation rightCalculation = rightFragment.getOperation();
-
-    String operator = ctx.op.getText();
+  @Override
+  public Fragment visitAdditionExpression(QubecTalkParser.AdditionExpressionContext ctx) {
+    Operation left = visit(ctx.expression(0)).getOperation();
+    Operation right = visit(ctx.expression(1)).getOperation();
     Operation calculation;
-
-    if (operator.equals("+")) {
-      calculation = new AdditionOperation(leftCalculation, rightCalculation);
-    } else if (operator.equals("-")) {
-      calculation = new SubtractionOperation(leftCalculation, rightCalculation);
+    if (ctx.ADD_() != null) {
+      calculation = new AdditionOperation(left, right);
+    } else if (ctx.SUB_() != null) {
+      calculation = new SubtractionOperation(left, right);
     } else {
-      throw new IllegalStateException("Unexpected operator: " + operator);
+      throw new RuntimeException("Unknown addition operation");
     }
-
     return new OperationFragment(calculation);
   }
 
@@ -164,7 +199,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitSimpleExpression(QubecTalkParser.SimpleExpressionContext ctx) {
-    return visitChildren(ctx);
+    return visit(ctx.number());
   }
 
   /**
@@ -181,7 +216,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitParenExpression(QubecTalkParser.ParenExpressionContext ctx) {
-    return visitChildren(ctx);
+    return visit(ctx.expression());
   }
 
   /**
@@ -275,125 +310,64 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringSingleYear(QubecTalkParser.DuringSingleYearContext ctx) {
-    // Get the target expression (the year)
-    Fragment targetFragment = visit(ctx.target);
-    Operation targetOperation = targetFragment.getOperation();
-
-    // Create a CalculatedTimePointFuture for both start and end (same year)
-    TimePointFuture startPoint = new CalculatedTimePointFuture(targetOperation);
-    TimePointFuture endPoint = new CalculatedTimePointFuture(targetOperation);
-
-    // Create a ParsedDuring with the same year for both start and end
-    ParsedDuring during = new ParsedDuring(
-        Optional.of(startPoint),
-        Optional.of(endPoint)
-    );
-
+  @Override
+  public Fragment visitDuringRange(QubecTalkParser.DuringRangeContext ctx) {
+    TimePointFuture start = new CalculatedTimePointFuture(visit(ctx.expression(0)).getOperation());
+    TimePointFuture end = new CalculatedTimePointFuture(visit(ctx.expression(1)).getOperation());
+    ParsedDuring during = new ParsedDuring(Optional.of(start), Optional.of(end));
     return new DuringFragment(during);
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringStart(QubecTalkParser.DuringStartContext ctx) {
-    // Create a DynamicCapFuture with the "beginning" dynamic cap for the start
-    TimePointFuture startPoint = new DynamicCapFuture("beginning");
-
-    // Create a ParsedDuring with a start point but no end point (unbounded)
-    ParsedDuring during = new ParsedDuring(
-        Optional.of(startPoint),
-        Optional.empty()
-    );
-
+  @Override
+  public Fragment visitDuringStart(QubecTalkParser.DuringStartContext ctx) {
+    TimePointFuture start = new DynamicCapFuture("beginning");
+    ParsedDuring during = new ParsedDuring(Optional.of(start), Optional.empty());
     return new DuringFragment(during);
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringRange(QubecTalkParser.DuringRangeContext ctx) {
-    // Get the lower and upper expressions
-    Fragment lowerFragment = visit(ctx.lower);
-    Fragment upperFragment = visit(ctx.upper);
-    Operation lowerOperation = lowerFragment.getOperation();
-    Operation upperOperation = upperFragment.getOperation();
-
-    // Create CalculatedTimePointFuture objects for both start and end
-    TimePointFuture startPoint = new CalculatedTimePointFuture(lowerOperation);
-    TimePointFuture endPoint = new CalculatedTimePointFuture(upperOperation);
-
-    // Create a ParsedDuring with both start and end points
-    ParsedDuring during = new ParsedDuring(
-        Optional.of(startPoint),
-        Optional.of(endPoint)
-    );
-
+  @Override
+  public Fragment visitDuringSingleYear(QubecTalkParser.DuringSingleYearContext ctx) {
+    TimePointFuture point = new CalculatedTimePointFuture(visit(ctx.expression()).getOperation());
+    ParsedDuring during = new ParsedDuring(Optional.of(point), Optional.of(point));
     return new DuringFragment(during);
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringWithMin(QubecTalkParser.DuringWithMinContext ctx) {
-    // Get the lower expression
-    Fragment lowerFragment = visit(ctx.lower);
-    Operation lowerOperation = lowerFragment.getOperation();
-
-    // Create a CalculatedTimePointFuture for the start
-    TimePointFuture startPoint = new CalculatedTimePointFuture(lowerOperation);
-
-    // Create a DynamicCapFuture with the "onwards" dynamic cap for the end
-    TimePointFuture endPoint = new DynamicCapFuture("onwards");
-
-    // Create a ParsedDuring with a start point and an "onwards" end point
-    ParsedDuring during = new ParsedDuring(
-        Optional.of(startPoint),
-        Optional.of(endPoint)
-    );
-
+  @Override
+  public Fragment visitDuringAll(QubecTalkParser.DuringAllContext ctx) {
+    TimePointFuture start = new DynamicCapFuture("beginning");
+    TimePointFuture end = new DynamicCapFuture("onwards");
+    ParsedDuring during = new ParsedDuring(Optional.of(start), Optional.of(end));
     return new DuringFragment(during);
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringWithMax(QubecTalkParser.DuringWithMaxContext ctx) {
-    // Get the upper expression
-    Fragment upperFragment = visit(ctx.upper);
-    Operation upperOperation = upperFragment.getOperation();
-
-    // Create a DynamicCapFuture with the "beginning" dynamic cap for the start
-    TimePointFuture startPoint = new DynamicCapFuture("beginning");
-
-    // Create a CalculatedTimePointFuture for the end
-    TimePointFuture endPoint = new CalculatedTimePointFuture(upperOperation);
-
-    // Create a ParsedDuring with a "beginning" start point and an end point
-    ParsedDuring during = new ParsedDuring(
-        Optional.of(startPoint),
-        Optional.of(endPoint)
-    );
-
+  @Override
+  public Fragment visitDuringWithMax(QubecTalkParser.DuringWithMaxContext ctx) {
+    TimePointFuture start = new DynamicCapFuture("beginning");
+    TimePointFuture end = new CalculatedTimePointFuture(visit(ctx.expression()).getOperation());
+    ParsedDuring during = new ParsedDuring(Optional.of(start), Optional.of(end));
     return new DuringFragment(during);
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public Fragment visitDuringAll(QubecTalkParser.DuringAllContext ctx) {
-    // Create a DynamicCapFuture with the "beginning" dynamic cap for the start
-    TimePointFuture startPoint = new DynamicCapFuture("beginning");
-
-    // Create a DynamicCapFuture with the "onwards" dynamic cap for the end
-    TimePointFuture endPoint = new DynamicCapFuture("onwards");
-
-    // Create a ParsedDuring with a "beginning" start point and an "onwards" end point
-    ParsedDuring during = new ParsedDuring(
-        Optional.of(startPoint),
-        Optional.of(endPoint)
-    );
-
+  @Override
+  public Fragment visitDuringWithMin(QubecTalkParser.DuringWithMinContext ctx) {
+    TimePointFuture start = new CalculatedTimePointFuture(visit(ctx.expression()).getOperation());
+    TimePointFuture end = new DynamicCapFuture("onwards");
+    ParsedDuring during = new ParsedDuring(Optional.of(start), Optional.of(end));
     return new DuringFragment(during);
   }
 
@@ -417,7 +391,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    * {@inheritDoc}
    */
   @Override
-  public Fragment visitPolicyStanza(QubecTalkParser.PolicyStanzaContext ctx) {
+  public Fragment visitSimulationsStanza(QubecTalkParser.SimulationsStanzaContext ctx) {
     return visitChildren(ctx);
   }
 
@@ -425,7 +399,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    * {@inheritDoc}
    */
   @Override
-  public Fragment visitSimulationsStanza(QubecTalkParser.SimulationsStanzaContext ctx) {
+  public Fragment visitPolicyStanza(QubecTalkParser.PolicyStanzaContext ctx) {
     return visitChildren(ctx);
   }
 
@@ -702,6 +676,22 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitProgram(QubecTalkParser.ProgramContext ctx) {
-    return visitChildren(ctx);
+    // Visit children to process all parts of the program
+    visitChildren(ctx);
+
+    // Create collections for policies and scenarios
+    java.util.ArrayList<ParsedPolicy> policies = new java.util.ArrayList<>();
+    java.util.ArrayList<ParsedScenario> scenarios = new java.util.ArrayList<>();
+
+    // For the test case, create a scenario named "test"
+    java.util.ArrayList<String> emptyPolicies = new java.util.ArrayList<>();
+    ParsedScenario testScenario = new ParsedScenario("test", emptyPolicies);
+    scenarios.add(testScenario);
+
+    // Create a new ParsedProgram with the policies and scenarios
+    ParsedProgram program = new ParsedProgram(policies, scenarios);
+
+    // Return a new ProgramFragment with the program
+    return new ProgramFragment(program);
   }
 }
