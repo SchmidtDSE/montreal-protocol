@@ -71,12 +71,9 @@ public class RetireRecalcStrategy implements RecalcStrategy {
     EngineNumber amount = unitConverter.convert(amountRaw, "units");
     stateGetter.clearPopulation();
 
-    // Calculate new values
-    // Convert percentage to decimal (divide by 100)
-    BigDecimal retirementRate = amount.getValue().divide(new BigDecimal("100"), 10, BigDecimal.ROUND_HALF_UP);
-    BigDecimal retirementAmount = currentPrior.getValue().multiply(retirementRate);
-    BigDecimal newPriorValue = currentPrior.getValue().subtract(retirementAmount);
-    BigDecimal newEquipmentValue = currentEquipment.getValue().subtract(retirementAmount);
+    // Calculate new values - amount is already converted to absolute units by UnitConverter
+    BigDecimal newPriorValue = currentPrior.getValue().subtract(amount.getValue());
+    BigDecimal newEquipmentValue = currentEquipment.getValue().subtract(amount.getValue());
 
     EngineNumber newPrior = new EngineNumber(newPriorValue, "units");
     EngineNumber newEquipment = new EngineNumber(newEquipmentValue, "units");

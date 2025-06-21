@@ -375,21 +375,26 @@ public class LiveTests {
       executePolicy(policy, machine);
     }
 
-    // Move to year 5 and check results (start of replacement)
-    for (int year = 2; year <= 5; year++) {
+    // Move to year 10 and check results (like the JavaScript test)
+    for (int year = 2; year <= 10; year++) {
       engine.incrementYear();
     }
 
     List<EngineResult> results = engine.getResults();
 
-    // Check Sub B in year 5
-    EngineResult resultSubB5 = findResult(results, "Test", "Sub B", 5);
-    assertNotNull(resultSubB5, "Should have result for Test/Sub B in year 5");
+    // Check Sub A in year 10 - should have 0 GHG consumption due to replacement
+    EngineResult resultSubA10 = findResult(results, "Test", "Sub A", 10);
+    assertNotNull(resultSubA10, "Should have result for Test/Sub A in year 10");
 
-    // Verify that Sub B has manufacture data in year 5 due to replacement
-    System.out.println("RETIRE ONLY - Sub B Year 5 Manufacture: " + resultSubB5.getManufacture().getValue() + " " + resultSubB5.getManufacture().getUnits());
-    assertTrue(resultSubB5.getManufacture().getValue().doubleValue() > 0,
-        "Sub B should have non-zero manufacture in year 5 due to replacement (retire only)");
+    // Check Sub B in year 10 - should have GHG consumption due to replacement
+    EngineResult resultSubB10 = findResult(results, "Test", "Sub B", 10);
+    assertNotNull(resultSubB10, "Should have result for Test/Sub B in year 10");
+
+    // Verify that Sub B has GHG consumption in year 10 due to replacement
+    System.out.println("RETIRE ONLY - Sub A Year 10 GHG: " + resultSubA10.getGhgConsumption().getValue() + " " + resultSubA10.getGhgConsumption().getUnits());
+    System.out.println("RETIRE ONLY - Sub B Year 10 GHG: " + resultSubB10.getGhgConsumption().getValue() + " " + resultSubB10.getGhgConsumption().getUnits());
+    assertTrue(resultSubB10.getGhgConsumption().getValue().doubleValue() > 0,
+        "Sub B should have non-zero GHG consumption in year 10 due to replacement (retire only)");
   }
 
   /**
@@ -427,21 +432,26 @@ public class LiveTests {
       executePolicy(policy, machine);
     }
 
-    // Move to year 5 and check results (start of replacement)
-    for (int year = 2; year <= 5; year++) {
+    // Move to year 10 and check results (like the JavaScript test)
+    for (int year = 2; year <= 10; year++) {
       engine.incrementYear();
     }
 
     List<EngineResult> results = engine.getResults();
 
-    // Check Sub B in year 5
-    EngineResult resultSubB5 = findResult(results, "Test", "Sub B", 5);
-    assertNotNull(resultSubB5, "Should have result for Test/Sub B in year 5");
+    // Check Sub A in year 10 - should have 0 GHG consumption due to replacement
+    EngineResult resultSubA10 = findResult(results, "Test", "Sub A", 10);
+    assertNotNull(resultSubA10, "Should have result for Test/Sub A in year 10");
 
-    // Verify that Sub B has manufacture data in year 5 due to replacement
-    System.out.println("RECHARGE ONLY - Sub B Year 5 Manufacture: " + resultSubB5.getManufacture().getValue() + " " + resultSubB5.getManufacture().getUnits());
-    assertTrue(resultSubB5.getManufacture().getValue().doubleValue() > 0,
-        "Sub B should have non-zero manufacture in year 5 due to replacement (recharge only)");
+    // Check Sub B in year 10 - should have GHG consumption due to replacement
+    EngineResult resultSubB10 = findResult(results, "Test", "Sub B", 10);
+    assertNotNull(resultSubB10, "Should have result for Test/Sub B in year 10");
+
+    // Verify that Sub B has GHG consumption in year 10 due to replacement
+    System.out.println("RECHARGE ONLY - Sub A Year 10 GHG: " + resultSubA10.getGhgConsumption().getValue() + " " + resultSubA10.getGhgConsumption().getUnits());
+    System.out.println("RECHARGE ONLY - Sub B Year 10 GHG: " + resultSubB10.getGhgConsumption().getValue() + " " + resultSubB10.getGhgConsumption().getUnits());
+    assertTrue(resultSubB10.getGhgConsumption().getValue().doubleValue() > 0,
+        "Sub B should have non-zero GHG consumption in year 10 due to replacement (recharge only)");
   }
 
   /**
