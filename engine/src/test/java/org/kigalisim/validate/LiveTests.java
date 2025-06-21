@@ -500,7 +500,6 @@ public class LiveTests {
     // Set the stanza (policy name)
     String stanzaName = policy.getName();
     machine.getEngine().setStanza(stanzaName != null ? stanzaName : "default");
-    System.out.println("[DEBUG_LOG] Executing policy: " + stanzaName);
 
     // For each application in the policy
     for (String applicationName : policy.getApplications()) {
@@ -508,7 +507,6 @@ public class LiveTests {
 
       // Set the application scope
       machine.getEngine().setApplication(applicationName);
-      System.out.println("[DEBUG_LOG] Executing application: " + applicationName);
 
       // For each substance in the application
       for (String substanceName : application.getSubstances()) {
@@ -517,34 +515,9 @@ public class LiveTests {
         // Set the substance scope
         machine.getEngine().setSubstance(substanceName);
 
-        // Debug output
-        System.out.println("[DEBUG_LOG] Executing operations for " + applicationName + "/" + substanceName);
-
-        // Count operations
-        int opCount = 0;
-        for (Operation op : substance.getOperations()) {
-          opCount++;
-        }
-        System.out.println("[DEBUG_LOG] Number of operations: " + opCount);
-
         // Execute each operation in the substance
         for (Operation operation : substance.getOperations()) {
-          System.out.println("[DEBUG_LOG] Executing operation: " + operation.getClass().getSimpleName());
           operation.execute(machine);
-
-          // After execution, get the current state
-          List<EngineResult> currentResults = machine.getEngine().getResults();
-          for (EngineResult result : currentResults) {
-            if (result.getApplication().equals(applicationName) 
-                && result.getSubstance().equals(substanceName)) {
-              System.out.println("[DEBUG_LOG] After " 
-                  + operation.getClass().getSimpleName() 
-                  + " - Manufacture: " 
-                  + result.getManufacture().getValue() 
-                  + " " 
-                  + result.getManufacture().getUnits());
-            }
-          }
         }
       }
     }
