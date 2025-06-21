@@ -25,7 +25,7 @@ public class ScenarioFragmentTest {
    * @return A simple ParsedScenario
    */
   private ParsedScenario createTestScenario() {
-    return new ParsedScenario("testScenario", Collections.emptyList());
+    return new ParsedScenario("testScenario", Collections.emptyList(), 1, 3, 1);
   }
 
   /**

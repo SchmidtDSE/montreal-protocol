@@ -14,10 +14,14 @@ import org.kigalisim.engine.SingleThreadEngine;
 import org.kigalisim.lang.interpret.QubecTalkInterpreter;
 import org.kigalisim.lang.machine.PushDownMachine;
 import org.kigalisim.lang.machine.SingleThreadPushDownMachine;
+import org.kigalisim.lang.operation.Operation;
 import org.kigalisim.lang.parse.ParseResult;
 import org.kigalisim.lang.parse.QubecTalkParser;
+import org.kigalisim.lang.program.ParsedApplication;
+import org.kigalisim.lang.program.ParsedPolicy;
 import org.kigalisim.lang.program.ParsedProgram;
 import org.kigalisim.lang.program.ParsedScenario;
+import org.kigalisim.lang.program.ParsedSubstance;
 
 /**
  * Entry point into the Kigali platform when used as a library.
@@ -63,7 +67,7 @@ public class KigaliSimFacade {
   }
 
   /**
-   * Run a simulation from the provided program.
+   * Run a scenario from the provided program.
    *
    * <p>Creates and executes a simulation using the provided program and simulation name where this
    * name refers to a scenario indicating the set of policies to be stacked.</p>
@@ -71,7 +75,7 @@ public class KigaliSimFacade {
    * @param program The parsed program containing the simulation to run.
    * @param scenarioName The name of the simulation to execute from the program.
    */
-  public static void runSimulation(ParsedProgram program, String scenarioName) {
+  public static void runScenario(ParsedProgram program, String scenarioName) {
     // Get the scenario from the program
     if (!program.getScenarios().contains(scenarioName)) {
       throw new IllegalArgumentException("Scenario not found: " + scenarioName);
@@ -80,21 +84,36 @@ public class KigaliSimFacade {
     // Get the scenario
     ParsedScenario scenario = program.getScenario(scenarioName);
 
-    // TODO: This is temporary
-    // Determine start and end years from the scenario
-    // For now, use fixed values for the example
-    int startYear = 1;
-    int endYear = 3;
+    // Get startYear and endYear from ParsedScenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
 
     // Create the engine and machine
     Engine engine = new SingleThreadEngine(startYear, endYear);
     PushDownMachine machine = new SingleThreadPushDownMachine(engine);
 
-    // TODO: This is temporary
-    // Run the simulation
-    // This is a simplified implementation that just sets up the engine
-    // A more complete implementation would run the simulation for each year
-    // and collect results
+    // Execute the default policy first
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute the other named policies in the scenario
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      executePolicy(policy, machine);
+    }
+  }
+
+  /**
+   * Run all scenarios from the provided program.
+   *
+   * <p>Creates and executes simulations for all scenarios in the program.</p>
+   *
+   * @param program The parsed program containing the simulations to run.
+   */
+  public static void runAllScenarios(ParsedProgram program) {
+    for (String scenarioName : program.getScenarios()) {
+      runScenario(program, scenarioName);
+    }
   }
 
   /**
@@ -121,6 +140,32 @@ public class KigaliSimFacade {
       // Print the exception for debugging
       System.err.println("Validation failed: " + e.getMessage());
       return false;
+    }
+  }
+
+  /**
+   * Execute a policy using the provided machine.
+   *
+   * <p>For each application in the policy, for each substance in the application,
+   * execute each operation in the substance using the provided machine.</p>
+   *
+   * @param policy The policy to execute.
+   * @param machine The machine to use for execution.
+   */
+  private static void executePolicy(ParsedPolicy policy, PushDownMachine machine) {
+    // For each application in the policy
+    for (String applicationName : policy.getApplications()) {
+      ParsedApplication application = policy.getApplication(applicationName);
+
+      // For each substance in the application
+      for (String substanceName : application.getSubstances()) {
+        ParsedSubstance substance = application.getSubstance(substanceName);
+
+        // Execute each operation in the substance
+        for (Operation operation : substance.getOperations()) {
+          operation.execute(machine);
+        }
+      }
     }
   }
 }
