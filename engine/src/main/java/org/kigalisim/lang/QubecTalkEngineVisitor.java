@@ -132,14 +132,6 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    * {@inheritDoc}
    */
   @Override
-  public Fragment visitExpression(QubecTalkParser.ExpressionContext ctx) {
-    return visitChildren(ctx);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public Fragment visitConditionExpression(QubecTalkParser.ConditionExpressionContext ctx) {
     return visitChildren(ctx);
   }
