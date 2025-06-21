@@ -30,9 +30,6 @@ public class KigaliSimFacade {
   /**
    * Parse a QubecTalk script.
    *
-   * <p>Parse a QubecTalk script such as to check for syntax errors or generate an AST in support of
-   * developer tools.</p>
-   *
    * @param code String code to parse as a QubecTalk source.
    * @return The parse result containing either the parse tree or errors.
    */
@@ -68,7 +65,8 @@ public class KigaliSimFacade {
   /**
    * Run a simulation from the provided program.
    *
-   * <p>Creates and executes a simulation using the provided program and simulation name.</p>
+   * <p>Creates and executes a simulation using the provided program and simulation name where this
+   * name refers to a scenario indicating the set of policies to be stacked.</p>
    *
    * @param program The parsed program containing the simulation to run.
    * @param scenarioName The name of the simulation to execute from the program.
@@ -102,7 +100,7 @@ public class KigaliSimFacade {
   /**
    * Validate a QubecTalk script.
    *
-   * <p>Parse and interpret a QubecTalk script to check for syntax and semantic errors.</p>
+   * <p>Parse and interpret a QubecTalk script to check for syntax errors.</p>
    *
    * @param filePath The path to the QubecTalk script file.
    * @return True if the script is valid, false otherwise.

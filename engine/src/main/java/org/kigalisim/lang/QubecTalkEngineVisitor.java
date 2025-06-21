@@ -23,10 +23,7 @@ import org.kigalisim.lang.operation.ChangeUnitsOperation;
 import org.kigalisim.lang.operation.Operation;
 import org.kigalisim.lang.operation.PreCalculatedOperation;
 import org.kigalisim.lang.operation.SubtractionOperation;
-import org.kigalisim.lang.program.ParsedPolicy;
-import org.kigalisim.lang.program.ParsedProgram;
-import org.kigalisim.lang.program.ParsedScenario;
-import org.kigalisim.lang.program.ParsedScenarios;
+import org.kigalisim.lang.program.*;
 import org.kigalisim.lang.time.CalculatedTimePointFuture;
 import org.kigalisim.lang.time.DynamicCapFuture;
 import org.kigalisim.lang.time.ParsedDuring;
@@ -315,15 +312,11 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitDefaultStanza(QubecTalkParser.DefaultStanzaContext ctx) {
-    List<org.kigalisim.lang.program.ParsedApplication> applications = new ArrayList<>();
+    List<ParsedApplication> applications = new ArrayList<>();
 
     for (QubecTalkParser.ApplicationDefContext appCtx : ctx.applicationDef()) {
       Fragment appFragment = visit(appCtx);
-      try {
-        applications.add(appFragment.getApplication());
-      } catch (RuntimeException e) {
-        // Not an application, ignore
-      }
+      applications.add(appFragment.getApplication());
     }
 
     ParsedPolicy policy = new ParsedPolicy("default", applications);
@@ -342,11 +335,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
       if (ctx.getChild(i) instanceof QubecTalkParser.SimulateContext) {
         QubecTalkParser.SimulateContext simCtx = (QubecTalkParser.SimulateContext) ctx.getChild(i);
         Fragment simFragment = visit(simCtx);
-        try {
-          scenarios.add(simFragment.getScenario());
-        } catch (RuntimeException e) {
-          // Not a scenario, ignore
-        }
+        scenarios.add(simFragment.getScenario());
       }
     }
 
@@ -366,11 +355,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
 
     for (QubecTalkParser.ApplicationModContext appCtx : ctx.applicationMod()) {
       Fragment appFragment = visit(appCtx);
-      try {
-        applications.add(appFragment.getApplication());
-      } catch (RuntimeException e) {
-        // Not an application, ignore
-      }
+      applications.add(appFragment.getApplication());
     }
 
     ParsedPolicy policy = new ParsedPolicy(policyName, applications);
@@ -657,19 +642,12 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
       Fragment stanzaFragment = visit(stanzaCtx);
 
       if (stanzaFragment.getIsStanzaScenarios()) {
-        // This is a scenarios stanza
-        ScenariosFragment scenariosFragment = (ScenariosFragment) stanzaFragment;
-        ParsedScenarios parsedScenarios = scenariosFragment.getScenarios();
+        ParsedScenarios parsedScenarios = stanzaFragment.getScenarios();
         for (String scenarioName : parsedScenarios.getScenarios()) {
           scenarios.add(parsedScenarios.getScenario(scenarioName));
         }
       } else {
-        try {
-          // Try to get a policy from the stanza
-          policies.add(stanzaFragment.getPolicy());
-        } catch (RuntimeException e) {
-          // Not a policy stanza, ignore
-        }
+        policies.add(stanzaFragment.getPolicy());
       }
     }
 

@@ -45,6 +45,7 @@ public class RunCommand implements Callable<Integer> {
       // Parse and interpret the file
       ParsedProgram program = KigaliSimFacade.parseAndInterpret(file.getPath());
 
+      // TODO: This is temporary, we should run with all scenarios and report them together.
       // For now, use "business as usual" as the default simulation name
       // In a more complete implementation, this would be a parameter
       String simulationName = "business as usual";
