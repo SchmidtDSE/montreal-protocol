@@ -547,6 +547,14 @@ public class SingleThreadEngine implements Engine {
       throw new RuntimeException("Cannot equals " + amount.getUnits());
     }
 
+    // Recalculate consumption after setting intensity (consistent with JS version)
+    RecalcOperation consumptionOperation = new RecalcOperationBuilder()
+        .setScopeEffective(scope)
+        .setRecalcKit(createRecalcKit())
+        .recalcConsumption()
+        .build();
+    consumptionOperation.execute(this);
+
     RecalcOperation operation = new RecalcOperationBuilder()
         .setRecalcKit(createRecalcKit())
         .recalcConsumption()
