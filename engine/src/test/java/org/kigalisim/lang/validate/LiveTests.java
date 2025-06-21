@@ -38,6 +38,7 @@ public class LiveTests {
   @Test
   public void testMinimalInterpreterExample() throws IOException {
     // Load and parse the QTA file
+    // Note that this is up a directory so not using classpath.
     String qtaPath = "../examples/minimal_interpreter.qta";
     ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
     assertNotNull(program, "Program should not be null");

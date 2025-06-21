@@ -402,6 +402,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
 
     // Process all children in order (after the substance name and before END_SUBSTANCE_)
     // This ensures we process both substanceStatement and globalStatement in the correct order
+    // Note that getChild is needed here because two different statement types are present.
     for (int i = 3; i < ctx.getChildCount() - 2; i++) {
       Fragment statementFragment = visit(ctx.getChild(i));
       if (statementFragment != null && statementFragment.getOperation() != null) {
