@@ -8,24 +8,15 @@ package org.kigalisim.lang.interpret;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kigalisim.lang.QubecTalkEngineVisitor;
-import org.kigalisim.lang.QubecTalkParser.ProgramContext;
-import org.kigalisim.lang.fragment.Fragment;
-import org.kigalisim.lang.fragment.ProgramFragment;
 import org.kigalisim.lang.parse.ParseError;
 import org.kigalisim.lang.parse.ParseResult;
 import org.kigalisim.lang.parse.QubecTalkParser;
 import org.kigalisim.lang.program.ParsedProgram;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 /**
  * Tests for the QubecTalkInterpreter class.

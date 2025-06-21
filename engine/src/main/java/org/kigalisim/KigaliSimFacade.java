@@ -9,7 +9,6 @@ package org.kigalisim;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.SingleThreadEngine;
 import org.kigalisim.lang.interpret.QubecTalkInterpreter;

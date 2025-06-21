@@ -44,19 +44,19 @@ public class RunCommand implements Callable<Integer> {
     try {
       // Parse and interpret the file
       ParsedProgram program = KigaliSimFacade.parseAndInterpret(file.getPath());
-      
+
       // For now, use "business as usual" as the default simulation name
       // In a more complete implementation, this would be a parameter
       String simulationName = "business as usual";
-      
+
       if (!program.getScenarios().contains(simulationName)) {
         System.err.println("Could not find simulation: " + simulationName);
         return SIMULATION_NOT_FOUND_ERROR;
       }
-      
+
       // Run the simulation
       KigaliSimFacade.runSimulation(program, simulationName);
-      
+
       System.out.println("Successfully ran simulation: " + simulationName);
       return 0;
     } catch (Exception e) {

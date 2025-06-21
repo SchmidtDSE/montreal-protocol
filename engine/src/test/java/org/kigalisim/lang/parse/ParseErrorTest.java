@@ -22,9 +22,9 @@ public class ParseErrorTest {
   public void testConstructorAndGetters() {
     int line = 42;
     String message = "Test error message";
-    
+
     ParseError error = new ParseError(line, message);
-    
+
     assertEquals(line, error.getLine(), "Line number should match");
     assertEquals(message, error.getMessage(), "Error message should match");
   }

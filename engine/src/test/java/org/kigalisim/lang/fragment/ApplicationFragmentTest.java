@@ -10,11 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.lang.program.ParsedApplication;
-import org.kigalisim.lang.program.ParsedSubstance;
 
 /**
  * Tests for the ApplicationFragment class.

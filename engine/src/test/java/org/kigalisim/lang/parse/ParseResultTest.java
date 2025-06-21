@@ -28,9 +28,9 @@ public class ParseResultTest {
   @Test
   public void testConstructorWithProgram() {
     ProgramContext mockProgram = Mockito.mock(ProgramContext.class);
-    
+
     ParseResult result = new ParseResult(mockProgram);
-    
+
     assertFalse(result.hasErrors(), "Result should not have errors");
     assertTrue(result.getProgram().isPresent(), "Program should be present");
     assertEquals(mockProgram, result.getProgram().get(), "Program should match");
@@ -45,9 +45,9 @@ public class ParseResultTest {
     List<ParseError> errors = new ArrayList<>();
     errors.add(new ParseError(1, "Error 1"));
     errors.add(new ParseError(2, "Error 2"));
-    
+
     ParseResult result = new ParseResult(errors);
-    
+
     assertTrue(result.hasErrors(), "Result should have errors");
     assertFalse(result.getProgram().isPresent(), "Program should not be present");
     assertEquals(2, result.getErrors().size(), "Errors list should have 2 items");
@@ -63,7 +63,7 @@ public class ParseResultTest {
   @Test
   public void testConstructorWithEmptyErrors() {
     List<ParseError> errors = new ArrayList<>();
-    
+
     assertThrows(IllegalArgumentException.class, () -> new ParseResult(errors),
         "Constructor should throw IllegalArgumentException for empty errors list");
   }

@@ -40,7 +40,7 @@ public class ValidateCommand implements Callable<Integer> {
     }
 
     boolean isValid = KigaliSimFacade.validate(file.getPath());
-    
+
     if (isValid) {
       System.out.println("Validated QubecTalk code at " + file);
       return 0;
