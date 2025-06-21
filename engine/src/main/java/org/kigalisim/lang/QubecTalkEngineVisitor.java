@@ -348,7 +348,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitPolicyStanza(QubecTalkParser.PolicyStanzaContext ctx) {
-    List<org.kigalisim.lang.program.ParsedApplication> applications = new ArrayList<>();
+    List<ParsedApplication> applications = new ArrayList<>();
 
     // Get the policy name
     String policyName = visit(ctx.name).getUnit();
