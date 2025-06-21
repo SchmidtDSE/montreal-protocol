@@ -9,8 +9,14 @@ package org.kigalisim;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.SingleThreadEngine;
+import org.kigalisim.engine.serializer.EngineResult;
+import org.kigalisim.engine.serializer.EngineResultSerializer;
+import org.kigalisim.engine.state.ConverterStateGetter;
 import org.kigalisim.lang.interpret.QubecTalkInterpreter;
 import org.kigalisim.lang.machine.PushDownMachine;
 import org.kigalisim.lang.machine.SingleThreadPushDownMachine;
@@ -64,6 +70,62 @@ public class KigaliSimFacade {
     String code = new String(Files.readAllBytes(Paths.get(filePath)));
     ParseResult parseResult = parse(code);
     return interpret(parseResult);
+  }
+
+  /**
+   * Run a scenario from the provided program and return results.
+   *
+   * <p>Creates and executes a simulation using the provided program and simulation name where this
+   * name refers to a scenario indicating the set of policies to be stacked. The simulation will
+   * iterate through all years from the scenario's start year to end year and collect results
+   * for all applications and substances for each year.</p>
+   *
+   * @param program The parsed program containing the simulation to run.
+   * @param scenarioName The name of the simulation to execute from the program.
+   * @return Stream of EngineResult objects containing the simulation results
+   */
+  public static Stream<EngineResult> runScenarioWithResults(ParsedProgram program, String scenarioName) {
+    // Get the scenario from the program
+    if (!program.getScenarios().contains(scenarioName)) {
+      throw new IllegalArgumentException("Scenario not found: " + scenarioName);
+    }
+
+    // Get the scenario
+    ParsedScenario scenario = program.getScenario(scenarioName);
+
+    // Get startYear and endYear from ParsedScenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+
+    // Create the engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Store results as we iterate through years
+    List<EngineResult> results = new ArrayList<>();
+
+    // Run simulation through all years, similar to the original runScenario method
+    while (!engine.getIsDone()) {
+      // Execute the default policy first
+      ParsedPolicy defaultPolicy = program.getPolicy("default");
+      executePolicy(defaultPolicy, machine);
+
+      // Execute the other named policies in the scenario
+      for (String policyName : scenario.getPolicies()) {
+        ParsedPolicy policy = program.getPolicy(policyName);
+        executePolicy(policy, machine);
+      }
+
+      // Collect results for this year using the engine's built-in method
+      List<EngineResult> yearResults = engine.getResults();
+      System.out.println("Year " + engine.getYear() + ": collected " + yearResults.size() + " results");
+      results.addAll(yearResults);
+
+      // Increment to the next year
+      engine.incrementYear();
+    }
+
+    return results.stream();
   }
 
   /**
@@ -168,6 +230,7 @@ public class KigaliSimFacade {
       // For each substance in the application
       for (String substanceName : application.getSubstances()) {
         ParsedSubstance substance = application.getSubstance(substanceName);
+        System.out.println("Executing operations for " + applicationName + "/" + substanceName);
 
         // Execute each operation in the substance
         for (Operation operation : substance.getOperations()) {

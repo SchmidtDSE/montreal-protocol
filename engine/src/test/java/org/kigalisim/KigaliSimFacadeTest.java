@@ -107,37 +107,13 @@ public class KigaliSimFacadeTest {
    */
   @Test
   public void testRunScenarioIteratesThroughYears(@TempDir Path tempDir) throws IOException {
-    // Create a simple QubecTalk program that should run through multiple years
-    String code = "start default\n"
-                  + "\n"
-                  + "  define application \"test app\"\n"
-                  + "\n"
-                  + "    uses substance \"test substance\"\n"
-                  + "      set manufacture to 10 kg\n"
-                  + "    end substance\n"
-                  + "\n"
-                  + "  end application\n"
-                  + "\n"
-                  + "end default\n"
-                  + "\n"
-                  + "start simulations\n"
-                  + "\n"
-                  + "  simulate \"yeartest\" from years 1 to 3\n"
-                  + "\n"
-                  + "end simulations";
-    
-    File file = tempDir.resolve("yeartest.qta").toFile();
-    Files.writeString(file.toPath(), code);
+    // Use the example file from examples directory
+    String examplePath = "../examples/test_year_iteration.qta";
+    File exampleFile = new File(examplePath);
+    assertTrue(exampleFile.exists(), "Example file should exist: " + examplePath);
 
-    // Debug parse errors first
-    ParseResult parseResult = KigaliSimFacade.parse(code);
-    if (parseResult.hasErrors()) {
-      System.out.println("Parse errors:");
-      parseResult.getErrors().forEach(System.out::println);
-    }
-    assertFalse(parseResult.hasErrors(), "Code should parse without errors");
-
-    ParsedProgram program = KigaliSimFacade.parseAndInterpret(file.getPath());
+    // Parse and interpret the example file
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(exampleFile.getPath());
     assertNotNull(program, "Program should not be null");
     
     // This should run through all years without throwing an exception
