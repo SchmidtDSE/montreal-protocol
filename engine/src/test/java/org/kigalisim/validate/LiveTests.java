@@ -340,7 +340,111 @@ public class LiveTests {
         "Manufacture units should be kg");
   }
 
-  /*
+  /**
+   * Test basic_replace with retire only - to isolate the issue.
+   */
+  @Test
+  public void testBasicReplaceRetireOnly() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "/tmp/test_basic_replace_retire_only.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the scenario
+    String scenarioName = "Sim";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      assertNotNull(policy, "Policy " + policyName + " should exist");
+      executePolicy(policy, machine);
+    }
+
+    // Move to year 5 and check results (start of replacement)
+    for (int year = 2; year <= 5; year++) {
+      engine.incrementYear();
+    }
+
+    List<EngineResult> results = engine.getResults();
+
+    // Check Sub B in year 5
+    EngineResult resultSubB5 = findResult(results, "Test", "Sub B", 5);
+    assertNotNull(resultSubB5, "Should have result for Test/Sub B in year 5");
+
+    // Verify that Sub B has manufacture data in year 5 due to replacement
+    System.out.println("RETIRE ONLY - Sub B Year 5 Manufacture: " + resultSubB5.getManufacture().getValue() + " " + resultSubB5.getManufacture().getUnits());
+    assertTrue(resultSubB5.getManufacture().getValue().doubleValue() > 0,
+        "Sub B should have non-zero manufacture in year 5 due to replacement (retire only)");
+  }
+
+  /**
+   * Test basic_replace with recharge only - to isolate the issue.
+   */
+  @Test
+  public void testBasicReplaceRechargeOnly() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "/tmp/test_basic_replace_recharge_only.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the scenario
+    String scenarioName = "Sim";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      assertNotNull(policy, "Policy " + policyName + " should exist");
+      executePolicy(policy, machine);
+    }
+
+    // Move to year 5 and check results (start of replacement)
+    for (int year = 2; year <= 5; year++) {
+      engine.incrementYear();
+    }
+
+    List<EngineResult> results = engine.getResults();
+
+    // Check Sub B in year 5
+    EngineResult resultSubB5 = findResult(results, "Test", "Sub B", 5);
+    assertNotNull(resultSubB5, "Should have result for Test/Sub B in year 5");
+
+    // Verify that Sub B has manufacture data in year 5 due to replacement
+    System.out.println("RECHARGE ONLY - Sub B Year 5 Manufacture: " + resultSubB5.getManufacture().getValue() + " " + resultSubB5.getManufacture().getUnits());
+    assertTrue(resultSubB5.getManufacture().getValue().doubleValue() > 0,
+        "Sub B should have non-zero manufacture in year 5 due to replacement (recharge only)");
+  }
+
+  /**
    * Test basic_replace.qta produces expected values.
    * This is the original complex version with retire/recharge operations.
    
@@ -354,7 +458,7 @@ public class LiveTests {
     - Adding recharge operations alone doesn't break it
     - But when both retire and recharge are present together, the replacement mechanism fails
     - The JS version of this works but the Java version fails.
-
+   */
   @Test
   public void testBasicReplace() throws IOException {
     // Load and parse the QTA file
@@ -442,7 +546,81 @@ public class LiveTests {
     assertTrue(resultSubB5.getManufacture().getValue().doubleValue() > 0,
         "Sub B should have non-zero manufacture in year 5 due to replacement");
   }
-  */
+
+  /**
+   * Test basic_replace_units.qta produces expected values.
+   * This tests units-based replacement.
+   */
+  @Test
+  public void testBasicReplaceUnits() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/basic_replace_units.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the scenario
+    String scenarioName = "Sim";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+    assertEquals(1, startYear, "Start year should be 1");
+    assertEquals(10, endYear, "End year should be 10");
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      assertNotNull(policy, "Policy " + policyName + " should exist");
+      executePolicy(policy, machine);
+    }
+
+    // Verify results for year 1 (before replacement)
+    List<EngineResult> results = engine.getResults();
+
+    // Check Sub A in year 1
+    EngineResult resultSubA1 = findResult(results, "Test", "Sub A", 1);
+    assertNotNull(resultSubA1, "Should have result for Test/Sub A in year 1");
+    assertEquals(100000.0, resultSubA1.getManufacture().getValue().doubleValue(), 0.0001,
+        "Sub A Manufacture should be 100000 kg in year 1");
+
+    // Check Sub B in year 1
+    EngineResult resultSubB1 = findResult(results, "Test", "Sub B", 1);
+    assertNotNull(resultSubB1, "Should have result for Test/Sub B in year 1");
+    assertEquals(0.0, resultSubB1.getManufacture().getValue().doubleValue(), 0.0001,
+        "Sub B Manufacture should be 0 kg in year 1");
+
+    // Move to year 10 and check results
+    for (int year = 2; year <= 10; year++) {
+      engine.incrementYear();
+    }
+
+    results = engine.getResults();
+
+    // Check Sub A in year 10 - should have reduced manufacture due to replacement
+    EngineResult resultSubA10 = findResult(results, "Test", "Sub A", 10);
+    assertNotNull(resultSubA10, "Should have result for Test/Sub A in year 10");
+
+    // Check Sub B in year 10 - should have added manufacture due to replacement
+    EngineResult resultSubB10 = findResult(results, "Test", "Sub B", 10);
+    assertNotNull(resultSubB10, "Should have result for Test/Sub B in year 10");
+
+    // Verify that Sub B has manufacture data in year 10 due to replacement
+    assertNotNull(resultSubB10.getManufacture(),
+        "Sub B should have manufacture data in year 10 due to replacement");
+    assertTrue(resultSubB10.getManufacture().getValue().doubleValue() > 0,
+        "Sub B should have non-zero manufacture in year 10 due to replacement");
+  }
 
   /**
    * Test basic_replace_simple.qta produces expected values.
