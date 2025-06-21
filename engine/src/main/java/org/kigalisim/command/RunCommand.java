@@ -21,9 +21,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.kigalisim.KigaliSimFacade;
 import org.kigalisim.engine.serializer.EngineResult;
-import org.kigalisim.lang.program.ParsedProgram;
-import org.kigalisim.lang.program.ParsedPolicy;
 import org.kigalisim.lang.program.ParsedApplication;
+import org.kigalisim.lang.program.ParsedPolicy;
+import org.kigalisim.lang.program.ParsedProgram;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -61,24 +61,12 @@ public class RunCommand implements Callable<Integer> {
       // Parse and interpret the file
       ParsedProgram program = KigaliSimFacade.parseAndInterpret(file.getPath());
 
-      // Debug: print program info
-      System.out.println("Scenarios: " + program.getScenarios());
-      ParsedPolicy defaultPolicy = program.getPolicy("default");
-      if (defaultPolicy != null) {
-        System.out.println("Default policy applications: " + defaultPolicy.getApplications());
-        for (String appName : defaultPolicy.getApplications()) {
-          ParsedApplication app = defaultPolicy.getApplication(appName);
-          System.out.println("Application " + appName + " substances: " + app.getSubstances());
-        }
-      }
-
       // Run all scenarios in the program and collect results
       Stream<EngineResult> allResults = program.getScenarios().stream()
           .flatMap(scenarioName -> KigaliSimFacade.runScenarioWithResults(program, scenarioName));
 
       // Collect to a list to see how many results we have
       List<EngineResult> resultsList = allResults.collect(java.util.stream.Collectors.toList());
-      System.out.println("Collected " + resultsList.size() + " results");
 
       // Write results to CSV
       writeResultsToCsv(resultsList.stream(), csvOutputFile);
@@ -86,7 +74,11 @@ public class RunCommand implements Callable<Integer> {
       System.out.println("Successfully ran all simulations and wrote results to " + csvOutputFile);
       return 0;
     } catch (Exception e) {
-      System.err.println("Error running simulation: " + e.getMessage());
+      System.err.println("Error running simulation: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+      if (e.getCause() != null) {
+        System.err.println("Caused by: " + e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage());
+      }
+      e.printStackTrace();
       return EXECUTION_ERROR;
     }
   }
