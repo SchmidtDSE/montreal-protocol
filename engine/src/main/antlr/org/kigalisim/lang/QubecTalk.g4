@@ -418,7 +418,7 @@ simulate: SIMULATE_ name=string FROM_ YEARS_ start=expression TO_ end=expression
 
 globalStatement: (defineVarStatement | setStatement);
 
-substanceStatement: (capStatement | changeStatement | equalsStatement | initialChargeStatement | rechargeStatement | recycleStatement | replaceStatement | retireStatement | setStatement);
+substanceStatement: (capStatement | changeStatement | equalsStatement | initialChargeStatement | rechargeStatement | recycleStatement | replaceStatement | retireStatement);
 
 /**
  * -------------

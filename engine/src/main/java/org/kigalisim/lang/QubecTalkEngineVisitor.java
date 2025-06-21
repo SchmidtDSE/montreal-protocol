@@ -400,8 +400,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     String name = visit(ctx.name).getString();
     List<Operation> operations = new ArrayList<>();
 
-    for (QubecTalkParser.SubstanceStatementContext stmtCtx : ctx.substanceStatement()) {
-      Fragment statementFragment = visit(stmtCtx);
+    // Process all children in order (after the substance name and before END_SUBSTANCE_)
+    // This ensures we process both substanceStatement and globalStatement in the correct order
+    for (int i = 3; i < ctx.getChildCount() - 2; i++) {
+      Fragment statementFragment = visit(ctx.getChild(i));
       if (statementFragment != null && statementFragment.getOperation() != null) {
         operations.add(statementFragment.getOperation());
       }
@@ -436,8 +438,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     String name = visit(ctx.name).getString();
     List<Operation> operations = new ArrayList<>();
 
-    for (QubecTalkParser.SubstanceStatementContext stmtCtx : ctx.substanceStatement()) {
-      Fragment statementFragment = visit(stmtCtx);
+    // Process all children in order (after the substance name and before END_SUBSTANCE_)
+    // This ensures we process both substanceStatement and globalStatement in the correct order
+    for (int i = 3; i < ctx.getChildCount() - 2; i++) {
+      Fragment statementFragment = visit(ctx.getChild(i));
       if (statementFragment != null && statementFragment.getOperation() != null) {
         operations.add(statementFragment.getOperation());
       }
