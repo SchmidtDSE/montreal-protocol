@@ -381,8 +381,8 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     List<ParsedSubstance> substances = new ArrayList<>();
 
     for (QubecTalkParser.SubstanceDefContext subCtx : ctx.substanceDef()) {
-      Fragment subFragment = visit(subCtx);
-      substances.add(subFragment.getSubstance());
+      Fragment substanceFragment = visit(subCtx);
+      substances.add(substanceFragment.getSubstance());
     }
 
     ParsedApplication application = new ParsedApplication(name, substances);
@@ -398,9 +398,9 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     List<Operation> operations = new ArrayList<>();
 
     for (QubecTalkParser.SubstanceStatementContext stmtCtx : ctx.substanceStatement()) {
-      Fragment stmtFragment = visit(stmtCtx);
-      if (stmtFragment != null && stmtFragment.getOperation() != null) {
-        operations.add(stmtFragment.getOperation());
+      Fragment statementFragment = visit(stmtCtx);
+      if (statementFragment != null && statementFragment.getOperation() != null) {
+        operations.add(statementFragment.getOperation());
       }
     }
 
@@ -417,8 +417,8 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     List<ParsedSubstance> substances = new ArrayList<>();
 
     for (QubecTalkParser.SubstanceModContext subCtx : ctx.substanceMod()) {
-      Fragment subFragment = visit(subCtx);
-      substances.add(subFragment.getSubstance());
+      Fragment substanceFragment = visit(subCtx);
+      substances.add(substanceFragment.getSubstance());
     }
 
     ParsedApplication application = new ParsedApplication(name, substances);
@@ -434,9 +434,9 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     List<Operation> operations = new ArrayList<>();
 
     for (QubecTalkParser.SubstanceStatementContext stmtCtx : ctx.substanceStatement()) {
-      Fragment stmtFragment = visit(stmtCtx);
-      if (stmtFragment != null && stmtFragment.getOperation() != null) {
-        operations.add(stmtFragment.getOperation());
+      Fragment statementFragment = visit(stmtCtx);
+      if (statementFragment != null && statementFragment.getOperation() != null) {
+        operations.add(statementFragment.getOperation());
       }
     }
 
