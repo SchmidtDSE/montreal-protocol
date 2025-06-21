@@ -167,17 +167,31 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     EngineNumber newRecycleValue = new EngineNumber(recycledDisplacedKg, "kg");
     streamKeeper.setStream(application, substance, "recycle", newRecycleValue);
 
-    // New values
+    // New values - preserve explicit values when demand is zero, recalculate when there's demand
     BigDecimal requiredKgUnbound = kgForRecharge.add(kgForNew);
     boolean requiredKgNegative = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0;
     BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
-    BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
-    BigDecimal newImportKg = percentImport.multiply(requiredKg);
-    EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
-    EngineNumber newImport = new EngineNumber(newImportKg, "kg");
     
-    // Call Engine.setStream with propagateChanges=false to match JavaScript behavior
-    target.setStream("manufacture", newManufacture, null, scopeEffective, false, null);
-    target.setStream("import", newImport, null, scopeEffective, false, null);
+    // Check if we have calculated demand. If requiredKg is 0, preserve existing explicit values
+    // to avoid overwriting explicit manufacture/import settings with calculated zeros
+    boolean hasCalculatedDemand = requiredKg.compareTo(BigDecimal.ZERO) > 0;
+    
+    // Always recalculate for consistency with JavaScript when there's demand
+    // or when there are no meaningful existing values
+    boolean shouldRecalculate = hasCalculatedDemand || 
+        (manufactureSalesKg.compareTo(new BigDecimal("0.001")) < 0 && 
+         importSalesKg.compareTo(new BigDecimal("0.001")) < 0);
+    
+    if (shouldRecalculate) {
+      BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
+      BigDecimal newImportKg = percentImport.multiply(requiredKg);
+      EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
+      EngineNumber newImport = new EngineNumber(newImportKg, "kg");
+      
+      // Call Engine.setStream with propagateChanges=false to match JavaScript behavior
+      target.setStream("manufacture", newManufacture, null, scopeEffective, false, null);
+      target.setStream("import", newImport, null, scopeEffective, false, null);
+    }
+    // Otherwise preserve existing values (don't overwrite explicit settings)
   }
 }
