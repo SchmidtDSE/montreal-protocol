@@ -61,6 +61,7 @@ public class LiveTests {
     ParsedPolicy defaultPolicy = program.getPolicy("default");
     assertNotNull(defaultPolicy, "Default policy should exist");
     
+    engine.setStanza("default");
     executePolicy(defaultPolicy, machine);
 
     // Execute other policies in the scenario (if any)
@@ -68,12 +69,6 @@ public class LiveTests {
       ParsedPolicy policy = program.getPolicy(policyName);
       executePolicy(policy, machine);
     }
-
-    // Debug: Try manually setting values to see if engine works
-    engine.setStanza("default");
-    engine.setApplication("testApp");
-    engine.setSubstance("testSubstance");
-    engine.setStream("manufacture", new EngineNumber(BigDecimal.valueOf(100000), "kg"), null);
 
     // Verify results for each year
     for (int year = startYear; year <= endYear; year++) {
@@ -104,13 +99,17 @@ public class LiveTests {
    * @param machine The machine to use for execution.
    */
   private void executePolicy(ParsedPolicy policy, PushDownMachine machine) {
+    Engine engine = machine.getEngine();
+    
     // For each application in the policy
     for (String applicationName : policy.getApplications()) {
       ParsedApplication application = policy.getApplication(applicationName);
+      engine.setApplication(applicationName);
 
       // For each substance in the application
       for (String substanceName : application.getSubstances()) {
         ParsedSubstance substance = application.getSubstance(substanceName);
+        engine.setSubstance(substanceName);
 
         // Execute each operation in the substance
         for (Operation operation : substance.getOperations()) {

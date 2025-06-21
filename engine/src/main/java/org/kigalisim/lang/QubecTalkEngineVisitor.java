@@ -24,8 +24,11 @@ import org.kigalisim.lang.fragment.SubstanceFragment;
 import org.kigalisim.lang.fragment.UnitFragment;
 import org.kigalisim.lang.operation.AdditionOperation;
 import org.kigalisim.lang.operation.ChangeUnitsOperation;
+import org.kigalisim.lang.operation.EqualsOperation;
+import org.kigalisim.lang.operation.InitialChargeOperation;
 import org.kigalisim.lang.operation.Operation;
 import org.kigalisim.lang.operation.PreCalculatedOperation;
+import org.kigalisim.lang.operation.SetOperation;
 import org.kigalisim.lang.operation.SubtractionOperation;
 import org.kigalisim.lang.program.ParsedApplication;
 import org.kigalisim.lang.program.ParsedPolicy;
@@ -507,7 +510,9 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitEqualsAllYears(QubecTalkParser.EqualsAllYearsContext ctx) {
-    return visitChildren(ctx);
+    Operation valueOperation = visit(ctx.value).getOperation();
+    Operation operation = new EqualsOperation(valueOperation);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -515,7 +520,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitEqualsDuration(QubecTalkParser.EqualsDurationContext ctx) {
-    return visitChildren(ctx);
+    Operation valueOperation = visit(ctx.value).getOperation();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+    Operation operation = new EqualsOperation(valueOperation, during);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -523,7 +531,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitInitialChargeAllYears(QubecTalkParser.InitialChargeAllYearsContext ctx) {
-    return visitChildren(ctx);
+    Operation valueOperation = visit(ctx.value).getOperation();
+    String stream = ctx.target.getText();
+    Operation operation = new InitialChargeOperation(stream, valueOperation);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -531,7 +542,11 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitInitialChargeDuration(QubecTalkParser.InitialChargeDurationContext ctx) {
-    return visitChildren(ctx);
+    Operation valueOperation = visit(ctx.value).getOperation();
+    String stream = ctx.target.getText();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+    Operation operation = new InitialChargeOperation(stream, valueOperation, during);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -621,7 +636,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitSetAllYears(QubecTalkParser.SetAllYearsContext ctx) {
-    return visitChildren(ctx);
+    Operation valueOperation = visit(ctx.value).getOperation();
+    String stream = ctx.target.getText();
+    Operation operation = new SetOperation(stream, valueOperation);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -629,7 +647,11 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitSetDuration(QubecTalkParser.SetDurationContext ctx) {
-    return visitChildren(ctx);
+    Operation valueOperation = visit(ctx.value).getOperation();
+    String stream = ctx.target.getText();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+    Operation operation = new SetOperation(stream, valueOperation, during);
+    return new OperationFragment(operation);
   }
 
   /**
