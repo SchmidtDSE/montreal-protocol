@@ -8,15 +8,26 @@ package org.kigalisim.validate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.kigalisim.KigaliSimFacade;
+import org.kigalisim.engine.Engine;
+import org.kigalisim.engine.SingleThreadEngine;
+import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.engine.serializer.EngineResult;
+import org.kigalisim.lang.machine.PushDownMachine;
+import org.kigalisim.lang.machine.SingleThreadPushDownMachine;
+import org.kigalisim.lang.operation.Operation;
+import org.kigalisim.lang.program.ParsedApplication;
+import org.kigalisim.lang.program.ParsedPolicy;
 import org.kigalisim.lang.program.ParsedProgram;
 import org.kigalisim.lang.program.ParsedScenario;
+import org.kigalisim.lang.program.ParsedSubstance;
 
 /**
  * Tests that validate QTA files against expected behavior.
@@ -53,7 +64,7 @@ public class LiveTests {
       // Find the result for testApp/testSubstance
       EngineResult result = findResult(results, "testApp", "testSubstance", year);
       assertNotNull(result, "Should have result for testApp/testSubstance in year " + year);
-      
+
       // Check manufacture value - should be 100 mt = 100000 kg
       assertEquals(100000.0, result.getManufacture().getValue().doubleValue(), 0.0001,
           "Manufacture should be 100000 kg in year " + year);
