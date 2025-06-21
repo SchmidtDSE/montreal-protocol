@@ -317,7 +317,7 @@ public class UnitConverter {
       BigDecimal conversionValue = conversion.getValue();
       BigDecimal newValue = originalValue.divide(conversionValue, MATH_CONTEXT);
       return new EngineNumber(newValue, "units");
-    } else if ("%".equals(currentUnits)) {
+    } else if ("%".equals(currentUnits) || "%eachyear".equals(currentUnits)) {
       BigDecimal originalValue = target.getValue();
       BigDecimal asRatio = originalValue.divide(PERCENT_FACTOR, MATH_CONTEXT);
       EngineNumber total = stateGetter.getPopulation();

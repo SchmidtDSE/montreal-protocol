@@ -408,8 +408,15 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     // Note that getChild is needed here because two different statement types are present.
     for (int i = 3; i < ctx.getChildCount() - 2; i++) {
       Fragment statementFragment = visit(ctx.getChild(i));
-      if (statementFragment != null && statementFragment.getOperation() != null) {
-        operations.add(statementFragment.getOperation());
+      if (statementFragment != null) {
+        try {
+          Operation operation = statementFragment.getOperation();
+          if (operation != null) {
+            operations.add(operation);
+          }
+        } catch (RuntimeException e) {
+          // Ignore fragments that don't have operations
+        }
       }
     }
 
@@ -446,8 +453,15 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
     // This ensures we process both substanceStatement and globalStatement in the correct order
     for (int i = 3; i < ctx.getChildCount() - 2; i++) {
       Fragment statementFragment = visit(ctx.getChild(i));
-      if (statementFragment != null && statementFragment.getOperation() != null) {
-        operations.add(statementFragment.getOperation());
+      if (statementFragment != null) {
+        try {
+          Operation operation = statementFragment.getOperation();
+          if (operation != null) {
+            operations.add(operation);
+          }
+        } catch (RuntimeException e) {
+          // Ignore fragments that don't have operations
+        }
       }
     }
 
@@ -669,7 +683,11 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitSetDuration(QubecTalkParser.SetDurationContext ctx) {
-    return visitChildren(ctx);
+    Operation valueOperation = visit(ctx.value).getOperation();
+    String stream = ctx.target.getText();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+    Operation operation = new SetOperation(stream, valueOperation, during);
+    return new OperationFragment(operation);
   }
 
   /**
