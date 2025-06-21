@@ -176,8 +176,8 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
     EngineNumber newImport = new EngineNumber(newImportKg, "kg");
     
-    // Call streamKeeper.setStream directly to match JavaScript behavior (bypasses propagation)
-    streamKeeper.setStream(application, substance, "manufacture", newManufacture);
-    streamKeeper.setStream(application, substance, "import", newImport);
+    // Call Engine.setStream with propagateChanges=false to match JavaScript behavior
+    target.setStream("manufacture", newManufacture, null, scopeEffective, false, null);
+    target.setStream("import", newImport, null, scopeEffective, false, null);
   }
 }
