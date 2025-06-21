@@ -357,6 +357,13 @@ public class UnitConverter {
       EngineNumber total = stateGetter.getGhgConsumption();
       BigDecimal newValue = total.getValue().multiply(asRatio);
       return new EngineNumber(newValue, "tCO2e");
+    } else if ("tCO2e/mt".equals(currentUnits)) {
+      // Handle tCO2e per metric ton - this is a conversion factor
+      // We need to convert to just tCO2e by multiplying by the volume in mt
+      EngineNumber volume = stateGetter.getVolume();
+      EngineNumber volumeInMt = convert(volume, "mt");
+      BigDecimal newValue = target.getValue().multiply(volumeInMt.getValue());
+      return new EngineNumber(newValue, "tCO2e");
     } else {
       throw new IllegalArgumentException("Unable to convert to consumption: " + currentUnits);
     }
