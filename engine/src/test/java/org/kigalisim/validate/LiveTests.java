@@ -384,7 +384,7 @@ public class LiveTests {
     // Check Sub A in year 1 - should be 10,000,000 tCO2e (100 mt * 100 tCO2e/kg)
     EngineResult resultSubA1 = findResult(results, "Test", "Sub A", 1);
     assertNotNull(resultSubA1, "Should have result for Test/Sub A in year 1");
-   /* assertEquals(10000000.0, resultSubA1.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    /*assertEquals(10000000.0, resultSubA1.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub A GHG consumption should be 10,000,000 tCO2e in year 1");
     assertEquals("tCO2e", resultSubA1.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 1");*/
