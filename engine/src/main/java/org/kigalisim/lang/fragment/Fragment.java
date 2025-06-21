@@ -94,4 +94,13 @@ public abstract class Fragment {
   public ParsedSubstance getSubstance() {
     throw new RuntimeException("This fragment does not have a substance.");
   }
+
+  /**
+   * Check if this fragment is a scenarios stanza.
+   *
+   * @return True if this fragment is a scenarios stanza, false otherwise.
+   */
+  public boolean getIsStanzaScenarios() {
+    return false;
+  }
 }

@@ -56,16 +56,6 @@ public class InitialChargeOperation implements Operation {
     YearMatcher yearMatcher = parsedDuring.buildYearMatcher(machine);
 
     Engine engine = machine.getEngine();
-
-    // Check if the current year is in the range specified by the YearMatcher
-    if (yearMatcher.getInRange(engine.getYear())) {
-      // If in range, set the initial charge to the calculated value
-      engine.setInitialCharge(result, stream, yearMatcher);
-    } else {
-      // If not in range, explicitly set the initial charge to zero
-      EngineNumber zero = new EngineNumber(java.math.BigDecimal.ZERO, result.getUnits());
-      // Use an unbounded YearMatcher to ensure the zero value is set
-      engine.setInitialCharge(zero, stream, YearMatcher.unbounded());
-    }
+    engine.setInitialCharge(result, stream, yearMatcher);
   }
 }

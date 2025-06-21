@@ -71,17 +71,18 @@ public class KigaliSimFacade {
    * <p>Creates and executes a simulation using the provided program and simulation name.</p>
    *
    * @param program The parsed program containing the simulation to run.
-   * @param simulationName The name of the simulation to execute from the program.
+   * @param scenarioName The name of the simulation to execute from the program.
    */
-  public static void runSimulation(ParsedProgram program, String simulationName) {
+  public static void runSimulation(ParsedProgram program, String scenarioName) {
     // Get the scenario from the program
-    if (!program.getScenarios().contains(simulationName)) {
-      throw new IllegalArgumentException("Simulation not found: " + simulationName);
+    if (!program.getScenarios().contains(scenarioName)) {
+      throw new IllegalArgumentException("Scenario not found: " + scenarioName);
     }
 
     // Get the scenario
-    ParsedScenario scenario = program.getScenario(simulationName);
+    ParsedScenario scenario = program.getScenario(scenarioName);
 
+    // TODO: This is temporary
     // Determine start and end years from the scenario
     // For now, use fixed values for the example
     int startYear = 1;
@@ -91,6 +92,7 @@ public class KigaliSimFacade {
     Engine engine = new SingleThreadEngine(startYear, endYear);
     PushDownMachine machine = new SingleThreadPushDownMachine(engine);
 
+    // TODO: This is temporary
     // Run the simulation
     // This is a simplified implementation that just sets up the engine
     // A more complete implementation would run the simulation for each year

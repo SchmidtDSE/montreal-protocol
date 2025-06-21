@@ -42,13 +42,7 @@ public class QubecTalkParser {
     parser.removeErrorListeners();
 
     List<ParseError> parseErrors = new ArrayList<>();
-    BaseErrorListener listener = new BaseErrorListener() {
-        @Override
-        public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-                                int charPositionInLine, String msg, RecognitionException e) {
-          parseErrors.add(new ParseError(line, msg));
-        }
-    };
+    BaseErrorListener listener = new ParserErrorListener(parseErrors);
 
     // Add our error listener to both lexer and parser
     lexer.addErrorListener(listener);
@@ -57,6 +51,29 @@ public class QubecTalkParser {
     ProgramContext program = parser.program();
 
     return parseErrors.isEmpty() ? new ParseResult(program) : new ParseResult(parseErrors);
+  }
+
+  /**
+   * Listener for ANTLR errors in parsing.
+   */
+  private static class ParserErrorListener extends BaseErrorListener {
+
+    private final List<ParseError> parseErrors;
+
+    /**
+     * Create a new listener for errors encountered in ANTLR parsing.
+     *
+     * @param parseErrors The list in which to report ANTLR errors.
+     */
+    public ParserErrorListener(List<ParseError> parseErrors) {
+      this.parseErrors = parseErrors;
+    }
+
+    @Override
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+                            int charPositionInLine, String msg, RecognitionException e) {
+      parseErrors.add(new ParseError(line, msg));
+    }
   }
 
 }

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.SingleThreadEngine;
 import org.kigalisim.engine.number.EngineNumber;
+import org.kigalisim.engine.state.YearMatcher;
 import org.kigalisim.lang.machine.PushDownMachine;
 import org.kigalisim.lang.machine.SingleThreadPushDownMachine;
 import org.kigalisim.lang.time.CalculatedTimePointFuture;
@@ -113,6 +114,14 @@ public class InitialChargeOperationTest {
    */
   @Test
   public void testExecuteWithDuringNotApplying() {
+    // Setup the original value
+    machine.getEngine().setInitialCharge(
+        new EngineNumber(BigDecimal.ZERO, "kg / unit"),
+        "manufacture",
+        new YearMatcher(Optional.empty(), Optional.empty())
+    );
+
+    // Setup a noop
     EngineNumber number = new EngineNumber(BigDecimal.valueOf(5), "kg / unit");
     Operation valueOperation = new PreCalculatedOperation(number);
 

@@ -7,12 +7,16 @@
 package org.kigalisim.lang;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.kigalisim.engine.number.EngineNumber;
 import org.kigalisim.lang.fragment.DuringFragment;
 import org.kigalisim.lang.fragment.Fragment;
 import org.kigalisim.lang.fragment.OperationFragment;
+import org.kigalisim.lang.fragment.PolicyFragment;
 import org.kigalisim.lang.fragment.ProgramFragment;
+import org.kigalisim.lang.fragment.ScenariosFragment;
 import org.kigalisim.lang.fragment.UnitFragment;
 import org.kigalisim.lang.operation.AdditionOperation;
 import org.kigalisim.lang.operation.ChangeUnitsOperation;
@@ -22,6 +26,7 @@ import org.kigalisim.lang.operation.SubtractionOperation;
 import org.kigalisim.lang.program.ParsedPolicy;
 import org.kigalisim.lang.program.ParsedProgram;
 import org.kigalisim.lang.program.ParsedScenario;
+import org.kigalisim.lang.program.ParsedScenarios;
 import org.kigalisim.lang.time.CalculatedTimePointFuture;
 import org.kigalisim.lang.time.DynamicCapFuture;
 import org.kigalisim.lang.time.ParsedDuring;
@@ -60,33 +65,6 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   /**
    * {@inheritDoc}
    */
-  @Override
-  public Fragment visitVolumeUnit(QubecTalkParser.VolumeUnitContext ctx) {
-    String unit = ctx.getText();
-    return new UnitFragment(unit);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Fragment visitRelativeUnit(QubecTalkParser.RelativeUnitContext ctx) {
-    String unit = ctx.getText();
-    return new UnitFragment(unit);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Fragment visitTemporalUnit(QubecTalkParser.TemporalUnitContext ctx) {
-    String unit = ctx.getText();
-    return new UnitFragment(unit);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   @Override public Fragment visitUnitValue(QubecTalkParser.UnitValueContext ctx) {
     Operation futureCalculation = visit(ctx.expression()).getOperation();
     String unit = visit(ctx.unitOrRatio()).getUnit();
@@ -99,36 +77,8 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitUnitOrRatio(QubecTalkParser.UnitOrRatioContext ctx) {
-    String unit = "";
-    for (int i = 0; i < ctx.unit().size(); i++) {
-      if (i > 0) {
-        if (ctx.DIV_() != null) {
-          unit += " / ";
-        } else if (ctx.EACH_() != null) {
-          unit += " / ";
-        } else {
-          unit += " ";
-        }
-      }
-      unit += visit(ctx.unit(i)).getUnit();
-    }
-    return new UnitFragment(unit);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Fragment visitUnit(QubecTalkParser.UnitContext ctx) {
-    if (ctx.volumeUnit() != null) {
-      return visit(ctx.volumeUnit());
-    } else if (ctx.relativeUnit() != null) {
-      return visit(ctx.relativeUnit());
-    } else if (ctx.temporalUnit() != null) {
-      return visit(ctx.temporalUnit());
-    } else {
-      throw new RuntimeException("Unknown unit type");
-    }
+    String unit = ctx.getText();
+    return new UnitFragment(unit.replaceAll(" each ", " / "));
   }
 
   /**
@@ -146,10 +96,12 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   public Fragment visitAdditionExpression(QubecTalkParser.AdditionExpressionContext ctx) {
     Operation left = visit(ctx.expression(0)).getOperation();
     Operation right = visit(ctx.expression(1)).getOperation();
+
+    String operatorStr = ctx.op.getText();
     Operation calculation;
-    if (ctx.ADD_() != null) {
+    if (operatorStr.equals("+")) {
       calculation = new AdditionOperation(left, right);
-    } else if (ctx.SUB_() != null) {
+    } else if (operatorStr.equals("-")) {
       calculation = new SubtractionOperation(left, right);
     } else {
       throw new RuntimeException("Unknown addition operation");
@@ -193,25 +145,9 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    * {@inheritDoc}
    */
   @Override
-  public Fragment visitSimpleExpression(QubecTalkParser.SimpleExpressionContext ctx) {
-    return visit(ctx.number());
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public Fragment visitGetStreamIndirectConversion(
       QubecTalkParser.GetStreamIndirectConversionContext ctx) {
     return visitChildren(ctx);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Fragment visitParenExpression(QubecTalkParser.ParenExpressionContext ctx) {
-    return visit(ctx.expression());
   }
 
   /**
@@ -319,7 +255,7 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
   @Override
   public Fragment visitDuringStart(QubecTalkParser.DuringStartContext ctx) {
     TimePointFuture start = new DynamicCapFuture("beginning");
-    ParsedDuring during = new ParsedDuring(Optional.of(start), Optional.empty());
+    ParsedDuring during = new ParsedDuring(Optional.of(start), Optional.of(start));
     return new DuringFragment(during);
   }
 
@@ -379,7 +315,19 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitDefaultStanza(QubecTalkParser.DefaultStanzaContext ctx) {
-    return visitChildren(ctx);
+    List<org.kigalisim.lang.program.ParsedApplication> applications = new ArrayList<>();
+
+    for (QubecTalkParser.ApplicationDefContext appCtx : ctx.applicationDef()) {
+      Fragment appFragment = visit(appCtx);
+      try {
+        applications.add(appFragment.getApplication());
+      } catch (RuntimeException e) {
+        // Not an application, ignore
+      }
+    }
+
+    ParsedPolicy policy = new ParsedPolicy("default", applications);
+    return new PolicyFragment(policy);
   }
 
   /**
@@ -387,7 +335,23 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitSimulationsStanza(QubecTalkParser.SimulationsStanzaContext ctx) {
-    return visitChildren(ctx);
+    List<ParsedScenario> scenarios = new ArrayList<>();
+
+    // Process each simulation
+    for (int i = 0; i < ctx.getChildCount(); i++) {
+      if (ctx.getChild(i) instanceof QubecTalkParser.SimulateContext) {
+        QubecTalkParser.SimulateContext simCtx = (QubecTalkParser.SimulateContext) ctx.getChild(i);
+        Fragment simFragment = visit(simCtx);
+        try {
+          scenarios.add(simFragment.getScenario());
+        } catch (RuntimeException e) {
+          // Not a scenario, ignore
+        }
+      }
+    }
+
+    ParsedScenarios parsedScenarios = new ParsedScenarios(scenarios);
+    return new ScenariosFragment(parsedScenarios);
   }
 
   /**
@@ -395,7 +359,22 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitPolicyStanza(QubecTalkParser.PolicyStanzaContext ctx) {
-    return visitChildren(ctx);
+    List<org.kigalisim.lang.program.ParsedApplication> applications = new ArrayList<>();
+
+    // Get the policy name
+    String policyName = visit(ctx.name).getUnit();
+
+    for (QubecTalkParser.ApplicationModContext appCtx : ctx.applicationMod()) {
+      Fragment appFragment = visit(appCtx);
+      try {
+        applications.add(appFragment.getApplication());
+      } catch (RuntimeException e) {
+        // Not an application, ignore
+      }
+    }
+
+    ParsedPolicy policy = new ParsedPolicy(policyName, applications);
+    return new PolicyFragment(policy);
   }
 
   /**
@@ -671,31 +650,30 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitProgram(QubecTalkParser.ProgramContext ctx) {
-    // Visit children to process all parts of the program
-    Fragment result = visitChildren(ctx);
+    List<ParsedPolicy> policies = new ArrayList<>();
+    List<ParsedScenario> scenarios = new ArrayList<>();
 
-    // If result is null, we need to create a default program
-    if (result == null) {
-      // Create collections for policies and scenarios
-      java.util.ArrayList<ParsedPolicy> policies = new java.util.ArrayList<>();
-      java.util.ArrayList<ParsedScenario> scenarios = new java.util.ArrayList<>();
+    for (QubecTalkParser.StanzaContext stanzaCtx : ctx.stanza()) {
+      Fragment stanzaFragment = visit(stanzaCtx);
 
-      // Create a scenario named "business as usual" as defined in the test file
-      java.util.ArrayList<String> emptyPolicies = new java.util.ArrayList<>();
-      ParsedScenario businessAsUsualScenario = new ParsedScenario("business as usual", emptyPolicies);
-      scenarios.add(businessAsUsualScenario);
-
-      // Also create a scenario named "test" for backward compatibility
-      ParsedScenario testScenario = new ParsedScenario("test", emptyPolicies);
-      scenarios.add(testScenario);
-
-      // Create a new ParsedProgram with the policies and scenarios
-      ParsedProgram program = new ParsedProgram(policies, scenarios);
-
-      // Return a new ProgramFragment with the program
-      return new ProgramFragment(program);
+      if (stanzaFragment.getIsStanzaScenarios()) {
+        // This is a scenarios stanza
+        ScenariosFragment scenariosFragment = (ScenariosFragment) stanzaFragment;
+        ParsedScenarios parsedScenarios = scenariosFragment.getScenarios();
+        for (String scenarioName : parsedScenarios.getScenarios()) {
+          scenarios.add(parsedScenarios.getScenario(scenarioName));
+        }
+      } else {
+        try {
+          // Try to get a policy from the stanza
+          policies.add(stanzaFragment.getPolicy());
+        } catch (RuntimeException e) {
+          // Not a policy stanza, ignore
+        }
+      }
     }
 
-    return result;
+    ParsedProgram program = new ParsedProgram(policies, scenarios);
+    return new ProgramFragment(program);
   }
 }
