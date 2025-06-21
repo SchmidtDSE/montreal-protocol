@@ -63,7 +63,7 @@ public class KigaliSimFacade {
   }
 
   /**
-   * Run a simulation from the provided program.
+   * Run a scenario from the provided program.
    *
    * <p>Creates and executes a simulation using the provided program and simulation name where this
    * name refers to a scenario indicating the set of policies to be stacked.</p>
@@ -71,7 +71,7 @@ public class KigaliSimFacade {
    * @param program The parsed program containing the simulation to run.
    * @param scenarioName The name of the simulation to execute from the program.
    */
-  public static void runSimulation(ParsedProgram program, String scenarioName) {
+  public static void runScenario(ParsedProgram program, String scenarioName) {
     // Get the scenario from the program
     if (!program.getScenarios().contains(scenarioName)) {
       throw new IllegalArgumentException("Scenario not found: " + scenarioName);
@@ -80,21 +80,29 @@ public class KigaliSimFacade {
     // Get the scenario
     ParsedScenario scenario = program.getScenario(scenarioName);
 
-    // TODO: This is temporary
-    // Determine start and end years from the scenario
-    // For now, use fixed values for the example
-    int startYear = 1;
-    int endYear = 3;
+    // Get startYear and endYear from ParsedScenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
 
     // Create the engine and machine
     Engine engine = new SingleThreadEngine(startYear, endYear);
     PushDownMachine machine = new SingleThreadPushDownMachine(engine);
 
-    // TODO: This is temporary
-    // Run the simulation
-    // This is a simplified implementation that just sets up the engine
-    // A more complete implementation would run the simulation for each year
-    // and collect results
+    // TODO: Execute the default policy and then execute the other named policies in the given
+    //       scenario name.
+  }
+
+  /**
+   * Run all scenarios from the provided program.
+   *
+   * <p>Creates and executes simulations for all scenarios in the program.</p>
+   *
+   * @param program The parsed program containing the simulations to run.
+   */
+  public static void runAllScenarios(ParsedProgram program) {
+    for (String scenarioName : program.getScenarios()) {
+      runScenario(program, scenarioName);
+    }
   }
 
   /**

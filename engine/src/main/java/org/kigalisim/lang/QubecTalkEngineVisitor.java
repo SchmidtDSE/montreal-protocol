@@ -587,7 +587,16 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitBaseSimulation(QubecTalkParser.BaseSimulationContext ctx) {
-    return visitChildren(ctx);
+    // Get the scenario name
+    String name = visit(ctx.name).getUnit();
+
+    // Get start and end years
+    int startYear = Integer.parseInt(ctx.start.getText());
+    int endYear = Integer.parseInt(ctx.end.getText());
+
+    // Create a scenario with no policies
+    ParsedScenario scenario = new ParsedScenario(name, new ArrayList<>(), startYear, endYear, 1);
+    return new ScenariosFragment(new ParsedScenarios(List.of(scenario)));
   }
 
   /**
@@ -595,7 +604,22 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitPolicySim(QubecTalkParser.PolicySimContext ctx) {
-    return visitChildren(ctx);
+    // Get the scenario name
+    String name = visit(ctx.name).getUnit();
+
+    // Get start and end years
+    int startYear = Integer.parseInt(ctx.start.getText());
+    int endYear = Integer.parseInt(ctx.end.getText());
+
+    // Get the policies
+    List<String> policies = new ArrayList<>();
+    for (int i = 0; i < ctx.string().size() - 1; i++) {
+      policies.add(visit(ctx.string(i + 1)).getUnit());
+    }
+
+    // Create a scenario with the policies
+    ParsedScenario scenario = new ParsedScenario(name, policies, startYear, endYear, 1);
+    return new ScenariosFragment(new ParsedScenarios(List.of(scenario)));
   }
 
   /**
@@ -603,7 +627,19 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitBaseSimulationTrials(QubecTalkParser.BaseSimulationTrialsContext ctx) {
-    return visitChildren(ctx);
+    // Get the scenario name
+    String name = visit(ctx.name).getUnit();
+
+    // Get start and end years
+    int startYear = Integer.parseInt(ctx.start.getText());
+    int endYear = Integer.parseInt(ctx.end.getText());
+
+    // Get the number of trials
+    int trials = Integer.parseInt(ctx.trials.getText());
+
+    // Create a scenario with no policies
+    ParsedScenario scenario = new ParsedScenario(name, new ArrayList<>(), startYear, endYear, trials);
+    return new ScenariosFragment(new ParsedScenarios(List.of(scenario)));
   }
 
   /**
@@ -611,7 +647,25 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitPolicySimTrials(QubecTalkParser.PolicySimTrialsContext ctx) {
-    return visitChildren(ctx);
+    // Get the scenario name
+    String name = visit(ctx.name).getUnit();
+
+    // Get start and end years
+    int startYear = Integer.parseInt(ctx.start.getText());
+    int endYear = Integer.parseInt(ctx.end.getText());
+
+    // Get the number of trials
+    int trials = Integer.parseInt(ctx.trials.getText());
+
+    // Get the policies
+    List<String> policies = new ArrayList<>();
+    for (int i = 0; i < ctx.string().size() - 1; i++) {
+      policies.add(visit(ctx.string(i + 1)).getUnit());
+    }
+
+    // Create a scenario with the policies
+    ParsedScenario scenario = new ParsedScenario(name, policies, startYear, endYear, trials);
+    return new ScenariosFragment(new ParsedScenarios(List.of(scenario)));
   }
 
   /**

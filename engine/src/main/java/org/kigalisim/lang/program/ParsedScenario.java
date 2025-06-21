@@ -17,6 +17,9 @@ public class ParsedScenario {
 
   private final String name;
   private final List<String> policies;
+  private final int startYear;
+  private final int endYear;
+  private final int trials;
 
   /**
    * Create a new record of a scenario.
@@ -24,10 +27,27 @@ public class ParsedScenario {
    * @param name The name of the scenario parsed.
    * @param policies The ordered list of policies which should be applied in this scenario excluding
    *     default which is always applied first.
+   * @param startYear The starting year for the simulation.
+   * @param endYear The ending year for the simulation.
+   * @param trials The number of trials to run for the simulation.
    */
-  public ParsedScenario(String name, List<String> policies) {
+  public ParsedScenario(String name, List<String> policies, int startYear, int endYear, int trials) {
     this.name = name;
     this.policies = policies;
+    this.startYear = startYear;
+    this.endYear = endYear;
+    this.trials = trials;
+  }
+
+  /**
+   * Create a new record of a scenario with default values for startYear, endYear, and trials.
+   *
+   * @param name The name of the scenario parsed.
+   * @param policies The ordered list of policies which should be applied in this scenario excluding
+   *     default which is always applied first.
+   */
+  public ParsedScenario(String name, List<String> policies) {
+    this(name, policies, 1, 3, 1);
   }
 
   public String getName() {
@@ -42,6 +62,35 @@ public class ParsedScenario {
    */
   public Iterable<String> getPolicies() {
     return policies;
+  }
+
+  /**
+   * Get the starting year for the simulation.
+   *
+   * @return The starting year.
+   */
+  public int getStartYear() {
+    return startYear;
+  }
+
+  /**
+   * Get the ending year for the simulation.
+   *
+   * @return The ending year.
+   */
+  public int getEndYear() {
+    return endYear;
+  }
+
+  /**
+   * Get the number of trials for the simulation.
+   *
+   * @return The number of trials.
+   * 
+   * TODO: This is not used yet.
+   */
+  public int getTrials() {
+    return trials;
   }
 
 }
