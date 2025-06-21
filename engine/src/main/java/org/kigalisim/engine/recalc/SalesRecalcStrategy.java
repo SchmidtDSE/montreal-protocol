@@ -165,28 +165,19 @@ public class SalesRecalcStrategy implements RecalcStrategy {
 
     // Recycle
     EngineNumber newRecycleValue = new EngineNumber(recycledDisplacedKg, "kg");
-    target.setStream("recycle", newRecycleValue, null, scopeEffective, false, null);
+    streamKeeper.setStream(application, substance, "recycle", newRecycleValue);
 
     // New values
     BigDecimal requiredKgUnbound = kgForRecharge.add(kgForNew);
     boolean requiredKgNegative = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0;
     BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
-    
-    // If requiredKg is 0, preserve existing explicit values instead of overwriting with 0
-    // This handles cases where explicit values are set but calculated demand is 0
-    if (requiredKg.compareTo(BigDecimal.ZERO) == 0) {
-      // Keep the existing manufacture and import values - don't overwrite with calculated 0s
-      return;
-    }
-    
-    // Calculate new values
     BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
     BigDecimal newImportKg = percentImport.multiply(requiredKg);
     EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
     EngineNumber newImport = new EngineNumber(newImportKg, "kg");
     
-    // Set calculated values with propagateChanges = false to avoid infinite recalc loops
-    target.setStream("manufacture", newManufacture, null, scopeEffective, false, null);
-    target.setStream("import", newImport, null, scopeEffective, false, null);
+    // Call streamKeeper.setStream directly to match JavaScript behavior (bypasses propagation)
+    streamKeeper.setStream(application, substance, "manufacture", newManufacture);
+    streamKeeper.setStream(application, substance, "import", newImport);
   }
 }
