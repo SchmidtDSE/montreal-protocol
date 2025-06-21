@@ -455,6 +455,59 @@ public class LiveTests {
   }
 
   /**
+   * Debug test to compare sales streams in different scenarios.
+   */
+  @Test
+  public void debugSalesStreamComparison() throws IOException {
+    System.out.println("=== Testing sales stream values ===");
+    
+    // Test 1: Simple case (no retire/recharge)
+    String qtaPathSimple = "/tmp/test_sales_simple.qta";
+    ParsedProgram programSimple = KigaliSimFacade.parseAndInterpret(qtaPathSimple);
+    Engine engineSimple = new SingleThreadEngine(1, 10);
+    PushDownMachine machineSimple = new SingleThreadPushDownMachine(engineSimple);
+    
+    ParsedPolicy defaultPolicySimple = programSimple.getPolicy("default");
+    executePolicy(defaultPolicySimple, machineSimple);
+    
+    // Check sales in year 1
+    engineSimple.setApplication("Test");
+    engineSimple.setSubstance("Sub A");
+    EngineNumber salesSimpleY1 = engineSimple.getStream("sales");
+    System.out.println("SIMPLE - Year 1 Sales: " + salesSimpleY1.getValue() + " " + salesSimpleY1.getUnits());
+    
+    // Move to year 5
+    for (int year = 2; year <= 5; year++) {
+      engineSimple.incrementYear();
+    }
+    EngineNumber salesSimpleY5 = engineSimple.getStream("sales");
+    System.out.println("SIMPLE - Year 5 Sales: " + salesSimpleY5.getValue() + " " + salesSimpleY5.getUnits());
+    
+    // Test 2: With retire only
+    String qtaPathRetire = "/tmp/test_basic_replace_retire_only.qta";
+    ParsedProgram programRetire = KigaliSimFacade.parseAndInterpret(qtaPathRetire);
+    Engine engineRetire = new SingleThreadEngine(1, 10);
+    PushDownMachine machineRetire = new SingleThreadPushDownMachine(engineRetire);
+    
+    ParsedPolicy defaultPolicyRetire = programRetire.getPolicy("default");
+    executePolicy(defaultPolicyRetire, machineRetire);
+    
+    // Check sales in year 1
+    engineRetire.setApplication("Test");
+    engineRetire.setSubstance("Sub A");
+    EngineNumber salesRetireY1 = engineRetire.getStream("sales");
+    System.out.println("RETIRE - Year 1 Sales: " + salesRetireY1.getValue() + " " + salesRetireY1.getUnits());
+    
+    // Move to year 5
+    for (int year = 2; year <= 5; year++) {
+      engineRetire.incrementYear();
+    }
+    EngineNumber salesRetireY5 = engineRetire.getStream("sales");
+    System.out.println("RETIRE - Year 5 Sales: " + salesRetireY5.getValue() + " " + salesRetireY5.getUnits());
+    
+  }
+
+  /**
    * Test basic_replace.qta produces expected values.
    * This is the original complex version with retire/recharge operations.
    
