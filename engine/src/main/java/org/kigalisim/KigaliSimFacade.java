@@ -9,18 +9,14 @@ package org.kigalisim;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kigalisim.engine.Engine;
 import org.kigalisim.engine.SingleThreadEngine;
-import org.kigalisim.lang.QubecTalkEngineVisitor;
-import org.kigalisim.lang.QubecTalkLexer;
-import org.kigalisim.lang.QubecTalkParser;
-import org.kigalisim.lang.fragment.Fragment;
-import org.kigalisim.lang.fragment.ProgramFragment;
+import org.kigalisim.lang.interpret.QubecTalkInterpreter;
 import org.kigalisim.lang.machine.PushDownMachine;
 import org.kigalisim.lang.machine.SingleThreadPushDownMachine;
+import org.kigalisim.lang.parse.ParseResult;
+import org.kigalisim.lang.parse.QubecTalkParser;
 import org.kigalisim.lang.program.ParsedProgram;
 import org.kigalisim.lang.program.ParsedScenario;
 
@@ -39,25 +35,22 @@ public class KigaliSimFacade {
    * developer tools.</p>
    *
    * @param code String code to parse as a QubecTalk source.
-   * @return The parse tree resulting from parsing the code.
+   * @return The parse result containing either the parse tree or errors.
    */
-  public static ParseTree parse(String code) {
-    QubecTalkLexer lexer = new QubecTalkLexer(CharStreams.fromString(code));
-    CommonTokenStream tokens = new CommonTokenStream(lexer);
-    QubecTalkParser parser = new QubecTalkParser(tokens);
-    return parser.program();
+  public static ParseResult parse(String code) {
+    QubecTalkParser parser = new QubecTalkParser();
+    return parser.parse(code);
   }
 
   /**
    * Interpret a parsed QubecTalk script to Java objects which can run the simulation.
    *
-   * @param parseTree The parse tree resulting from parsing the QubecTalk source.
+   * @param parseResult The parse result from parsing the QubecTalk source.
    * @return The parsed program which can be used to run a specific simulation.
    */
-  public static ParsedProgram interpret(ParseTree parseTree) {
-    QubecTalkEngineVisitor visitor = new QubecTalkEngineVisitor();
-    Fragment fragment = visitor.visit(parseTree);
-    return fragment.getProgram();
+  public static ParsedProgram interpret(ParseResult parseResult) {
+    QubecTalkInterpreter interpreter = new QubecTalkInterpreter();
+    return interpreter.interpret(parseResult);
   }
 
   /**
@@ -69,8 +62,8 @@ public class KigaliSimFacade {
    */
   public static ParsedProgram parseAndInterpret(String filePath) throws IOException {
     String code = new String(Files.readAllBytes(Paths.get(filePath)));
-    ParseTree parseTree = parse(code);
-    return interpret(parseTree);
+    ParseResult parseResult = parse(code);
+    return interpret(parseResult);
   }
 
   /**
@@ -115,7 +108,15 @@ public class KigaliSimFacade {
    */
   public static boolean validate(String filePath) {
     try {
-      parseAndInterpret(filePath);
+      String code = new String(Files.readAllBytes(Paths.get(filePath)));
+      ParseResult parseResult = parse(code);
+
+      if (parseResult.hasErrors()) {
+        System.err.println("Validation failed: Parse errors detected");
+        return false;
+      }
+
+      interpret(parseResult);
       return true;
     } catch (Exception e) {
       // Print the exception for debugging
