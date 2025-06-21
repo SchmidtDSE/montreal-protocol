@@ -71,11 +71,6 @@ public class RetireRecalcStrategy implements RecalcStrategy {
     EngineNumber amount = unitConverter.convert(amountRaw, "units");
     stateGetter.clearPopulation();
 
-    // Skip retirement calculation if we're in year 1 (to preserve the initial manufacture value)
-    if (target.getYear() == 1) {
-      return;
-    }
-
     // Calculate new values
     // Convert percentage to decimal (divide by 100)
     BigDecimal retirementRate = amount.getValue().divide(new BigDecimal("100"), 10, BigDecimal.ROUND_HALF_UP);
