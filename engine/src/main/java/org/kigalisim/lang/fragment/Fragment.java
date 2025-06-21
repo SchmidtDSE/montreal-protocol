@@ -7,7 +7,12 @@
 package org.kigalisim.lang.fragment;
 
 import org.kigalisim.lang.operation.Operation;
-import org.kigalisim.lang.program.*;
+import org.kigalisim.lang.program.ParsedApplication;
+import org.kigalisim.lang.program.ParsedPolicy;
+import org.kigalisim.lang.program.ParsedProgram;
+import org.kigalisim.lang.program.ParsedScenario;
+import org.kigalisim.lang.program.ParsedScenarios;
+import org.kigalisim.lang.program.ParsedSubstance;
 import org.kigalisim.lang.time.ParsedDuring;
 
 
@@ -112,8 +117,8 @@ public abstract class Fragment {
   /**
    * Check if this fragment is a scenarios stanza.
    *
-   * @throws RuntimeException Thrown if requested on a non-stanza.
    * @return True if this fragment is a scenarios stanza, false if another stanza.
+   * @throws RuntimeException Thrown if requested on a non-stanza.
    */
   public boolean getIsStanzaScenarios() {
     throw new RuntimeException("This fragment is not a stanza.");

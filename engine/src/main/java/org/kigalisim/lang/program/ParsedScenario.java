@@ -38,7 +38,7 @@ public class ParsedScenario {
     this.endYear = endYear;
     this.trials = trials;
   }
-  
+
   public String getName() {
     return name;
   }
@@ -75,11 +75,11 @@ public class ParsedScenario {
    * Get the number of trials for the simulation.
    *
    * @return The number of trials.
-   * 
-   * TODO: This is not used yet.
    */
   public int getTrials() {
     return trials;
   }
+
+  // TODO: getTrials is not used yet.
 
 }

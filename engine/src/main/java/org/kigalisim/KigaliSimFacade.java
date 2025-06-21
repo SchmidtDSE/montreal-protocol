@@ -14,10 +14,14 @@ import org.kigalisim.engine.SingleThreadEngine;
 import org.kigalisim.lang.interpret.QubecTalkInterpreter;
 import org.kigalisim.lang.machine.PushDownMachine;
 import org.kigalisim.lang.machine.SingleThreadPushDownMachine;
+import org.kigalisim.lang.operation.Operation;
 import org.kigalisim.lang.parse.ParseResult;
 import org.kigalisim.lang.parse.QubecTalkParser;
+import org.kigalisim.lang.program.ParsedApplication;
+import org.kigalisim.lang.program.ParsedPolicy;
 import org.kigalisim.lang.program.ParsedProgram;
 import org.kigalisim.lang.program.ParsedScenario;
+import org.kigalisim.lang.program.ParsedSubstance;
 
 /**
  * Entry point into the Kigali platform when used as a library.
@@ -88,8 +92,15 @@ public class KigaliSimFacade {
     Engine engine = new SingleThreadEngine(startYear, endYear);
     PushDownMachine machine = new SingleThreadPushDownMachine(engine);
 
-    // TODO: Execute the default policy and then execute the other named policies in the given
-    //       scenario name.
+    // Execute the default policy first
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute the other named policies in the scenario
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      executePolicy(policy, machine);
+    }
   }
 
   /**
@@ -129,6 +140,32 @@ public class KigaliSimFacade {
       // Print the exception for debugging
       System.err.println("Validation failed: " + e.getMessage());
       return false;
+    }
+  }
+
+  /**
+   * Execute a policy using the provided machine.
+   *
+   * <p>For each application in the policy, for each substance in the application,
+   * execute each operation in the substance using the provided machine.</p>
+   *
+   * @param policy The policy to execute.
+   * @param machine The machine to use for execution.
+   */
+  private static void executePolicy(ParsedPolicy policy, PushDownMachine machine) {
+    // For each application in the policy
+    for (String applicationName : policy.getApplications()) {
+      ParsedApplication application = policy.getApplication(applicationName);
+
+      // For each substance in the application
+      for (String substanceName : application.getSubstances()) {
+        ParsedSubstance substance = application.getSubstance(substanceName);
+
+        // Execute each operation in the substance
+        for (Operation operation : substance.getOperations()) {
+          operation.execute(machine);
+        }
+      }
     }
   }
 }
