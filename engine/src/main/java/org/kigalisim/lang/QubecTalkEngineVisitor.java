@@ -28,6 +28,9 @@ import org.kigalisim.lang.operation.EqualsOperation;
 import org.kigalisim.lang.operation.InitialChargeOperation;
 import org.kigalisim.lang.operation.Operation;
 import org.kigalisim.lang.operation.PreCalculatedOperation;
+import org.kigalisim.lang.operation.RechargeOperation;
+import org.kigalisim.lang.operation.ReplaceOperation;
+import org.kigalisim.lang.operation.RetireOperation;
 import org.kigalisim.lang.operation.SetOperation;
 import org.kigalisim.lang.operation.SubtractionOperation;
 import org.kigalisim.lang.program.ParsedApplication;
@@ -552,7 +555,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitRechargeAllYears(QubecTalkParser.RechargeAllYearsContext ctx) {
-    return visitChildren(ctx);
+    Operation populationOperation = visit(ctx.population).getOperation();
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    Operation operation = new RechargeOperation(populationOperation, volumeOperation);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -560,7 +566,11 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitRechargeDuration(QubecTalkParser.RechargeDurationContext ctx) {
-    return visitChildren(ctx);
+    Operation populationOperation = visit(ctx.population).getOperation();
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+    Operation operation = new RechargeOperation(populationOperation, volumeOperation, during);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -602,7 +612,11 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitReplaceAllYears(QubecTalkParser.ReplaceAllYearsContext ctx) {
-    return visitChildren(ctx);
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    String stream = ctx.target.getText();
+    String destinationSubstance = visit(ctx.destination).getString();
+    Operation operation = new ReplaceOperation(volumeOperation, stream, destinationSubstance);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -610,7 +624,12 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitReplaceDuration(QubecTalkParser.ReplaceDurationContext ctx) {
-    return visitChildren(ctx);
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    String stream = ctx.target.getText();
+    String destinationSubstance = visit(ctx.destination).getString();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+    Operation operation = new ReplaceOperation(volumeOperation, stream, destinationSubstance, during);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -618,7 +637,9 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitRetireAllYears(QubecTalkParser.RetireAllYearsContext ctx) {
-    return visitChildren(ctx);
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    Operation operation = new RetireOperation(volumeOperation);
+    return new OperationFragment(operation);
   }
 
   /**
@@ -626,7 +647,10 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    */
   @Override
   public Fragment visitRetireDuration(QubecTalkParser.RetireDurationContext ctx) {
-    return visitChildren(ctx);
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+    Operation operation = new RetireOperation(volumeOperation, during);
+    return new OperationFragment(operation);
   }
 
   /**

@@ -8,6 +8,7 @@ package org.kigalisim.lang.validate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -148,5 +149,395 @@ public class LiveTests {
         .filter(r -> r.getYear() == year)
         .findFirst()
         .orElse(null);
+  }
+
+  /**
+   * Test basic.qta produces expected values.
+   */
+  @Test
+  public void testBasic() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/basic.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the "business as usual" scenario
+    String scenarioName = "business as usual";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+    assertEquals(1, startYear, "Start year should be 1");
+    assertEquals(1, endYear, "End year should be 1");
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario (if any)
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      executePolicy(policy, machine);
+    }
+
+    // Verify results
+    List<EngineResult> results = engine.getResults();
+    EngineResult result = findResult(results, "test", "test", startYear);
+    assertNotNull(result, "Should have result for test/test in year " + startYear);
+
+    // Check manufacture value - should be 100 mt = 100000 kg
+    assertEquals(100000.0, result.getManufacture().getValue().doubleValue(), 0.0001,
+        "Manufacture should be 100000 kg");
+    assertEquals("kg", result.getManufacture().getUnits(),
+        "Manufacture units should be kg");
+  }
+
+  /**
+   * Test basic_kwh.qta produces expected values.
+   */
+  @Test
+  public void testBasicKwh() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/basic_kwh.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the "business as usual" scenario
+    String scenarioName = "business as usual";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+    assertEquals(1, startYear, "Start year should be 1");
+    assertEquals(1, endYear, "End year should be 1");
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario (if any)
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      executePolicy(policy, machine);
+    }
+
+    // Verify results
+    List<EngineResult> results = engine.getResults();
+    EngineResult result = findResult(results, "test", "test", startYear);
+    assertNotNull(result, "Should have result for test/test in year " + startYear);
+
+    // Check manufacture value - should be 100 mt = 100000 kg
+    assertEquals(100000.0, result.getManufacture().getValue().doubleValue(), 0.0001,
+        "Manufacture should be 100000 kg");
+    assertEquals("kg", result.getManufacture().getUnits(),
+        "Manufacture units should be kg");
+
+    // Check energy consumption
+    assertTrue(result.getEnergyConsumption().getValue().doubleValue() > 0,
+        "Energy consumption should be greater than 0");
+    assertEquals("kwh", result.getEnergyConsumption().getUnits(),
+        "Energy consumption units should be kwh");
+  }
+
+  /**
+   * Test basic_special_float.qta produces expected values.
+   */
+  @Test
+  public void testBasicSpecialFloat() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/basic_special_float.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the "business as usual" scenario
+    String scenarioName = "business as usual";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+    assertEquals(1, startYear, "Start year should be 1");
+    assertEquals(1, endYear, "End year should be 1");
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario (if any)
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      executePolicy(policy, machine);
+    }
+
+    // Verify results
+    List<EngineResult> results = engine.getResults();
+    EngineResult result = findResult(results, "test", "test", startYear);
+    assertNotNull(result, "Should have result for test/test in year " + startYear);
+
+    // Check manufacture value - should be 100 mt = 100000 kg
+    assertEquals(100000.0, result.getManufacture().getValue().doubleValue(), 0.0001,
+        "Manufacture should be 100000 kg");
+    assertEquals("kg", result.getManufacture().getUnits(),
+        "Manufacture units should be kg");
+  }
+
+  /**
+   * Test basic_units.qta produces expected values.
+   */
+  @Test
+  public void testBasicUnits() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/basic_units.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the "business as usual" scenario
+    String scenarioName = "business as usual";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+    assertEquals(1, startYear, "Start year should be 1");
+    assertEquals(1, endYear, "End year should be 1");
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario (if any)
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      executePolicy(policy, machine);
+    }
+
+    // Verify results
+    List<EngineResult> results = engine.getResults();
+    EngineResult result = findResult(results, "test", "test", startYear);
+    assertNotNull(result, "Should have result for test/test in year " + startYear);
+
+    // Check manufacture value - should be 1 mt = 1000 kg
+    assertEquals(1000.0, result.getManufacture().getValue().doubleValue(), 0.0001,
+        "Manufacture should be 1000 kg");
+    assertEquals("kg", result.getManufacture().getUnits(),
+        "Manufacture units should be kg");
+  }
+
+  /**
+   * Test basic_units_convert.qta produces expected values.
+   */
+  @Test
+  public void testBasicUnitsConvert() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/basic_units_convert.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the "business as usual" scenario
+    String scenarioName = "business as usual";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+    assertEquals(1, startYear, "Start year should be 1");
+    assertEquals(1, endYear, "End year should be 1");
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario (if any)
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      executePolicy(policy, machine);
+    }
+
+    // Verify results
+    List<EngineResult> results = engine.getResults();
+    EngineResult result = findResult(results, "test", "test", startYear);
+    assertNotNull(result, "Should have result for test/test in year " + startYear);
+
+    // Check manufacture value - should be 1 mt = 1000 kg
+    assertEquals(1000.0, result.getManufacture().getValue().doubleValue(), 0.0001,
+        "Manufacture should be 1000 kg");
+    assertEquals("kg", result.getManufacture().getUnits(),
+        "Manufacture units should be kg");
+  }
+
+  /**
+   * Test basic_replace.qta produces expected values.
+   */
+  @Test
+  public void testBasicReplace() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/basic_replace.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the scenario
+    String scenarioName = "Sim";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+    assertEquals(1, startYear, "Start year should be 1");
+    assertEquals(10, endYear, "End year should be 10");
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      assertNotNull(policy, "Policy " + policyName + " should exist");
+      executePolicy(policy, machine);
+    }
+
+    // Verify results for year 1 (before replacement)
+    List<EngineResult> results = engine.getResults();
+
+    // Check Sub A in year 1
+    EngineResult resultSubA1 = findResult(results, "Test", "Sub A", 1);
+    assertNotNull(resultSubA1, "Should have result for Test/Sub A in year 1");
+    assertEquals(100000.0, resultSubA1.getManufacture().getValue().doubleValue(), 0.0001,
+        "Sub A Manufacture should be 100000 kg in year 1");
+
+    // Check Sub B in year 1
+    EngineResult resultSubB1 = findResult(results, "Test", "Sub B", 1);
+    assertNotNull(resultSubB1, "Should have result for Test/Sub B in year 1");
+    assertEquals(0.0, resultSubB1.getManufacture().getValue().doubleValue(), 0.0001,
+        "Sub B Manufacture should be 0 kg in year 1");
+
+    // Move to year 5 and check results (start of replacement)
+    for (int year = 2; year <= 5; year++) {
+      engine.incrementYear();
+    }
+
+    results = engine.getResults();
+
+    // Check Sub A in year 5
+    EngineResult resultSubA5 = findResult(results, "Test", "Sub A", 5);
+    assertNotNull(resultSubA5, "Should have result for Test/Sub A in year 5");
+
+    // Check Sub B in year 5
+    EngineResult resultSubB5 = findResult(results, "Test", "Sub B", 5);
+    assertNotNull(resultSubB5, "Should have result for Test/Sub B in year 5");
+
+    // Verify that Sub B has manufacture data in year 5 due to replacement
+    assertNotNull(resultSubB5.getManufacture(),
+        "Sub B should have manufacture data in year 5 due to replacement");
+  }
+
+  /**
+   * Test basic_replace_units.qta produces expected values.
+   */
+  @Test
+  public void testBasicReplaceUnits() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/basic_replace_units.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Get the scenario
+    String scenarioName = "Sim";
+    ParsedScenario scenario = program.getScenario(scenarioName);
+    assertNotNull(scenario, "Scenario should exist");
+
+    // Get start and end years from scenario
+    int startYear = scenario.getStartYear();
+    int endYear = scenario.getEndYear();
+    assertEquals(1, startYear, "Start year should be 1");
+    assertEquals(10, endYear, "End year should be 10");
+
+    // Create engine and machine
+    Engine engine = new SingleThreadEngine(startYear, endYear);
+    PushDownMachine machine = new SingleThreadPushDownMachine(engine);
+
+    // Execute the default policy
+    ParsedPolicy defaultPolicy = program.getPolicy("default");
+    assertNotNull(defaultPolicy, "Default policy should exist");
+    executePolicy(defaultPolicy, machine);
+
+    // Execute other policies in the scenario
+    for (String policyName : scenario.getPolicies()) {
+      ParsedPolicy policy = program.getPolicy(policyName);
+      assertNotNull(policy, "Policy " + policyName + " should exist");
+      executePolicy(policy, machine);
+    }
+
+    // Verify results for year 1 (before replacement)
+    List<EngineResult> results = engine.getResults();
+
+    // Check Sub A in year 1
+    EngineResult resultSubA1 = findResult(results, "Test", "Sub A", 1);
+    assertNotNull(resultSubA1, "Should have result for Test/Sub A in year 1");
+    assertEquals(100000.0, resultSubA1.getManufacture().getValue().doubleValue(), 0.0001,
+        "Sub A Manufacture should be 100000 kg in year 1");
+
+    // Check Sub B in year 1
+    EngineResult resultSubB1 = findResult(results, "Test", "Sub B", 1);
+    assertNotNull(resultSubB1, "Should have result for Test/Sub B in year 1");
+    assertEquals(0.0, resultSubB1.getManufacture().getValue().doubleValue(), 0.0001,
+        "Sub B Manufacture should be 0 kg in year 1");
+
+    // Move to year 5 and check results (start of replacement)
+    for (int year = 2; year <= 5; year++) {
+      engine.incrementYear();
+    }
+
+    results = engine.getResults();
+
+    // Check Sub A in year 5
+    EngineResult resultSubA5 = findResult(results, "Test", "Sub A", 5);
+    assertNotNull(resultSubA5, "Should have result for Test/Sub A in year 5");
+
+    // Check Sub B in year 5
+    EngineResult resultSubB5 = findResult(results, "Test", "Sub B", 5);
+    assertNotNull(resultSubB5, "Should have result for Test/Sub B in year 5");
+
+    // Verify that Sub B has manufacture data in year 5 due to replacement
+    assertNotNull(resultSubB5.getManufacture(),
+        "Sub B should have manufacture data in year 5 due to replacement");
   }
 }
