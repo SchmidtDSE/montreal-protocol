@@ -205,14 +205,12 @@ public class SingleThreadEngine implements Engine {
     streamKeeper.setStream(application, substance, name, value);
 
     // Track the units last used to specify this stream (only for user-initiated calls)
-    if (propagateChanges && unitsToRecord != null) {
-      String unitsToRecordRealized = unitsToRecord != null ? unitsToRecord : value.getUnits();
-      streamKeeper.setLastSpecifiedUnits(application, substance, unitsToRecordRealized);
-    }
-
     if (!propagateChanges) {
       return;
     }
+
+    String unitsToRecordRealized = unitsToRecord != null ? unitsToRecord : value.getUnits();
+    streamKeeper.setLastSpecifiedUnits(application, substance, unitsToRecordRealized);
 
     if ("sales".equals(name) || "manufacture".equals(name) || "import".equals(name)) {
       RecalcOperationBuilder builder = new RecalcOperationBuilder()
@@ -348,20 +346,7 @@ public class SingleThreadEngine implements Engine {
       }
 
       // Determine total
-      BigDecimal manufactureRawValue = manufactureValue.getValue();
-      BigDecimal importRawValue = importValue.getValue();
-      BigDecimal total;
-
-      // Check for finite values (BigDecimal doesn't have infinity, but we can check for very large values)
-      if (manufactureRawValue.abs().compareTo(new BigDecimal("1E+100")) > 0) {
-        total = importRawValue;
-      } else if (importRawValue.abs().compareTo(new BigDecimal("1E+100")) > 0) {
-        total = manufactureRawValue;
-      } else {
-        total = manufactureRawValue.add(importRawValue);
-      }
-
-      boolean emptyStreams = total.compareTo(BigDecimal.ZERO) == 0;
+      boolean emptyStreams = isEmptyStreams(manufactureValue, importValue);
 
       // Get initial charges
       EngineNumber manufactureInitialChargeRaw = getRawInitialChargeFor(application, substance, "manufacture");
@@ -414,6 +399,23 @@ public class SingleThreadEngine implements Engine {
     }
   }
 
+  private static boolean isEmptyStreams(EngineNumber manufactureValue, EngineNumber importValue) {
+    BigDecimal manufactureRawValue = manufactureValue.getValue();
+    BigDecimal importRawValue = importValue.getValue();
+    BigDecimal total;
+
+    // Check for finite values (BigDecimal doesn't have infinity, but we can check for very large values)
+    if (manufactureRawValue.abs().compareTo(new BigDecimal("1E+100")) > 0) {
+      total = importRawValue;
+    } else if (importRawValue.abs().compareTo(new BigDecimal("1E+100")) > 0) {
+      total = manufactureRawValue;
+    } else {
+      total = manufactureRawValue.add(importRawValue);
+    }
+
+    return total.compareTo(BigDecimal.ZERO) == 0;
+  }
+
   @Override
   public EngineNumber getRawInitialChargeFor(String application, String substance, String stream) {
     return streamKeeper.getInitialCharge(application, substance, stream);
@@ -464,9 +466,7 @@ public class SingleThreadEngine implements Engine {
     } else if ("manufacture".equals(stream) || "import".equals(stream)) {
       // For manufacture or import, check if that specific channel was last specified in units
       String lastUnits = streamKeeper.getLastSpecifiedUnits(application, substance);
-      if (lastUnits != null && lastUnits.startsWith("unit")) {
-        return false; // Add recharge on top
-      }
+      return lastUnits == null || !lastUnits.startsWith("unit"); // Add recharge on top
     }
 
     return true;
