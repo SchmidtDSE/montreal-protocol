@@ -73,7 +73,7 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "business as usual";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     // Convert to list for checking results across multiple years
     List<EngineResult> resultsList = results.collect(Collectors.toList());
 
@@ -81,7 +81,7 @@ public class LiveTests {
     for (int year = 1; year <= 3; year++) {
       EngineResult result = getResult(resultsList.stream(), year, "testApp", "testSubstance");
       assertNotNull(result, "Should have result for testApp/testSubstance in year " + year);
-      
+
       // Basic verification that we have results (specific values depend on the QTA content)
       assertNotNull(result.getManufacture(), "Should have manufacture data in year " + year);
     }
@@ -100,7 +100,7 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "business as usual";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     List<EngineResult> resultsList = results.collect(Collectors.toList());
     EngineResult result = getResult(resultsList.stream(), 1, "test", "test");
     assertNotNull(result, "Should have result for test/test in year 1");
@@ -125,7 +125,7 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "business as usual";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     List<EngineResult> resultsList = results.collect(Collectors.toList());
     EngineResult result = getResult(resultsList.stream(), 1, "test", "test");
     assertNotNull(result, "Should have result for test/test in year 1");
@@ -156,7 +156,7 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "business as usual";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     List<EngineResult> resultsList = results.collect(Collectors.toList());
     EngineResult result = getResult(resultsList.stream(), 1, "test", "test");
     assertNotNull(result, "Should have result for test/test in year 1");
@@ -181,7 +181,7 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "business as usual";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     List<EngineResult> resultsList = results.collect(Collectors.toList());
     EngineResult result = getResult(resultsList.stream(), 1, "test", "test");
     assertNotNull(result, "Should have result for test/test in year 1");
@@ -206,7 +206,7 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "business as usual";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     List<EngineResult> resultsList = results.collect(Collectors.toList());
     EngineResult result = getResult(resultsList.stream(), 1, "test", "test");
     assertNotNull(result, "Should have result for test/test in year 1");
@@ -218,7 +218,7 @@ public class LiveTests {
         "Manufacture units should be kg");
   }
 
-  /*
+  /**
    * Test basic_replace.qta produces expected values.
    * This test uses KigaliSimFacade.runScenarioWithResults to properly run the simulation.
    * Currently commented out due to assertion failures that need investigation.
@@ -233,42 +233,42 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "Sim";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     // Convert to list for multiple access
     List<EngineResult> resultsList = results.collect(Collectors.toList());
 
     // Check year 1 consumption (following JS test pattern)
-    EngineResult recordAYear1 = getResult(resultsList.stream(), 1, "Test", "Sub A");
-    assertNotNull(recordAYear1, "Should have result for Test/Sub A in year 1");
-    assertEquals(10000000.0, recordAYear1.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1A = getResult(resultsList.stream(), 1, "Test", "Sub A");
+    assertNotNull(recordYear1A, "Should have result for Test/Sub A in year 1");
+    assertEquals(10000000.0, recordYear1A.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub A GHG consumption should be 10000000 tCO2e in year 1");
-    assertEquals("tCO2e", recordAYear1.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1A.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 1");
 
-    EngineResult recordBYear1 = getResult(resultsList.stream(), 1, "Test", "Sub B");
-    assertNotNull(recordBYear1, "Should have result for Test/Sub B in year 1");
-    assertEquals(0.0, recordBYear1.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1B = getResult(resultsList.stream(), 1, "Test", "Sub B");
+    assertNotNull(recordYear1B, "Should have result for Test/Sub B in year 1");
+    assertEquals(0.0, recordYear1B.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub B GHG consumption should be 0 tCO2e in year 1");
-    assertEquals("tCO2e", recordBYear1.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1B.getGhgConsumption().getUnits(),
         "Sub B GHG consumption units should be tCO2e in year 1");
 
     // Check year 10 consumption
-    EngineResult recordAYear10 = getResult(resultsList.stream(), 10, "Test", "Sub A");
-    assertNotNull(recordAYear10, "Should have result for Test/Sub A in year 10");
-    assertEquals(0.0, recordAYear10.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1A0 = getResult(resultsList.stream(), 10, "Test", "Sub A");
+    assertNotNull(recordYear1A0, "Should have result for Test/Sub A in year 10");
+    assertEquals(0.0, recordYear1A0.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub A GHG consumption should be 0 tCO2e in year 10");
-    assertEquals("tCO2e", recordAYear10.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1A0.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 10");
 
-    EngineResult recordBYear10 = getResult(resultsList.stream(), 10, "Test", "Sub B");
-    assertNotNull(recordBYear10, "Should have result for Test/Sub B in year 10");
-    assertEquals(1000000.0, recordBYear10.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear10B = getResult(resultsList.stream(), 10, "Test", "Sub B");
+    assertNotNull(recordYear10B, "Should have result for Test/Sub B in year 10");
+    assertEquals(1000000.0, recordYear10B.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub B GHG consumption should be 1000000 tCO2e in year 10");
-    assertEquals("tCO2e", recordBYear10.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear10B.getGhgConsumption().getUnits(),
         "Sub B GHG consumption units should be tCO2e in year 10");
   }
 
-  /*
+  /**
    * Test basic_replace_simple.qta produces expected values.
    * This test uses KigaliSimFacade.runScenarioWithResults to properly run the simulation.
    * Currently commented out due to assertion failures that need investigation.
@@ -283,42 +283,42 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "Sim";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     // Convert to list for multiple access
     List<EngineResult> resultsList = results.collect(Collectors.toList());
 
     // Check year 1 - no replacement yet (following JS test pattern)
-    EngineResult recordAYear1 = getResult(resultsList.stream(), 1, "Test", "Sub A");
-    assertNotNull(recordAYear1, "Should have result for Test/Sub A in year 1");
-    assertEquals(10000000.0, recordAYear1.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1A = getResult(resultsList.stream(), 1, "Test", "Sub A");
+    assertNotNull(recordYear1A, "Should have result for Test/Sub A in year 1");
+    assertEquals(10000000.0, recordYear1A.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub A GHG consumption should be 10000000 tCO2e in year 1");
-    assertEquals("tCO2e", recordAYear1.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1A.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 1");
 
-    EngineResult recordBYear1 = getResult(resultsList.stream(), 1, "Test", "Sub B");
-    assertNotNull(recordBYear1, "Should have result for Test/Sub B in year 1");
-    assertEquals(0.0, recordBYear1.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1B = getResult(resultsList.stream(), 1, "Test", "Sub B");
+    assertNotNull(recordYear1B, "Should have result for Test/Sub B in year 1");
+    assertEquals(0.0, recordYear1B.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub B GHG consumption should be 0 tCO2e in year 1");
-    assertEquals("tCO2e", recordBYear1.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1B.getGhgConsumption().getUnits(),
         "Sub B GHG consumption units should be tCO2e in year 1");
 
     // Check year 10 - replacement should result in complete shift from A to B
-    EngineResult recordAYear10 = getResult(resultsList.stream(), 10, "Test", "Sub A");
-    assertNotNull(recordAYear10, "Should have result for Test/Sub A in year 10");
-    assertEquals(0.0, recordAYear10.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1A0 = getResult(resultsList.stream(), 10, "Test", "Sub A");
+    assertNotNull(recordYear1A0, "Should have result for Test/Sub A in year 10");
+    assertEquals(0.0, recordYear1A0.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub A GHG consumption should be 0 tCO2e in year 10");
-    assertEquals("tCO2e", recordAYear10.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1A0.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 10");
 
-    EngineResult recordBYear10 = getResult(resultsList.stream(), 10, "Test", "Sub B");
-    assertNotNull(recordBYear10, "Should have result for Test/Sub B in year 10");
-    assertEquals(10000000.0, recordBYear10.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear10B = getResult(resultsList.stream(), 10, "Test", "Sub B");
+    assertNotNull(recordYear10B, "Should have result for Test/Sub B in year 10");
+    assertEquals(10000000.0, recordYear10B.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub B GHG consumption should be 10000000 tCO2e in year 10");
-    assertEquals("tCO2e", recordBYear10.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear10B.getGhgConsumption().getUnits(),
         "Sub B GHG consumption units should be tCO2e in year 10");
   }
 
-  /*
+  /**
    * Test basic_replace_units.qta produces expected values.
    * This test verifies units-based replacement using KigaliSimFacade.
    * Currently commented out due to unit conversion issues.
@@ -333,42 +333,42 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "Sim";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     // Convert to list for multiple access
     List<EngineResult> resultsList = results.collect(Collectors.toList());
 
     // Check year 1 - no replacement yet (following JS test pattern)
-    EngineResult recordAYear1 = getResult(resultsList.stream(), 1, "Test", "Sub A");
-    assertNotNull(recordAYear1, "Should have result for Test/Sub A in year 1");
-    assertEquals(10000000.0, recordAYear1.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1A = getResult(resultsList.stream(), 1, "Test", "Sub A");
+    assertNotNull(recordYear1A, "Should have result for Test/Sub A in year 1");
+    assertEquals(10000000.0, recordYear1A.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub A GHG consumption should be 10000000 tCO2e in year 1");
-    assertEquals("tCO2e", recordAYear1.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1A.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 1");
 
-    EngineResult recordBYear1 = getResult(resultsList.stream(), 1, "Test", "Sub B");
-    assertNotNull(recordBYear1, "Should have result for Test/Sub B in year 1");
-    assertEquals(0.0, recordBYear1.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1B = getResult(resultsList.stream(), 1, "Test", "Sub B");
+    assertNotNull(recordYear1B, "Should have result for Test/Sub B in year 1");
+    assertEquals(0.0, recordYear1B.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub B GHG consumption should be 0 tCO2e in year 1");
-    assertEquals("tCO2e", recordBYear1.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1B.getGhgConsumption().getUnits(),
         "Sub B GHG consumption units should be tCO2e in year 1");
 
     // Check year 10 - replacement active for years 5-10 (6 years total)
     // Sub A: Original 100 mt, replaced 6 × (1000 units × 10 kg/unit) = 60 mt
     // Remaining: 40 mt × 100 tCO2e/mt = 4,000,000 tCO2e
-    EngineResult recordAYear10 = getResult(resultsList.stream(), 10, "Test", "Sub A");
-    assertNotNull(recordAYear10, "Should have result for Test/Sub A in year 10");
-    assertEquals(4000000.0, recordAYear10.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear1A0 = getResult(resultsList.stream(), 10, "Test", "Sub A");
+    assertNotNull(recordYear1A0, "Should have result for Test/Sub A in year 10");
+    assertEquals(4000000.0, recordYear1A0.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub A GHG consumption should be 4000000 tCO2e in year 10");
-    assertEquals("tCO2e", recordAYear10.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear1A0.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 10");
 
     // Sub B: Added 6 × (1000 units × 20 kg/unit) = 120 mt
     // Total: 120 mt × 10 tCO2e/mt = 1,200,000 tCO2e
-    EngineResult recordBYear10 = getResult(resultsList.stream(), 10, "Test", "Sub B");
-    assertNotNull(recordBYear10, "Should have result for Test/Sub B in year 10");
-    assertEquals(1200000.0, recordBYear10.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    EngineResult recordYear10B = getResult(resultsList.stream(), 10, "Test", "Sub B");
+    assertNotNull(recordYear10B, "Should have result for Test/Sub B in year 10");
+    assertEquals(1200000.0, recordYear10B.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub B GHG consumption should be 1200000 tCO2e in year 10");
-    assertEquals("tCO2e", recordBYear10.getGhgConsumption().getUnits(),
+    assertEquals("tCO2e", recordYear10B.getGhgConsumption().getUnits(),
         "Sub B GHG consumption units should be tCO2e in year 10");
   }
 
@@ -385,41 +385,41 @@ public class LiveTests {
     // Run the scenario using KigaliSimFacade
     String scenarioName = "Sim";
     Stream<EngineResult> results = KigaliSimFacade.runScenarioWithResults(program, scenarioName);
-    
+
     // Convert to list for multiple access
     List<EngineResult> resultsList = results.collect(Collectors.toList());
 
     // Print actual values for year 1
-    EngineResult recordAYear1 = getResult(resultsList.stream(), 1, "Test", "Sub A");
-    if (recordAYear1 != null) {
-      System.out.println("Sub A Year 1 - GHG: " + recordAYear1.getGhgConsumption().getValue() + " " + recordAYear1.getGhgConsumption().getUnits());
-      System.out.println("Sub A Year 1 - Manufacture: " + recordAYear1.getManufacture().getValue() + " " + recordAYear1.getManufacture().getUnits());
+    EngineResult recordYear1A = getResult(resultsList.stream(), 1, "Test", "Sub A");
+    if (recordYear1A != null) {
+      System.out.println("Sub A Year 1 - GHG: " + recordYear1A.getGhgConsumption().getValue() + " " + recordYear1A.getGhgConsumption().getUnits());
+      System.out.println("Sub A Year 1 - Manufacture: " + recordYear1A.getManufacture().getValue() + " " + recordYear1A.getManufacture().getUnits());
     }
 
-    EngineResult recordBYear1 = getResult(resultsList.stream(), 1, "Test", "Sub B");
-    if (recordBYear1 != null) {
-      System.out.println("Sub B Year 1 - GHG: " + recordBYear1.getGhgConsumption().getValue() + " " + recordBYear1.getGhgConsumption().getUnits());
-      System.out.println("Sub B Year 1 - Manufacture: " + recordBYear1.getManufacture().getValue() + " " + recordBYear1.getManufacture().getUnits());
+    EngineResult recordYear1B = getResult(resultsList.stream(), 1, "Test", "Sub B");
+    if (recordYear1B != null) {
+      System.out.println("Sub B Year 1 - GHG: " + recordYear1B.getGhgConsumption().getValue() + " " + recordYear1B.getGhgConsumption().getUnits());
+      System.out.println("Sub B Year 1 - Manufacture: " + recordYear1B.getManufacture().getValue() + " " + recordYear1B.getManufacture().getUnits());
     }
 
     // Print actual values for year 10
-    EngineResult recordAYear10 = getResult(resultsList.stream(), 10, "Test", "Sub A");
-    if (recordAYear10 != null) {
-      System.out.println("Sub A Year 10 - GHG: " + recordAYear10.getGhgConsumption().getValue() + " " + recordAYear10.getGhgConsumption().getUnits());
-      System.out.println("Sub A Year 10 - Manufacture: " + recordAYear10.getManufacture().getValue() + " " + recordAYear10.getManufacture().getUnits());
+    EngineResult recordYear1A0 = getResult(resultsList.stream(), 10, "Test", "Sub A");
+    if (recordYear1A0 != null) {
+      System.out.println("Sub A Year 10 - GHG: " + recordYear1A0.getGhgConsumption().getValue() + " " + recordYear1A0.getGhgConsumption().getUnits());
+      System.out.println("Sub A Year 10 - Manufacture: " + recordYear1A0.getManufacture().getValue() + " " + recordYear1A0.getManufacture().getUnits());
     }
 
-    EngineResult recordBYear10 = getResult(resultsList.stream(), 10, "Test", "Sub B");
-    if (recordBYear10 != null) {
-      System.out.println("Sub B Year 10 - GHG: " + recordBYear10.getGhgConsumption().getValue() + " " + recordBYear10.getGhgConsumption().getUnits());
-      System.out.println("Sub B Year 10 - Manufacture: " + recordBYear10.getManufacture().getValue() + " " + recordBYear10.getManufacture().getUnits());
+    EngineResult recordYear10B = getResult(resultsList.stream(), 10, "Test", "Sub B");
+    if (recordYear10B != null) {
+      System.out.println("Sub B Year 10 - GHG: " + recordYear10B.getGhgConsumption().getValue() + " " + recordYear10B.getGhgConsumption().getUnits());
+      System.out.println("Sub B Year 10 - Manufacture: " + recordYear10B.getManufacture().getValue() + " " + recordYear10B.getManufacture().getUnits());
     }
-    
+
     // Print all available results for inspection
     System.out.println("All results:");
     for (EngineResult result : resultsList) {
-      System.out.println("Year " + result.getYear() + " " + result.getApplication() + "/" + result.getSubstance() + 
-          " - GHG: " + result.getGhgConsumption().getValue() + " " + result.getGhgConsumption().getUnits());
+      System.out.println("Year " + result.getYear() + " " + result.getApplication() + "/" + result.getSubstance()
+          + " - GHG: " + result.getGhgConsumption().getValue() + " " + result.getGhgConsumption().getUnits());
     }
   }
 
