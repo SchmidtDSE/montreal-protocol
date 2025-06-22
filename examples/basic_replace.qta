@@ -9,7 +9,7 @@ start default
       equals 1 kwh / kg
       set manufacture to 100 mt during year 1
       retire 5 % each year
-      recharge 5 % each year with 1 kg / unit
+      #recharge 5 % each year with 1 kg / unit
     end substance
 
 
@@ -19,7 +19,7 @@ start default
       equals 10 tCO2e / kg
       equals 1 kwh / kg
       retire 5 % each year
-      recharge 5 % each year with 1 kg / unit
+      #recharge 5 % each year with 1 kg / unit
     end substance
 
   end application

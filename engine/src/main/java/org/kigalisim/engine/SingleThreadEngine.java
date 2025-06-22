@@ -11,6 +11,7 @@
 package org.kigalisim.engine;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -328,11 +329,84 @@ public class SingleThreadEngine implements Engine {
   @Override
   public EngineNumber getInitialCharge(String stream) {
     if ("sales".equals(stream)) {
-      // For now, implement a simplified version - the full implementation is complex
-      // and involves pooling initial charges from manufacture and import
       String application = scope.getApplication();
       String substance = scope.getSubstance();
-      return getRawInitialChargeFor(application, substance, "manufacture");
+
+      // Get manufacture and import values
+      EngineNumber manufactureRaw = getStream("manufacture");
+      EngineNumber manufactureValue = unitConverter.convert(manufactureRaw, "kg");
+
+      if (manufactureValue.getValue().compareTo(BigDecimal.ZERO) == 0) {
+        return getRawInitialChargeFor(application, substance, "import");
+      }
+
+      EngineNumber importRaw = getStream("import");
+      EngineNumber importValue = unitConverter.convert(importRaw, "kg");
+
+      if (importValue.getValue().compareTo(BigDecimal.ZERO) == 0) {
+        return getRawInitialChargeFor(application, substance, "manufacture");
+      }
+
+      // Determine total
+      BigDecimal manufactureRawValue = manufactureValue.getValue();
+      BigDecimal importRawValue = importValue.getValue();
+      BigDecimal total;
+
+      // Check for finite values (BigDecimal doesn't have infinity, but we can check for very large values)
+      if (manufactureRawValue.abs().compareTo(new BigDecimal("1E+100")) > 0) {
+        total = importRawValue;
+      } else if (importRawValue.abs().compareTo(new BigDecimal("1E+100")) > 0) {
+        total = manufactureRawValue;
+      } else {
+        total = manufactureRawValue.add(importRawValue);
+      }
+
+      boolean emptyStreams = total.compareTo(BigDecimal.ZERO) == 0;
+
+      // Get initial charges
+      EngineNumber manufactureInitialChargeRaw = getRawInitialChargeFor(application, substance, "manufacture");
+      EngineNumber manufactureInitialChargeUnbounded = unitConverter.convert(
+          manufactureInitialChargeRaw, "kg / unit");
+
+      EngineNumber importInitialChargeRaw = getRawInitialChargeFor(application, substance, "import");
+      EngineNumber importInitialChargeUnbounded = unitConverter.convert(
+          importInitialChargeRaw, "kg / unit");
+
+      // Get bounded values
+      EngineNumber manufactureInitialCharge = manufactureInitialChargeUnbounded.getValue().compareTo(BigDecimal.ZERO) == 0 
+          ? importInitialChargeUnbounded 
+          : manufactureInitialChargeUnbounded;
+
+      EngineNumber importInitialCharge = importInitialChargeUnbounded.getValue().compareTo(BigDecimal.ZERO) == 0 
+          ? manufactureInitialChargeUnbounded 
+          : importInitialChargeUnbounded;
+
+      // Calculate units
+      BigDecimal manufactureKg = emptyStreams ? BigDecimal.ONE : manufactureValue.getValue();
+      BigDecimal importKg = emptyStreams ? BigDecimal.ONE : importValue.getValue();
+      BigDecimal manufactureKgUnit = manufactureInitialCharge.getValue();
+      BigDecimal importKgUnit = importInitialCharge.getValue();
+
+      BigDecimal manufactureUnits = manufactureKgUnit.compareTo(BigDecimal.ZERO) == 0 
+          ? BigDecimal.ZERO 
+          : manufactureKg.divide(manufactureKgUnit, MathContext.DECIMAL128);
+
+      BigDecimal importUnits = importKgUnit.compareTo(BigDecimal.ZERO) == 0 
+          ? BigDecimal.ZERO 
+          : importKg.divide(importKgUnit, MathContext.DECIMAL128);
+
+      boolean emptyPopulation = manufactureUnits.compareTo(BigDecimal.ZERO) == 0 
+          && importUnits.compareTo(BigDecimal.ZERO) == 0;
+
+      if (emptyPopulation) {
+        return new EngineNumber(BigDecimal.ZERO, "kg / unit");
+      } else {
+        BigDecimal newSumWeighted = manufactureKgUnit.multiply(manufactureUnits)
+            .add(importKgUnit.multiply(importUnits));
+        BigDecimal newSumWeight = manufactureUnits.add(importUnits);
+        BigDecimal pooledKgUnit = newSumWeighted.divide(newSumWeight, MathContext.DECIMAL128);
+        return new EngineNumber(pooledKgUnit, "kg / unit");
+      }
     } else {
       String application = scope.getApplication();
       String substance = scope.getSubstance();
