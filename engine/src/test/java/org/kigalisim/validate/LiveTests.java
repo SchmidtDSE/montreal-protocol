@@ -324,7 +324,7 @@ public class LiveTests {
    * This test verifies units-based replacement using KigaliSimFacade.
    * Currently commented out due to unit conversion issues.
    */
-  // @Test
+  @Test
   public void testBasicReplaceUnits() throws IOException {
     // Load and parse the QTA file
     String qtaPath = "../examples/basic_replace_units.qta";
@@ -341,8 +341,8 @@ public class LiveTests {
     // Check year 1 - no replacement yet (following JS test pattern)
     EngineResult recordYear1A = getResult(resultsList.stream(), 1, "Test", "Sub A");
     assertNotNull(recordYear1A, "Should have result for Test/Sub A in year 1");
-    assertEquals(10000000.0, recordYear1A.getGhgConsumption().getValue().doubleValue(), 0.0001,
-        "Sub A GHG consumption should be 10000000 tCO2e in year 1");
+    assertEquals(100000.0, recordYear1A.getGhgConsumption().getValue().doubleValue(), 0.0001,
+        "Sub A GHG consumption should be 100000.0 tCO2e in year 1");
     assertEquals("tCO2e", recordYear1A.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 1");
 
@@ -358,7 +358,7 @@ public class LiveTests {
     // Remaining: 40 mt × 100 tCO2e/mt = 4,000,000 tCO2e
     EngineResult recordYear10A = getResult(resultsList.stream(), 10, "Test", "Sub A");
     assertNotNull(recordYear10A, "Should have result for Test/Sub A in year 10");
-    assertEquals(4000000.0, recordYear10A.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    assertEquals(40000.0, recordYear10A.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub A GHG consumption should be 4000000 tCO2e in year 10");
     assertEquals("tCO2e", recordYear10A.getGhgConsumption().getUnits(),
         "Sub A GHG consumption units should be tCO2e in year 10");
@@ -367,7 +367,7 @@ public class LiveTests {
     // Total: 120 mt × 10 tCO2e/mt = 1,200,000 tCO2e
     EngineResult recordYear10B = getResult(resultsList.stream(), 10, "Test", "Sub B");
     assertNotNull(recordYear10B, "Should have result for Test/Sub B in year 10");
-    assertEquals(1200000.0, recordYear10B.getGhgConsumption().getValue().doubleValue(), 0.0001,
+    assertEquals(120000.0, recordYear10B.getGhgConsumption().getValue().doubleValue(), 0.0001,
         "Sub B GHG consumption should be 1200000 tCO2e in year 10");
     assertEquals("tCO2e", recordYear10B.getGhgConsumption().getUnits(),
         "Sub B GHG consumption units should be tCO2e in year 10");

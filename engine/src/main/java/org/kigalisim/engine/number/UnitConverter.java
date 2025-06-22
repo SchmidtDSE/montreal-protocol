@@ -269,14 +269,14 @@ public class UnitConverter {
       BigDecimal originalValue = target.getValue();
       EngineNumber conversion = stateGetter.getSubstanceConsumption();
       BigDecimal conversionValue = conversion.getValue();
-      String newUnits = conversion.getUnits().split(" / ")[1];
+      String newUnits = conversion.getUnits().split("/")[1].strip();
       BigDecimal newValue = originalValue.divide(conversionValue, MATH_CONTEXT);
       return new EngineNumber(newValue, newUnits);
     } else if ("unit".equals(currentUnits) || "units".equals(currentUnits)) {
       BigDecimal originalValue = target.getValue();
       EngineNumber conversion = stateGetter.getAmortizedUnitVolume();
       BigDecimal conversionValue = conversion.getValue();
-      String newUnits = conversion.getUnits().split(" / ")[0];
+      String newUnits = conversion.getUnits().split("/")[0].strip();
       BigDecimal newValue = originalValue.multiply(conversionValue);
       return new EngineNumber(newValue, newUnits);
     } else if ("%".equals(currentUnits)) {
