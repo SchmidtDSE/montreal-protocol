@@ -524,7 +524,7 @@ public class UnitConverterTest {
     // Test with different whitespace configurations
     EngineNumber result1 = convertUnits(new EngineNumber(20, "kg/unit"), "kg", mockStateGetter);
     EngineNumber result2 = convertUnits(new EngineNumber(20, "kg / unit"), "kg", mockStateGetter);
-    EngineNumber result3 = convertUnits(new EngineNumber(20, "kg  /  unit"), "kg", mockStateGetter);
+    final EngineNumber result3 = convertUnits(new EngineNumber(20, "kg  /  unit"), "kg", mockStateGetter);
 
     // All should produce the same result
     assertCloseTo(200, result1.getValue(), 0.001);
