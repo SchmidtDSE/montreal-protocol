@@ -5,7 +5,7 @@
  */
 
 import {EngineNumber} from "engine_number";
-import {AggregatedResult, SimulationAttributeToExporterResult} from "engine_struct";
+import {AggregatedResult, AttributeToExporterResult} from "engine_struct";
 
 /**
  * Builder class for creating metric computation strategies.
@@ -151,11 +151,27 @@ class ReportDataWrapper {
   /**
    * Create a new report data wrapper.
    *
-   * @param {Array<SimulationResult>} innerData - The raw report data to wrap.
+   * @param {Array<EngineResult>|Array<SimulationResult>} innerData - The raw report data to wrap.
    */
   constructor(innerData) {
     const self = this;
-    self._innerData = innerData;
+
+    // Check if innerData is an array of SimulationResult objects
+    if (innerData.length > 0 && innerData[0].getTrialResults) {
+      // Flatten the SimulationResult objects into an array of EngineResult objects
+      self._innerData = innerData.flatMap(simResult => {
+        const trialResults = simResult.getTrialResults();
+        return trialResults.flat(2).map(result => {
+          // Set the scenario name on each EngineResult
+          result._scenarioName = simResult.getName();
+          return result;
+        });
+      });
+    } else {
+      // Assume innerData is already an array of EngineResult objects
+      self._innerData = innerData;
+    }
+
     self._innerDataExporterAttributed = null;
 
     const strategyBuilder = new MetricStrategyBuilder();
@@ -351,7 +367,7 @@ class ReportDataWrapper {
    *
    * @param {FilterSet} filterSet - Filter set with attribution settings to
    *     apply.
-   * @returns {Array<SimulationResult>} The raw data.
+   * @returns {Array<EngineResult>} The raw data.
    */
   getRawData(filterSet) {
     const self = this;
@@ -406,7 +422,13 @@ class ReportDataWrapper {
   getScenarios(filterSet) {
     const self = this;
     if (filterSet.getScenario() === null) {
-      return new Set(self.getRawData(filterSet).map((x) => x.getName()));
+      const rawData = self.getRawData(filterSet);
+      try {
+        const scenarios = new Set(rawData.map((x) => x.getScenarioName()));
+        return scenarios;
+      } catch (e) {
+        throw e;
+      }
     } else {
       return new Set([filterSet.getScenario()]);
     }
@@ -738,13 +760,10 @@ class ReportDataWrapper {
     const allRecords = self.getRawData(filterSet);
 
     const scenario = filterSet.getScenario();
-    const scenarios = step(allRecords, scenario, (x) => x.getName());
-
-    const trials = scenarios.map((x) => x.getTrialResults());
-    const trialsFlat = trials.flat(3);
+    const withScenario = step(allRecords, scenario, (x) => x.getScenarioName());
 
     const year = filterSet.getYear();
-    const withYear = step(trialsFlat, year, (x) => x.getYear());
+    const withYear = step(withScenario, year, (x) => x.getYear());
 
     const app = filterSet.getApplication();
     const withApp = stepWithSubapp(withYear, app, (x) => x.getApplication());
@@ -756,16 +775,23 @@ class ReportDataWrapper {
   }
 
   /**
-   * Deocrate the inner data (SimulationResult) to attribute to exporter.
+   * Decorate the inner data (EngineResult) to attribute to exporter.
    *
    * @private
-   * @param {Array<SimulationResult>} rawResults - The results with attribute
+   * @param {Array<EngineResult>} rawResults - The results with attribute
    *     to importer that should be decorated.
-   * @returns {Array<SimulationAttributeToExporterResult>} Decorated version.
+   * @returns {Array<EngineResult>} Decorated version with AttributeToExporterResult.
    */
   _buildExporterAttributed(rawResults) {
     const self = this;
-    return rawResults.map((x) => new SimulationAttributeToExporterResult(x));
+    try {
+      const result = rawResults.map((x) => {
+        return new AttributeToExporterResult(x);
+      });
+      return result;
+    } catch (e) {
+      throw e;
+    }
   }
 }
 

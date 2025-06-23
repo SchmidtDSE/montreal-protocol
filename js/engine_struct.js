@@ -515,6 +515,16 @@ class AttributeToExporterResult {
     const self = this;
     return self._inner.getImportSupplement();
   }
+
+  /**
+   * Get the scenario name.
+   *
+   * @returns {string} The scenario name from the decorated result.
+   */
+  getScenarioName() {
+    const self = this;
+    return self._inner.getScenarioName();
+  }
 }
 
 /**
