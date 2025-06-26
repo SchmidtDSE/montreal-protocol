@@ -81,7 +81,6 @@ public class StreamKeeper {
   public void ensureSubstance(UseKey useKey) {
     String key = getKey(useKey);
     
-    // Single HashMap lookup instead of hasSubstance() which does containsKey()
     if (substances.get(key) != null) {
       return;
     }
@@ -646,7 +645,6 @@ public class StreamKeeper {
       throw new IllegalStateException("Scope cannot be null in " + context);
     }
     
-    // Single HashMap lookup instead of hasSubstance() which does containsKey()
     String keyString = getKey(key);
     if (substances.get(keyString) == null) {
       StringBuilder message = new StringBuilder();
