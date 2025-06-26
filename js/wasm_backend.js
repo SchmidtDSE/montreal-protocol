@@ -55,33 +55,57 @@ class ReportDataParser {
    * @returns {Array<EngineResult>} Array of parsed engine results.
    */
   static _parseCsvData(csvData) {
-    const lines = csvData.split("\n").filter((line) => line.trim());
+    const lines = csvData.split("\n");
+    const filteredLines = [];
+    
+    // Filter non-empty lines in single pass (avoid filter + trim chain)
+    for (let i = 0; i < lines.length; i++) {
+      const trimmed = lines[i].trim();
+      if (trimmed) {
+        filteredLines.push(trimmed);
+      }
+    }
 
-    if (lines.length === 0) {
+    if (filteredLines.length === 0) {
       return [];
     }
 
-    // Parse header to understand column structure
-    const headers = lines[0].split(",").map((h) => h.trim());
+    // Parse header with single split, trim in place (avoid map chain)
+    const headerLine = filteredLines[0];
+    const headers = headerLine.split(",");
+    const headerCount = headers.length;
+    
+    for (let i = 0; i < headerCount; i++) {
+      headers[i] = headers[i].trim();
+    }
+    
+    // Pre-calculate header indices for direct access
+    const headerIndices = {};
+    for (let i = 0; i < headerCount; i++) {
+      headerIndices[headers[i]] = i;
+    }
+
     const results = [];
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(",").map((v) => v.trim());
+    for (let i = 1; i < filteredLines.length; i++) {
+      const line = filteredLines[i];
+      const values = line.split(",");
 
-      if (values.length !== headers.length) {
+      if (values.length !== headerCount) {
         continue; // Skip malformed rows
       }
 
-      const row = {};
-      headers.forEach((header, index) => {
-        row[header] = values[index];
-      });
+      // Trim values in place (avoid map chain)
+      for (let j = 0; j < values.length; j++) {
+        values[j] = values[j].trim();
+      }
 
       try {
-        const engineResult = ReportDataParser._createEngineResult(row);
+        // Pass values array and indices instead of creating intermediate object
+        const engineResult = ReportDataParser._createEngineResult(values, headerIndices);
         results.push(engineResult);
       } catch (e) {
-        console.warn("Failed to parse row:", row, e);
+        console.warn("Failed to parse row:", values, e);
         // Continue parsing other rows
       }
     }
@@ -89,56 +113,63 @@ class ReportDataParser {
     return results;
   }
 
+
   /**
    * Create an EngineResult from a parsed CSV row.
    *
    * @private
-   * @param {Object} row - The parsed CSV row data.
+   * @param {Array<string>} values - The parsed CSV row values.
+   * @param {Object} headerIndices - Map of header names to array indices.
    * @returns {EngineResult} The created engine result.
    */
-  static _createEngineResult(row) {
+  static _createEngineResult(values, headerIndices) {
     // Helper function to parse Java EngineNumber.toString() format: "value units"
-    const parseEngineNumber = (valueStr, defaultUnits = "units") => {
-      if (!valueStr || valueStr.trim() === "") {
+    const parseEngineNumber = (valueStr, defaultUnits) => {
+      if (!valueStr) {
         return new EngineNumber(0, defaultUnits);
       }
-      const parts = valueStr.trim().split(/\s+/);
-      if (parts.length >= 2) {
-        // Format: "value units"
-        const value = parseFloat(parts[0]) || 0;
-        const units = parts.slice(1).join(" "); // Handle multi-word units
-        return new EngineNumber(value, units);
-      } else {
+      
+      // Find first space character instead of using regex split
+      const spaceIndex = valueStr.indexOf(" ");
+      if (spaceIndex === -1) {
         // Only value, use default units
-        const value = parseFloat(parts[0]) || 0;
+        const value = parseFloat(valueStr) || 0;
         return new EngineNumber(value, defaultUnits);
+      } else {
+        // Format: "value units"
+        const value = parseFloat(valueStr.substring(0, spaceIndex)) || 0;
+        const units = valueStr.substring(spaceIndex + 1); // Get units after space
+        return new EngineNumber(value, units);
       }
     };
 
+    // Direct array access using pre-calculated indices (avoid object creation)
+    const getValue = (field) => values[headerIndices[field]] || "";
+    
     // Extract fields matching Java CSV format
-    const application = row["application"] || "";
-    const substance = row["substance"] || "";
-    const year = parseInt(row["year"] || "0");
-    const scenarioName = row["scenario"] || ""; // Java uses "scenario", not "scenarioName"
-    const trialNumber = parseInt(row["trial"] || "0"); // Java uses "trial", not "trialNumber"
+    const application = getValue("application");
+    const substance = getValue("substance");
+    const year = parseInt(getValue("year")) || 0;
+    const scenarioName = getValue("scenario"); // Java uses "scenario", not "scenarioName"
+    const trialNumber = parseInt(getValue("trial")) || 0; // Java uses "trial", not "trialNumber"
 
     // Parse EngineNumber fields from Java's "value units" format
-    const manufactureValue = parseEngineNumber(row["manufacture"], "kg");
-    const importValue = parseEngineNumber(row["import"], "kg");
-    const recycleValue = parseEngineNumber(row["recycle"], "kg");
-    const domesticConsumptionValue = parseEngineNumber(row["domesticConsumption"], "tCO2e");
-    const importConsumptionValue = parseEngineNumber(row["importConsumption"], "tCO2e");
-    const recycleConsumptionValue = parseEngineNumber(row["recycleConsumption"], "tCO2e");
-    const populationValue = parseEngineNumber(row["population"], "units");
-    const populationNew = parseEngineNumber(row["populationNew"], "units");
-    const rechargeEmissions = parseEngineNumber(row["rechargeEmissions"], "tCO2e");
-    const eolEmissions = parseEngineNumber(row["eolEmissions"], "tCO2e");
-    const energyConsumption = parseEngineNumber(row["energyConsumption"], "kwh");
+    const manufactureValue = parseEngineNumber(getValue("manufacture"), "kg");
+    const importValue = parseEngineNumber(getValue("import"), "kg");
+    const recycleValue = parseEngineNumber(getValue("recycle"), "kg");
+    const domesticConsumptionValue = parseEngineNumber(getValue("domesticConsumption"), "tCO2e");
+    const importConsumptionValue = parseEngineNumber(getValue("importConsumption"), "tCO2e");
+    const recycleConsumptionValue = parseEngineNumber(getValue("recycleConsumption"), "tCO2e");
+    const populationValue = parseEngineNumber(getValue("population"), "units");
+    const populationNew = parseEngineNumber(getValue("populationNew"), "units");
+    const rechargeEmissions = parseEngineNumber(getValue("rechargeEmissions"), "tCO2e");
+    const eolEmissions = parseEngineNumber(getValue("eolEmissions"), "tCO2e");
+    const energyConsumption = parseEngineNumber(getValue("energyConsumption"), "kwh");
 
     // Handle importSupplement fields from Java CSV
-    const initialChargeValue = parseEngineNumber(row["initialChargeValue"], "kg");
-    const initialChargeConsumption = parseEngineNumber(row["initialChargeConsumption"], "tCO2e");
-    const importNewPopulation = parseEngineNumber(row["importNewPopulation"], "units");
+    const initialChargeValue = parseEngineNumber(getValue("initialChargeValue"), "kg");
+    const initialChargeConsumption = parseEngineNumber(getValue("initialChargeConsumption"), "tCO2e");
+    const importNewPopulation = parseEngineNumber(getValue("importNewPopulation"), "units");
 
     // Create importSupplement object using the proper ImportSupplement class
     const importSupplement = new ImportSupplement(
