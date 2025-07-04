@@ -6,10 +6,10 @@ permissions:
   contents: read
 
 jobs:
-  lint:
+  lintJs:
     environment: build
     runs-on: ubuntu-latest
-    name: Run Linter
+    name: Run JS Linter
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,34 +17,13 @@ jobs:
         uses: actions/setup-node@v4
       - name: Install node deps
         run: npm install --dev
+        working-directory: ./editor
       - name: Lint production code
         run: npx eslint ./js/*.js
+        working-directory: ./editor
       - name: Lint test code
         run: npx eslint ./test/*.js
-  unitTests:
-    environment: build
-    runs-on: ubuntu-latest
-    name: Run Unit Tests
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Node
-        uses: actions/setup-node@v4
-      - name: Install Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '11'
-      - name: Install node deps
-        run: npm install
-      - name: Build
-        run: bash ./support/make.sh
-      - name: Install front end deps
-        run: bash ./support/install_deps.sh
-      - name: Install browser
-        run: sudo apt install -y chromium-browser
-      - name: Run unit tests
-        run: npx grunt
+        working-directory: ./editor
   checkCacheBusters:
     environment: build
     runs-on: ubuntu-latest
@@ -57,26 +36,156 @@ jobs:
       - name: Install Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '11'
+          distribution: 'temurin'
+          java-version: '21'
       - name: Install node deps
         run: npm install
+        working-directory: ./editor
       - name: Build
         run: bash ./support/make.sh
+        working-directory: ./editor
       - name: Install front end deps
         run: bash ./support/install_deps.sh
+        working-directory: ./editor
       - name: Prepare deploy
         run: bash ./support/prepare_deploy.sh
+        working-directory: ./editor
       - name: Copy guide
-        run: cp -r ./guide ./deploy/guide
+        run: cp -r ./docs/guide ./editor/deploy/guide
       - name: Update cache busters
         run: bash ./support/update_cache_busters.sh
-  deploy:
-    environment: deploy
-    if: github.ref == 'refs/heads/deploy'
+        working-directory: ./editor
+  buildEngine:
+    environment: Build
     runs-on: ubuntu-latest
-    name: Deploy
-    needs: [lint, unitTests, checkCacheBusters]
+    name: Build Fat Jar
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build fat jar
+        run: ./gradlew fatJar
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: fatJar
+          path: engine/build/libs/kigalisim-fat.jar
+  checkEngine:
+    needs: buildEngine
+    environment: Build
+    runs-on: ubuntu-latest
+    name: Static Engine Checks
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Check grammar
+        run: ./gradlew generateGrammarSource
+      - name: Check main style
+        run: ./gradlew checkstyleMain
+      - name: Check test style
+        run: ./gradlew checkstyleTest
+  testEngine:
+    needs: buildEngine
+    environment: Build
+    runs-on: ubuntu-latest
+    name: Test Engine
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Run tests
+        run: ./gradlew test
+  runEngineLocal:
+    needs: buildEngine
+    environment: Build
+    runs-on: ubuntu-latest
+    name: Run Engine Locally
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Download fat jar
+        uses: actions/download-artifact@v4
+        with:
+          name: fatJar
+          path: engine/build/libs/
+      - name: Run example QTA file with CSV export
+        run: java -jar build/libs/kigalisim-fat.jar run ../examples/minimal_interpreter.qta -o /tmp/minimal_interpreter.csv
+      - name: Check CSV file was created and is non-empty
+        run: |
+          if [ ! -f /tmp/minimal_interpreter.csv ]; then
+            echo "ERROR: CSV file was not created"
+            exit 1
+          fi
+          if [ ! -s /tmp/minimal_interpreter.csv ]; then
+            echo "ERROR: CSV file is empty"
+            exit 1
+          fi
+          echo "SUCCESS: CSV file was created and is non-empty"
+          echo "CSV file contents:"
+          cat /tmp/minimal_interpreter.csv
+  buildWasm:
+    environment: Build
+    needs: [ checkEngine, buildEngine, testEngine, runEngineLocal ]
+    runs-on: ubuntu-latest
+    name: Build WASM Engine
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./engine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build war
+        run: ./gradlew war
+      - name: Upload war
+        uses: actions/upload-artifact@v4
+        with:
+          name: war
+          path: engine/build/libs/KigaliSim.war
+  unitTestsBrowser:
+    environment: build
+    runs-on: ubuntu-latest
+    name: Run Unit Tests
+    needs: [ buildWasm ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -85,20 +194,94 @@ jobs:
       - name: Install Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '11'
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Download WASM war
+        uses: actions/download-artifact@v4
+        with:
+          name: war
+          path: ./
+      - name: Extract WASM files to wasm directory
+        run: bash ./support/update_wasm_from_war.sh ../KigaliSim.war
+        working-directory: ./editor
       - name: Install node deps
         run: npm install
+        working-directory: ./editor
       - name: Build
         run: bash ./support/make.sh
+        working-directory: ./editor
       - name: Install front end deps
         run: bash ./support/install_deps.sh
+        working-directory: ./editor
+      - name: Install browser
+        run: sudo apt install -y chromium-browser
+      - name: Run unit tests
+        run: npx grunt
+        working-directory: ./editor
+  deploy-prep:
+    environment: build
+    runs-on: ubuntu-latest
+    name: Deploy Preparation
+    needs: [ lintJs, unitTestsBrowser, checkCacheBusters, buildWasm ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Download WASM war
+        uses: actions/download-artifact@v4
+        with:
+          name: war
+          path: ./
+      - name: Extract WASM files to wasm directory
+        run: bash ./support/update_wasm_from_war.sh ../KigaliSim.war
+        working-directory: ./editor
+      - name: Install node deps
+        run: npm install
+        working-directory: ./editor
+      - name: Build
+        run: bash ./support/make.sh
+        working-directory: ./editor
+      - name: Install front end deps
+        run: bash ./support/install_deps.sh
+        working-directory: ./editor
       - name: Prepare deploy
         run: bash ./support/prepare_deploy.sh
+        working-directory: ./editor
       - name: Copy guide
-        run: cp -r ./guide ./deploy/guide
+        run: cp -r ./docs/guide ./editor/deploy/guide
+      - name: Copy case study QTA file to guide
+        run: cp ./examples/case_study.qta ./editor/deploy/guide/case_study.qta
+      - name: Copy subdivided case study QTA file to guide
+        run: cp ./examples/case_study_subdivided.qta ./editor/deploy/guide/case_study_subdivided.qta
+      - name: Copy WASM files
+        run: cp -r ./editor/wasm ./editor/deploy/wasm
       - name: Update cache busters
         run: bash ./support/update_cache_busters.sh
+        working-directory: ./editor
+      - name: Upload deploy artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-files
+          path: ./editor/deploy
+          retention-days: 1
+  deployPreview:
+    environment: deploy
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    name: Deploy
+    needs: [deploy-prep]
+    steps:
+      - name: Download deploy artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-files
+          path: ./deploy
       - name: Upload
         uses: Creepios/sftp-action@v1.0.3
         with:
@@ -107,4 +290,25 @@ jobs:
           username: ${{ secrets.SFTPUSER }}
           password: ${{ secrets.SFTPPASSWORD }}
           localPath: './deploy'
-          remotePath: './mlf-policy-explorer.org'
+          remotePath: './preview.kigalisim.org'
+  deploy:
+    environment: deploy
+    if: github.ref == 'refs/heads/deploy'
+    runs-on: ubuntu-latest
+    name: Deploy
+    needs: [deploy-prep]
+    steps:
+      - name: Download deploy artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-files
+          path: ./deploy
+      - name: Upload
+        uses: Creepios/sftp-action@v1.0.3
+        with:
+          host: ${{ secrets.SFTPHOST }}
+          port: 22
+          username: ${{ secrets.SFTPUSER }}
+          password: ${{ secrets.SFTPPASSWORD }}
+          localPath: './deploy'
+          remotePath: './kigalisim.org'
