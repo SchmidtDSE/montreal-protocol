@@ -208,6 +208,18 @@ public class RechargeLiveTests {
     assertNotNull(resultYear2026, "Should have result for Domestic AC/HFC-32 in year 2026");
     assertEquals(21600.0, resultYear2026.getPopulation().getValue().doubleValue(), 0.0001,
         "Equipment should be 21600 units in year 2026 when recharge comes before import");
+    
+    // Check year 2027 equipment (population) value
+    EngineResult resultYear2027 = LiveTestsUtil.getResult(resultsList.stream(), 2027, "Domestic AC", "HFC-32");
+    assertNotNull(resultYear2027, "Should have result for Domestic AC/HFC-32 in year 2027");
+    assertEquals(22400.0, resultYear2027.getPopulation().getValue().doubleValue(), 0.0001,
+        "Equipment should be 22400 units in year 2027 when recharge comes before import");
+    
+    // Check year 2028 equipment (population) value
+    EngineResult resultYear2028 = LiveTestsUtil.getResult(resultsList.stream(), 2028, "Domestic AC", "HFC-32");
+    assertNotNull(resultYear2028, "Should have result for Domestic AC/HFC-32 in year 2028");
+    assertEquals(23200.0, resultYear2028.getPopulation().getValue().doubleValue(), 0.0001,
+        "Equipment should be 23200 units in year 2028 when recharge comes before import");
   }
 
   /**
@@ -232,6 +244,56 @@ public class RechargeLiveTests {
     double newEquipment = resultYear2025.getPopulationNew().getValue().doubleValue();
     assertEquals(2667.0, newEquipment, 0.01,
         "New equipment for HFC-134a should be 2667 in year 2025 when recharge comes after set import");
+  }
+
+  /**
+   * Test kg-based imports with recharge to verify correct behavior.
+   * With kg-based imports, recharge needs are subtracted first.
+   * If imports are insufficient for recharge, equipment decreases.
+   */
+  @Test
+  public void testRechargeEquipmentGrowthKg() throws IOException {
+    String qtaPath = "../examples/recharge_equipment_growth_kg.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+    
+    String scenarioName = "BAU";
+    Stream<EngineResult> results = KigaliSimFacade.runScenario(program, scenarioName, progress -> {});
+    List<EngineResult> resultsList = results.collect(Collectors.toList());
+    
+    // Check year 2025 equipment (population) value
+    // Recharge needed: 20000 * 0.1 * 0.85 = 1700 kg
+    // Import available: 800 kg
+    // Deficit: 900 kg = 1058.82 units
+    // Equipment: 20000 - 1058.82 = 18941.18 units
+    EngineResult resultYear2025 = LiveTestsUtil.getResult(resultsList.stream(), 2025, "Domestic AC", "HFC-32");
+    assertNotNull(resultYear2025, "Should have result for Domestic AC/HFC-32 in year 2025");
+    assertEquals(18941.18, resultYear2025.getPopulation().getValue().doubleValue(), 0.01,
+        "Equipment should decrease to 18941 units due to insufficient imports for recharge");
+    
+    // Check year 2026 equipment (population) value
+    // Recharge needed: 18941.18 * 0.1 * 0.85 = 1610 kg
+    // Import available: 800 kg
+    // Deficit: 810 kg = 952.94 units
+    // Equipment: 18941.18 - 952.94 = 17988.24 units
+    EngineResult resultYear2026 = LiveTestsUtil.getResult(resultsList.stream(), 2026, "Domestic AC", "HFC-32");
+    assertNotNull(resultYear2026, "Should have result for Domestic AC/HFC-32 in year 2026");
+    assertEquals(17988.24, resultYear2026.getPopulation().getValue().doubleValue(), 0.01,
+        "Equipment should continue decreasing to 17988 units");
+    
+    // Check year 2027 equipment (population) value
+    // Similar calculation continues
+    EngineResult resultYear2027 = LiveTestsUtil.getResult(resultsList.stream(), 2027, "Domestic AC", "HFC-32");
+    assertNotNull(resultYear2027, "Should have result for Domestic AC/HFC-32 in year 2027");
+    assertEquals(17130.59, resultYear2027.getPopulation().getValue().doubleValue(), 0.01,
+        "Equipment should be 17131 units in year 2027");
+    
+    // Check year 2028 equipment (population) value
+    // Equipment continues to decrease as imports remain insufficient
+    EngineResult resultYear2028 = LiveTestsUtil.getResult(resultsList.stream(), 2028, "Domestic AC", "HFC-32");
+    assertNotNull(resultYear2028, "Should have result for Domestic AC/HFC-32 in year 2028");
+    assertEquals(16358.71, resultYear2028.getPopulation().getValue().doubleValue(), 0.01,
+        "Equipment should be 16359 units in year 2028");
   }
 
 }
