@@ -245,4 +245,43 @@ public class RecycleRecoverLiveTests {
     }
   }
 
+  /**
+   * Test that BAU and Recovery/Recycling scenarios have the same total equipment values
+   * when import is specified in kg instead of units.
+   * This test checks if the bug is related to unit-based import specification.
+   */
+  @Test
+  public void testRecycleNoneBugKg() throws IOException {
+    // Load and parse the QTA file
+    String qtaPath = "../examples/recycle_none_bug_kg.qta";
+    ParsedProgram program = KigaliSimFacade.parseAndInterpret(qtaPath);
+    assertNotNull(program, "Program should not be null");
+
+    // Run BAU scenario
+    Stream<EngineResult> bauResults = KigaliSimFacade.runScenario(program, "Business as Usual", progress -> {});
+    List<EngineResult> bauResultsList = bauResults.collect(Collectors.toList());
+
+    // Run Recovery and Recycling scenario
+    Stream<EngineResult> rrResults = KigaliSimFacade.runScenario(program, "Recovery and Recycling", progress -> {});
+    List<EngineResult> rrResultsList = rrResults.collect(Collectors.toList());
+
+    // Check equipment values for years 2025, 2026, and 2027
+    int[] yearsToCheck = {2025, 2026, 2027};
+    for (int year : yearsToCheck) {
+      EngineResult bauResult = LiveTestsUtil.getResult(bauResultsList.stream(), year, "MAC", "HFC-134a");
+      EngineResult rrResult = LiveTestsUtil.getResult(rrResultsList.stream(), year, "MAC", "HFC-134a");
+
+      assertNotNull(bauResult, "Should have BAU result for MAC/HFC-134a in year " + year);
+      assertNotNull(rrResult, "Should have Recovery/Recycling result for MAC/HFC-134a in year " + year);
+
+      double bauEquipment = bauResult.getPopulation().getValue().doubleValue();
+      double rrEquipment = rrResult.getPopulation().getValue().doubleValue();
+
+      assertEquals(bauEquipment, rrEquipment, 0.0001,
+          "Year " + year + ": BAU equipment (" + bauEquipment + 
+          ") should equal Recovery/Recycling equipment (" + rrEquipment + 
+          ") when recovery rate is 0% and import is in kg");
+    }
+  }
+
 }
