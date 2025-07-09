@@ -151,7 +151,7 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     boolean requiredKgNegative = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0;
     BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
 
-    // Check if we had unit-based specifications from Strategy 8
+    // Check if we had unit-based specifications that need to be preserved
     boolean hasUnitBasedSpecs = streamKeeper.hasLastSpecifiedValue(scopeEffective, "sales")
         && streamKeeper.getLastSpecifiedValue(scopeEffective, "sales").hasEquipmentUnits();
 
@@ -170,7 +170,7 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     }
     
     if (hasUnitBasedSpecs) {
-      // Convert back to units to preserve Strategy 8's intent
+      // Convert back to units to preserve user intent
       // This ensures that unit-based specifications are maintained through recycling operations
       // Need to set up the converter state for proper unit conversion
       stateGetter.setAmortizedUnitVolume(initialCharge);

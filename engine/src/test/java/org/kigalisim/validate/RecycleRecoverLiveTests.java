@@ -239,9 +239,9 @@ public class RecycleRecoverLiveTests {
       double rrEquipment = rrResult.getPopulation().getValue().doubleValue();
 
       assertEquals(bauEquipment, rrEquipment, 0.0001,
-          "Year " + year + ": BAU equipment (" + bauEquipment + 
-          ") should equal Recovery/Recycling equipment (" + rrEquipment + 
-          ") when recovery rate is 0%");
+          "Year " + year + ": BAU equipment (" + bauEquipment
+          + ") should equal Recovery/Recycling equipment (" + rrEquipment
+          + ") when recovery rate is 0%");
     }
   }
 
@@ -278,9 +278,9 @@ public class RecycleRecoverLiveTests {
       double rrEquipment = rrResult.getPopulation().getValue().doubleValue();
 
       assertEquals(bauEquipment, rrEquipment, 0.0001,
-          "Year " + year + ": BAU equipment (" + bauEquipment + 
-          ") should equal Recovery/Recycling equipment (" + rrEquipment + 
-          ") when recovery rate is 0% and import is in kg");
+          "Year " + year + ": BAU equipment (" + bauEquipment
+          + ") should equal Recovery/Recycling equipment (" + rrEquipment
+          + ") when recovery rate is 0% and import is in kg");
     }
   }
 

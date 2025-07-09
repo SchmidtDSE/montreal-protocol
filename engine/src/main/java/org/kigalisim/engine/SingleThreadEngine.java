@@ -278,7 +278,7 @@ public class SingleThreadEngine implements Engine {
       // This preserves user intent across carry-over years
       streamKeeper.setLastSpecifiedValue(keyEffective, name, value);
       
-      // Handle stream combinations for Strategy 8
+      // Handle stream combinations for unit preservation
       handleStreamCombinations(keyEffective, name, value);
       
       // Note: We do NOT call setLastSalesUnits here because it would overwrite
@@ -581,10 +581,10 @@ public class SingleThreadEngine implements Engine {
     streamKeeper.setRechargePopulation(scope, volume);
     streamKeeper.setRechargeIntensity(scope, intensity);
 
-    // Strategy 8: Check if we have a tracked unit-based sales intent
+    // Check if we have a tracked unit-based sales intent to preserve
     EngineNumber lastSalesValue = streamKeeper.getLastSpecifiedValue(scope, "sales");
     if (lastSalesValue != null && lastSalesValue.hasEquipmentUnits()) {
-      // Only apply Strategy 8 if we're NOT in the same year as when the value was set
+      // Only apply unit preservation if we're NOT in the same year as when the value was set
       // This is a heuristic to detect carry-over years
       EngineNumber currentImport = streamKeeper.getStream(scope, "import");
       EngineNumber currentManufacture = streamKeeper.getStream(scope, "manufacture");
@@ -1141,7 +1141,7 @@ public class SingleThreadEngine implements Engine {
 
   /**
    * Handle stream combinations when setting manufacture, import, or sales.
-   * This is part of Strategy 8 to track user intent across carry-over years.
+   * This tracks user intent across carry-over years.
    *
    * @param useKey The key containing application and substance
    * @param streamName The name of the stream being set (manufacture, import, or sales)
