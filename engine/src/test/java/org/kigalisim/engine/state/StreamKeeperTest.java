@@ -360,48 +360,8 @@ public class StreamKeeperTest {
     assertNotNull(substance2, "Should find second substance");
   }
 
-  /**
-   * Test last specified units getter and setter delegate to parameterization.
-   */
-  @Test
-  public void testLastSpecifiedUnitsGetterAndSetterDelegateToParameterization() {
-    StreamKeeper keeper = createMockKeeper();
-    Scope testScope = createTestScope();
-    keeper.ensureSubstance(testScope);
-
-    // Test default value
-    String defaultUnits = keeper.getLastSalesUnits(testScope);
-    assertEquals("kg", defaultUnits, "Should have default units of kg");
-
-    // Test setting and getting
-    keeper.setLastSalesUnits(testScope, "units");
-    String retrieved = keeper.getLastSalesUnits(testScope);
-    assertEquals("units", retrieved, "Should retrieve set units");
-  }
-
-  /**
-   * Test setStream automatically tracks last specified units.
-   */
-  @Test
-  public void testSetStreamAutomaticallyTracksLastSpecifiedUnits() {
-    StreamKeeper keeper = createMockKeeper();
-    Scope testScope = createTestScope();
-    keeper.ensureSubstance(testScope);
-
-    // Test default value
-    String defaultUnits = keeper.getLastSalesUnits(testScope);
-    assertEquals("kg", defaultUnits, "Should have default units of kg");
-
-    // Test setting units directly via StreamKeeper methods
-    keeper.setLastSalesUnits(testScope, "kg");
-    String unitsAfterKg = keeper.getLastSalesUnits(testScope);
-    assertEquals("kg", unitsAfterKg, "Should have kg units after setting");
-
-    // Test setting different units
-    keeper.setLastSalesUnits(testScope, "units");
-    String unitsAfterUnits = keeper.getLastSalesUnits(testScope);
-    assertEquals("units", unitsAfterUnits, "Should have units after setting");
-  }
+  // Note: Tests for deprecated setLastSalesUnits and getLastSalesUnits methods have been removed.
+  // The functionality is now tested through setLastSpecifiedValue and getLastSpecifiedValue tests.
 
   /**
    * Test setStream with units for sales components (manufacture/import).
@@ -581,27 +541,6 @@ public class StreamKeeperTest {
                  "Value should be unchanged");
   }
 
-  /**
-   * Test backward compatibility with getLastSalesUnits.
-   */
-  @Test
-  public void testGetLastSalesUnitsBackwardCompatibility() {
-    StreamKeeper keeper = createMockKeeper();
-    Scope testScope = createTestScope();
-    keeper.ensureSubstance(testScope);
-
-    // Initially should return "kg" as default
-    assertEquals("kg", keeper.getLastSalesUnits(testScope),
-                 "Should return kg as default");
-
-    // Set a sales value with units
-    EngineNumber testValue = new EngineNumber(new BigDecimal("800"), "units");
-    keeper.setLastSpecifiedValue(testScope, "sales", testValue);
-
-    // getLastSalesUnits should now return "units"
-    assertEquals("units", keeper.getLastSalesUnits(testScope),
-                 "Should return units from lastSpecifiedValue");
-  }
 
   /**
    * Test setLastSpecifiedValue with null stream name throws appropriate exception.

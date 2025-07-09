@@ -263,38 +263,6 @@ public class StreamParameterization {
     return lastSpecifiedValue.containsKey(streamName);
   }
 
-  /**
-   * Set the last sales units for stream operations (legacy compatibility).
-   *
-   * @param units The units string last used to specify a sales-related stream
-   * @deprecated Use setLastSpecifiedValue instead
-   */
-  @Deprecated
-  public void setLastSalesUnits(String units) {
-    // Ignore percentage units to avoid impacting last recorded units
-    if (units != null && units.contains("%")) {
-      return;
-    }
-    // For backward compatibility, create an EngineNumber with zero value
-    lastSpecifiedValue.put("sales", new EngineNumber(BigDecimal.ZERO, units));
-  }
-
-  /**
-   * Get the last sales units for stream operations (legacy compatibility).
-   *
-   * @return The units string last used to specify a sales-related stream
-   * @deprecated Use getLastSpecifiedValue instead
-   */
-  @Deprecated
-  public String getLastSalesUnits() {
-    // For backwards compatibility, check sales stream first
-    EngineNumber salesValue = lastSpecifiedValue.get("sales");
-    if (salesValue != null) {
-      return salesValue.getUnits();
-    }
-    // Default to kg if no value is tracked
-    return "kg";
-  }
 
   /**
    * Mark a stream as having been enabled (set to non-zero value).

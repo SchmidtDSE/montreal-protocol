@@ -540,34 +540,6 @@ public class StreamKeeper {
     return parameterization.hasLastSpecifiedValue(streamName);
   }
 
-  /**
-   * Set the last sales units for a key.
-   *
-   * <p>This tracks the units last used when setting sales-related streams
-   * to determine if recharge should use explicit or implicit calculations.</p>
-   *
-   * @param useKey The key containing application and substance
-   * @param units The units to set for sales-related streams
-   * @deprecated Use setLastSpecifiedValue instead
-   */
-  @Deprecated
-  public void setLastSalesUnits(UseKey useKey, String units) {
-    // Convert to new method for backwards compatibility
-    setLastSpecifiedValue(useKey, "sales", new EngineNumber(BigDecimal.ZERO, units));
-  }
-
-  /**
-   * Get the last sales units for a key.
-   *
-   * @param useKey The key containing application and substance
-   * @return The units string last used to specify a sales-related stream
-   * @deprecated Use getLastSpecifiedValue instead
-   */
-  @Deprecated
-  public String getLastSalesUnits(UseKey useKey) {
-    StreamParameterization parameterization = getParameterization(useKey);
-    return parameterization.getLastSalesUnits();
-  }
 
   /**
    * Check if a stream has ever been enabled (set to non-zero value).
