@@ -540,6 +540,27 @@ public class StreamKeeper {
     return parameterization.hasLastSpecifiedValue(streamName);
   }
 
+  /**
+   * Check if sales intent has been freshly set for the given scope.
+   *
+   * @param useKey The key containing application and substance
+   * @return true if sales intent was freshly set, false otherwise
+   */
+  public boolean isSalesIntentFreshlySet(UseKey useKey) {
+    StreamParameterization parameterization = getParameterization(useKey);
+    return parameterization.isSalesIntentFreshlySet();
+  }
+
+  /**
+   * Reset the sales intent flag for the given scope.
+   *
+   * @param useKey The key containing application and substance
+   */
+  public void resetSalesIntentFlag(UseKey useKey) {
+    StreamParameterization parameterization = getParameterization(useKey);
+    parameterization.setSalesIntentFreshlySet(false);
+  }
+
 
   /**
    * Check if a stream has ever been enabled (set to non-zero value).

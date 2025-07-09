@@ -35,6 +35,7 @@ public class StreamParameterization {
   private EngineNumber displacementRate;
   private final Map<String, EngineNumber> lastSpecifiedValue;
   private final Set<String> enabledStreams;
+  private boolean salesIntentFreshlySet;
 
   /**
    * Create a new stream parameterization instance.
@@ -43,6 +44,7 @@ public class StreamParameterization {
     this.initialCharge = new HashMap<>();
     this.enabledStreams = new HashSet<>();
     this.lastSpecifiedValue = new HashMap<>();
+    this.salesIntentFreshlySet = false;
     
     // Initialize all parameters with default values
     ghgIntensity = new EngineNumber(BigDecimal.ZERO, "tCO2e / kg");
@@ -241,6 +243,11 @@ public class StreamParameterization {
       return;
     }
     lastSpecifiedValue.put(streamName, value);
+    
+    // Set the flag if this is a sales-related stream
+    if ("sales".equals(streamName) || "import".equals(streamName) || "manufacture".equals(streamName)) {
+      salesIntentFreshlySet = true;
+    }
   }
 
   /**
@@ -281,6 +288,24 @@ public class StreamParameterization {
    */
   public boolean hasStreamBeenEnabled(String streamName) {
     return enabledStreams.contains(streamName);
+  }
+
+  /**
+   * Check if sales intent has been freshly set in the current processing cycle.
+   *
+   * @return true if sales intent was freshly set, false otherwise
+   */
+  public boolean isSalesIntentFreshlySet() {
+    return salesIntentFreshlySet;
+  }
+
+  /**
+   * Set the flag indicating whether sales intent has been freshly set.
+   *
+   * @param freshlySet true if sales intent was freshly set, false otherwise
+   */
+  public void setSalesIntentFreshlySet(boolean freshlySet) {
+    this.salesIntentFreshlySet = freshlySet;
   }
 
   /**

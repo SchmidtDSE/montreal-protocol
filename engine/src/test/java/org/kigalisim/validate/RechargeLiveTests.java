@@ -1,6 +1,7 @@
 package org.kigalisim.validate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
@@ -356,5 +357,6 @@ public class RechargeLiveTests {
     assertEquals(23200.0, resultYear2028.getPopulation().getValue().doubleValue(), 0.0001,
         "Equipment should be 23200 units in year 2028 with initial charge during 2025");
   }
+
 
 }

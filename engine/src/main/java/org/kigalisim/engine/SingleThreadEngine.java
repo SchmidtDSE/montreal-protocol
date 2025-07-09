@@ -590,6 +590,9 @@ public class SingleThreadEngine implements Engine {
     streamKeeper.setRechargeIntensity(scope, intensity);
 
     boolean isCarryOver = isCarryOver(scope);
+    // Reset the flag after checking - it should only affect the first recharge check
+    streamKeeper.resetSalesIntentFlag(scope);
+    
     if (isCarryOver) {
       // Preserve user's original unit-based intent
       // Use setStreamFor with the original value - this will automatically add recharge on top
@@ -1177,24 +1180,10 @@ public class SingleThreadEngine implements Engine {
    * @return true if this is a carry-over situation, false otherwise
    */
   private boolean isCarryOver(UseKey scope) {
-    EngineNumber lastSalesValue = streamKeeper.getLastSpecifiedValue(scope, "sales");
-    if (lastSalesValue == null || !lastSalesValue.hasEquipmentUnits()) {
-      return false;
-    }
-    
-    EngineNumber currentImport = streamKeeper.getStream(scope, "import");
-    EngineNumber currentManufacture = streamKeeper.getStream(scope, "manufacture");
-    
-    // Check if both import and manufacture are at their base values (not freshly set this year)
-    boolean isCarryOver = true;
-    if (currentImport != null && currentImport.getValue().compareTo(BigDecimal.ZERO) > 0) {
-      // If import matches our tracked value, it was likely just set this year
-      if (currentImport.getValue().compareTo(lastSalesValue.getValue()) == 0) {
-        isCarryOver = false;
-      }
-    }
-    
-    return isCarryOver;
+    // Check if we have a previous unit-based sales specification and no fresh input this year
+    return !streamKeeper.isSalesIntentFreshlySet(scope) 
+           && streamKeeper.hasLastSpecifiedValue(scope, "sales")
+           && streamKeeper.getLastSpecifiedValue(scope, "sales").hasEquipmentUnits();
   }
 
 }
