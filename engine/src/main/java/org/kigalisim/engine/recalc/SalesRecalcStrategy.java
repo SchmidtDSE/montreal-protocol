@@ -151,23 +151,10 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     boolean requiredKgNegative = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0;
     BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
 
-    // Check if we had unit-based specifications that need to be preserved
-    boolean hasUnitBasedSpecs = streamKeeper.hasLastSpecifiedValue(scopeEffective, "sales")
-        && streamKeeper.getLastSpecifiedValue(scopeEffective, "sales").hasEquipmentUnits();
-
     BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
     BigDecimal newImportKg = percentImport.multiply(requiredKg);
     
-    if (hasUnitBasedSpecs) {
-      // Check if the current values indicate a unit-based operation
-      // If implicit recharge is present, we know units were used in the current operation
-      boolean currentOperationIsUnitBased = implicitRechargeKg.compareTo(BigDecimal.ZERO) > 0;
-      
-      if (!currentOperationIsUnitBased) {
-        // Current operation is kg-based (like displacement), don't preserve units
-        hasUnitBasedSpecs = false;
-      }
-    }
+    boolean hasUnitBasedSpecs = getHasUnitBasedSpecs(streamKeeper, scopeEffective, implicitRechargeKg);
     
     if (hasUnitBasedSpecs) {
       // Convert back to units to preserve user intent
@@ -207,5 +194,33 @@ public class SalesRecalcStrategy implements RecalcStrategy {
             Optional.of(scopeEffective), false, Optional.empty());
       }
     }
+  }
+  
+  /**
+   * Determines if unit-based specifications should be preserved.
+   *
+   * @param streamKeeper the stream keeper to use for checking specifications
+   * @param scopeEffective the scope to check
+   * @param implicitRechargeKg the implicit recharge amount in kg
+   * @return true if unit-based specifications should be preserved
+   */
+  private boolean getHasUnitBasedSpecs(StreamKeeper streamKeeper, UseKey scopeEffective, BigDecimal implicitRechargeKg) {
+    // Check if we had unit-based specifications that need to be preserved
+    boolean hasUnitBasedSpecs = streamKeeper.hasLastSpecifiedValue(scopeEffective, "sales")
+        && streamKeeper.getLastSpecifiedValue(scopeEffective, "sales").hasEquipmentUnits();
+    
+    if (hasUnitBasedSpecs) {
+      // Check if the current values indicate a unit-based operation
+      // If implicit recharge is present, we know units were used in the current operation
+      // TODO: Consider making this explicit rather than using implicit recharge as a heuristic
+      boolean currentOperationIsUnitBased = implicitRechargeKg.compareTo(BigDecimal.ZERO) > 0;
+      
+      if (!currentOperationIsUnitBased) {
+        // Current operation is kg-based (like displacement), don't preserve units
+        hasUnitBasedSpecs = false;
+      }
+    }
+    
+    return hasUnitBasedSpecs;
   }
 }

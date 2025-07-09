@@ -279,10 +279,7 @@ public class SingleThreadEngine implements Engine {
       streamKeeper.setLastSpecifiedValue(keyEffective, name, value);
       
       // Handle stream combinations for unit preservation
-      handleStreamCombinations(keyEffective, name, value);
-      
-      // Note: We do NOT call setLastSalesUnits here because it would overwrite
-      // the correct value we just set in setLastSpecifiedValue with a zero value
+      updateSalesCarryOver(keyEffective, name, value);
     }
     
     if ("sales".equals(name) || "manufacture".equals(name) || "import".equals(name)) {
@@ -581,49 +578,33 @@ public class SingleThreadEngine implements Engine {
     streamKeeper.setRechargePopulation(scope, volume);
     streamKeeper.setRechargeIntensity(scope, intensity);
 
-    // Check if we have a tracked unit-based sales intent to preserve
-    EngineNumber lastSalesValue = streamKeeper.getLastSpecifiedValue(scope, "sales");
-    if (lastSalesValue != null && lastSalesValue.hasEquipmentUnits()) {
-      // Only apply unit preservation if we're NOT in the same year as when the value was set
-      // This is a heuristic to detect carry-over years
-      EngineNumber currentImport = streamKeeper.getStream(scope, "import");
-      EngineNumber currentManufacture = streamKeeper.getStream(scope, "manufacture");
-      
-      // Check if both import and manufacture are at their base values (not freshly set this year)
-      boolean isCarryOverYear = true;
-      if (currentImport != null && currentImport.getValue().compareTo(BigDecimal.ZERO) > 0) {
-        // If import matches our tracked value, it was likely just set this year
-        if (currentImport.getValue().compareTo(lastSalesValue.getValue()) == 0) {
-          isCarryOverYear = false;
-        }
-      }
-      
-      if (isCarryOverYear) {
-        // Preserve user's original unit-based intent
-        // Use setStreamFor with the original value - this will automatically add recharge on top
-        setStreamFor("sales", lastSalesValue, Optional.empty(), Optional.of(scope), true, Optional.empty());
-        return; // Skip normal recalc to avoid accumulation
-      }
-    }
+    boolean isCarryOver = isCarryOver(scope);
+    if (isCarryOver) {
+      // Preserve user's original unit-based intent
+      // Use setStreamFor with the original value - this will automatically add recharge on top
+      EngineNumber lastSalesValue = streamKeeper.getLastSpecifiedValue(scope, "sales");
+      setStreamFor("sales", lastSalesValue, Optional.empty(), Optional.of(scope), true, Optional.empty());
+      return; // Skip normal recalc to avoid accumulation
+    } else {
+      // Fall back to kg-based or untracked values
+      String lastUnits = streamKeeper.getLastSalesUnits(scope);
+      boolean useExplicitRecharge = lastUnits == null || !lastUnits.startsWith("unit");
 
-    // Fall back to original logic for kg-based or untracked values
-    String lastUnits = streamKeeper.getLastSalesUnits(scope);
-    boolean useExplicitRecharge = lastUnits == null || !lastUnits.startsWith("unit");
-
-    // Recalculate
-    RecalcOperation operation = new RecalcOperationBuilder()
-        .setUseExplicitRecharge(useExplicitRecharge)
-        .setRecalcKit(createRecalcKit())
-        .recalcPopulationChange()
-        .thenPropagateToSales()
-        .thenPropagateToConsumption()
-        .build();
-    operation.execute(this);
-    
-    // Only clear implicit recharge if NOT using explicit recharge (i.e., when units were used)
-    // This ensures implicit recharge persists for carried-over values
-    if (useExplicitRecharge) {
-      streamKeeper.setStream(scope, "implicitRecharge", new EngineNumber(BigDecimal.ZERO, "kg"));
+      // Recalculate
+      RecalcOperation operation = new RecalcOperationBuilder()
+          .setUseExplicitRecharge(useExplicitRecharge)
+          .setRecalcKit(createRecalcKit())
+          .recalcPopulationChange()
+          .thenPropagateToSales()
+          .thenPropagateToConsumption()
+          .build();
+      operation.execute(this);
+      
+      // Only clear implicit recharge if NOT using explicit recharge (i.e., when units were used)
+      // This ensures implicit recharge persists for carried-over values
+      if (useExplicitRecharge) {
+        streamKeeper.setStream(scope, "implicitRecharge", new EngineNumber(BigDecimal.ZERO, "kg"));
+      }
     }
   }
 
@@ -977,9 +958,6 @@ public class SingleThreadEngine implements Engine {
         // Different substance - apply the same number of units to the destination substance
         Scope destinationScope = scope.getWithSubstance(displaceTarget);
 
-        // Don't set unit tracking for displacement - the displaced amount is added in kg
-        // and should not trigger unit-based recalculation
-
         // Temporarily change scope to destination for unit conversion
         final Scope originalScope = scope;
         scope = destinationScope;
@@ -1140,14 +1118,14 @@ public class SingleThreadEngine implements Engine {
   }
 
   /**
-   * Handle stream combinations when setting manufacture, import, or sales.
+   * Updates sales carry-over tracking when setting manufacture, import, or sales.
    * This tracks user intent across carry-over years.
    *
    * @param useKey The key containing application and substance
    * @param streamName The name of the stream being set (manufacture, import, or sales)
    * @param value The value being set with units
    */
-  private void handleStreamCombinations(UseKey useKey, String streamName, EngineNumber value) {
+  private void updateSalesCarryOver(UseKey useKey, String streamName, EngineNumber value) {
     // Only process unit-based values for combination tracking
     if (!value.hasEquipmentUnits()) {
       return;
@@ -1179,6 +1157,33 @@ public class SingleThreadEngine implements Engine {
       // Only one stream has units - use it as the sales intent
       streamKeeper.setLastSpecifiedValue(useKey, "sales", value);
     }
+  }
+
+  /**
+   * Determines if current operations represent a carry-over situation.
+   *
+   * @param scope the scope to check
+   * @return true if this is a carry-over situation, false otherwise
+   */
+  private boolean isCarryOver(UseKey scope) {
+    EngineNumber lastSalesValue = streamKeeper.getLastSpecifiedValue(scope, "sales");
+    if (lastSalesValue == null || !lastSalesValue.hasEquipmentUnits()) {
+      return false;
+    }
+    
+    EngineNumber currentImport = streamKeeper.getStream(scope, "import");
+    EngineNumber currentManufacture = streamKeeper.getStream(scope, "manufacture");
+    
+    // Check if both import and manufacture are at their base values (not freshly set this year)
+    boolean isCarryOver = true;
+    if (currentImport != null && currentImport.getValue().compareTo(BigDecimal.ZERO) > 0) {
+      // If import matches our tracked value, it was likely just set this year
+      if (currentImport.getValue().compareTo(lastSalesValue.getValue()) == 0) {
+        isCarryOver = false;
+      }
+    }
+    
+    return isCarryOver;
   }
 
 }
