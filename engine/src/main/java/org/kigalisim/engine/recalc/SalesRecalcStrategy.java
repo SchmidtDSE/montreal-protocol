@@ -151,13 +151,50 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     boolean requiredKgNegative = requiredKgUnbound.compareTo(BigDecimal.ZERO) < 0;
     BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
 
+    // Check if we had unit-based specifications from Strategy 8
+    boolean hasUnitBasedSpecs = streamKeeper.hasLastSpecifiedValue(scopeEffective, "sales") &&
+                               streamKeeper.getLastSpecifiedValue(scopeEffective, "sales").hasEquipmentUnits();
+
     BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
     BigDecimal newImportKg = percentImport.multiply(requiredKg);
-    EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
-    EngineNumber newImport = new EngineNumber(newImportKg, "kg");
-
-    // Call Engine.setStream with propagateChanges=false to match JavaScript behavior
-    target.setStreamFor("manufacture", newManufacture, Optional.empty(), Optional.of(scopeEffective), false, Optional.empty());
-    target.setStreamFor("import", newImport, Optional.empty(), Optional.of(scopeEffective), false, Optional.empty());
+    
+    if (hasUnitBasedSpecs) {
+      // Convert back to units to preserve Strategy 8's intent
+      // This ensures that unit-based specifications are maintained through recycling operations
+      // Need to set up the converter state for proper unit conversion
+      stateGetter.setAmortizedUnitVolume(initialCharge);
+      
+      // Only set streams that have non-zero allocations (i.e., are enabled)
+      if (percentManufacture.compareTo(BigDecimal.ZERO) > 0) {
+        EngineNumber newManufactureUnits = unitConverter.convert(
+            new EngineNumber(newManufactureKg, "kg"), "units");
+        target.setStreamFor("manufacture", newManufactureUnits, Optional.empty(), 
+            Optional.of(scopeEffective), false, Optional.empty());
+      }
+      
+      if (percentImport.compareTo(BigDecimal.ZERO) > 0) {
+        EngineNumber newImportUnits = unitConverter.convert(
+            new EngineNumber(newImportKg, "kg"), "units");
+        target.setStreamFor("import", newImportUnits, Optional.empty(), 
+            Optional.of(scopeEffective), false, Optional.empty());
+      }
+      
+      // Clear the state after conversion
+      stateGetter.clearAmortizedUnitVolume();
+    } else {
+      // Normal kg-based setting for non-unit specifications
+      // Only set streams that have non-zero allocations (i.e., are enabled)
+      if (percentManufacture.compareTo(BigDecimal.ZERO) > 0) {
+        EngineNumber newManufacture = new EngineNumber(newManufactureKg, "kg");
+        target.setStreamFor("manufacture", newManufacture, Optional.empty(), 
+            Optional.of(scopeEffective), false, Optional.empty());
+      }
+      
+      if (percentImport.compareTo(BigDecimal.ZERO) > 0) {
+        EngineNumber newImport = new EngineNumber(newImportKg, "kg");
+        target.setStreamFor("import", newImport, Optional.empty(), 
+            Optional.of(scopeEffective), false, Optional.empty());
+      }
+    }
   }
 }
