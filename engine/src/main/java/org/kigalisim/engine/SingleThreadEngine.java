@@ -977,10 +977,8 @@ public class SingleThreadEngine implements Engine {
         // Different substance - apply the same number of units to the destination substance
         Scope destinationScope = scope.getWithSubstance(displaceTarget);
 
-        // Set lastSalesUnits for displacement target if it's a sales stream
-        if (isSalesStream(stream)) {
-          streamKeeper.setLastSalesUnits(destinationScope, "units");
-        }
+        // Don't set unit tracking for displacement - the displaced amount is added in kg
+        // and should not trigger unit-based recalculation
 
         // Temporarily change scope to destination for unit conversion
         final Scope originalScope = scope;

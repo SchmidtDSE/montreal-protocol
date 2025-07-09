@@ -152,11 +152,22 @@ public class SalesRecalcStrategy implements RecalcStrategy {
     BigDecimal requiredKg = requiredKgNegative ? BigDecimal.ZERO : requiredKgUnbound;
 
     // Check if we had unit-based specifications from Strategy 8
-    boolean hasUnitBasedSpecs = streamKeeper.hasLastSpecifiedValue(scopeEffective, "sales") &&
-                               streamKeeper.getLastSpecifiedValue(scopeEffective, "sales").hasEquipmentUnits();
+    boolean hasUnitBasedSpecs = streamKeeper.hasLastSpecifiedValue(scopeEffective, "sales")
+        && streamKeeper.getLastSpecifiedValue(scopeEffective, "sales").hasEquipmentUnits();
 
     BigDecimal newManufactureKg = percentManufacture.multiply(requiredKg);
     BigDecimal newImportKg = percentImport.multiply(requiredKg);
+    
+    if (hasUnitBasedSpecs) {
+      // Check if the current values indicate a unit-based operation
+      // If implicit recharge is present, we know units were used in the current operation
+      boolean currentOperationIsUnitBased = implicitRechargeKg.compareTo(BigDecimal.ZERO) > 0;
+      
+      if (!currentOperationIsUnitBased) {
+        // Current operation is kg-based (like displacement), don't preserve units
+        hasUnitBasedSpecs = false;
+      }
+    }
     
     if (hasUnitBasedSpecs) {
       // Convert back to units to preserve Strategy 8's intent
