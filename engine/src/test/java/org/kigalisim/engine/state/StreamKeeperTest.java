@@ -512,4 +512,109 @@ public class StreamKeeperTest {
     assertEquals(new BigDecimal("10"), result.getValue(),
                 "Should allow setting non-zero value on enabled stream");
   }
+
+  /**
+   * Test setting and getting last specified value.
+   */
+  @Test
+  public void testSetAndGetLastSpecifiedValue() {
+    StreamKeeper keeper = createMockKeeper();
+    Scope testScope = createTestScope();
+    keeper.ensureSubstance(testScope);
+
+    // Test setting a value with units
+    EngineNumber testValue = new EngineNumber(new BigDecimal("800"), "units");
+    keeper.setLastSpecifiedValue(testScope, "sales", testValue);
+
+    // Test getting the value back
+    EngineNumber retrieved = keeper.getLastSpecifiedValue(testScope, "sales");
+    assertNotNull(retrieved, "Retrieved value should not be null");
+    assertEquals(new BigDecimal("800"), retrieved.getValue(), "Value should match");
+    assertEquals("units", retrieved.getUnits(), "Units should match");
+  }
+
+  /**
+   * Test hasLastSpecifiedValue method.
+   */
+  @Test
+  public void testHasLastSpecifiedValue() {
+    StreamKeeper keeper = createMockKeeper();
+    Scope testScope = createTestScope();
+    keeper.ensureSubstance(testScope);
+
+    // Initially should not have a value
+    assertFalse(keeper.hasLastSpecifiedValue(testScope, "sales"),
+                "Should not have value initially");
+
+    // Set a value
+    EngineNumber testValue = new EngineNumber(new BigDecimal("500"), "units");
+    keeper.setLastSpecifiedValue(testScope, "import", testValue);
+
+    // Now should have the value
+    assertTrue(keeper.hasLastSpecifiedValue(testScope, "import"),
+               "Should have value after setting");
+    assertFalse(keeper.hasLastSpecifiedValue(testScope, "sales"),
+                "Should not have value for different stream");
+  }
+
+  /**
+   * Test that percentage units are ignored in setLastSpecifiedValue.
+   */
+  @Test
+  public void testSetLastSpecifiedValueIgnoresPercentages() {
+    StreamKeeper keeper = createMockKeeper();
+    Scope testScope = createTestScope();
+    keeper.ensureSubstance(testScope);
+
+    // Set initial value
+    EngineNumber initialValue = new EngineNumber(new BigDecimal("100"), "kg");
+    keeper.setLastSpecifiedValue(testScope, "sales", initialValue);
+
+    // Try to set percentage value - should be ignored
+    EngineNumber percentValue = new EngineNumber(new BigDecimal("50"), "%");
+    keeper.setLastSpecifiedValue(testScope, "sales", percentValue);
+
+    // Original value should still be there
+    EngineNumber retrieved = keeper.getLastSpecifiedValue(testScope, "sales");
+    assertEquals("kg", retrieved.getUnits(), "Units should still be kg, not %");
+    assertEquals(new BigDecimal("100"), retrieved.getValue(), 
+                 "Value should be unchanged");
+  }
+
+  /**
+   * Test backward compatibility with getLastSalesUnits.
+   */
+  @Test
+  public void testGetLastSalesUnitsBackwardCompatibility() {
+    StreamKeeper keeper = createMockKeeper();
+    Scope testScope = createTestScope();
+    keeper.ensureSubstance(testScope);
+
+    // Initially should return "kg" as default
+    assertEquals("kg", keeper.getLastSalesUnits(testScope),
+                 "Should return kg as default");
+
+    // Set a sales value with units
+    EngineNumber testValue = new EngineNumber(new BigDecimal("800"), "units");
+    keeper.setLastSpecifiedValue(testScope, "sales", testValue);
+
+    // getLastSalesUnits should now return "units"
+    assertEquals("units", keeper.getLastSalesUnits(testScope),
+                 "Should return units from lastSpecifiedValue");
+  }
+
+  /**
+   * Test setLastSpecifiedValue with null stream name throws appropriate exception.
+   */
+  @Test
+  public void testSetLastSpecifiedValueWithUnknownSubstance() {
+    StreamKeeper keeper = createMockKeeper();
+    Scope unknownScope = new Scope("test", "unknown", "substance");
+    
+    EngineNumber testValue = new EngineNumber(new BigDecimal("100"), "kg");
+    
+    assertThrows(IllegalStateException.class, () -> {
+      keeper.setLastSpecifiedValue(unknownScope, "sales", testValue);
+    }, "Should throw exception for unknown substance");
+  }
 }

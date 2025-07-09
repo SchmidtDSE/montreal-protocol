@@ -412,4 +412,96 @@ public class StreamParameterizationTest {
                    "Format \"" + format + "\" should be accepted");
     }
   }
+
+  /**
+   * Test setting and getting last specified value.
+   */
+  @Test
+  public void testSetAndGetLastSpecifiedValue() {
+    StreamParameterization parameterization = new StreamParameterization();
+
+    // Test setting a value
+    EngineNumber testValue = new EngineNumber(new BigDecimal("500"), "units");
+    parameterization.setLastSpecifiedValue("import", testValue);
+
+    // Test getting the value back
+    EngineNumber retrieved = parameterization.getLastSpecifiedValue("import");
+    assertNotNull(retrieved, "Retrieved value should not be null");
+    assertEquals(new BigDecimal("500"), retrieved.getValue(), "Value should match");
+    assertEquals("units", retrieved.getUnits(), "Units should match");
+
+    // Test getting a non-existent value
+    EngineNumber nonExistent = parameterization.getLastSpecifiedValue("sales");
+    assertEquals(null, nonExistent, "Non-existent value should be null");
+  }
+
+  /**
+   * Test hasLastSpecifiedValue method.
+   */
+  @Test
+  public void testHasLastSpecifiedValue() {
+    StreamParameterization parameterization = new StreamParameterization();
+
+    // Initially should not have any values
+    assertEquals(false, parameterization.hasLastSpecifiedValue("sales"),
+                 "Should not have value initially");
+
+    // Set a value
+    EngineNumber testValue = new EngineNumber(new BigDecimal("800"), "units");
+    parameterization.setLastSpecifiedValue("sales", testValue);
+
+    // Now should have the value
+    assertEquals(true, parameterization.hasLastSpecifiedValue("sales"),
+                 "Should have value after setting");
+    assertEquals(false, parameterization.hasLastSpecifiedValue("import"),
+                 "Should not have value for different stream");
+  }
+
+  /**
+   * Test that percentage units are ignored in setLastSpecifiedValue.
+   */
+  @Test
+  public void testSetLastSpecifiedValueIgnoresPercentages() {
+    StreamParameterization parameterization = new StreamParameterization();
+
+    // Set initial value
+    EngineNumber initialValue = new EngineNumber(new BigDecimal("100"), "kg");
+    parameterization.setLastSpecifiedValue("sales", initialValue);
+
+    // Try to set percentage value - should be ignored
+    EngineNumber percentValue = new EngineNumber(new BigDecimal("50"), "%");
+    parameterization.setLastSpecifiedValue("sales", percentValue);
+
+    // Original value should still be there
+    EngineNumber retrieved = parameterization.getLastSpecifiedValue("sales");
+    assertEquals("kg", retrieved.getUnits(), "Units should still be kg, not %");
+    assertEquals(new BigDecimal("100"), retrieved.getValue(), 
+                 "Value should be unchanged");
+  }
+
+  /**
+   * Test backward compatibility of getLastSalesUnits with lastSpecifiedValue.
+   */
+  @Test
+  public void testGetLastSalesUnitsWithLastSpecifiedValue() {
+    StreamParameterization parameterization = new StreamParameterization();
+
+    // Initially should return "kg" as default
+    assertEquals("kg", parameterization.getLastSalesUnits(),
+                 "Should return kg as default");
+
+    // Set a sales value with units
+    EngineNumber testValue = new EngineNumber(new BigDecimal("800"), "units");
+    parameterization.setLastSpecifiedValue("sales", testValue);
+
+    // getLastSalesUnits should now return "units"
+    assertEquals("units", parameterization.getLastSalesUnits(),
+                 "Should return units from lastSpecifiedValue");
+
+    // Set a non-sales value - shouldn't affect getLastSalesUnits
+    EngineNumber importValue = new EngineNumber(new BigDecimal("500"), "mt");
+    parameterization.setLastSpecifiedValue("import", importValue);
+    assertEquals("units", parameterization.getLastSalesUnits(),
+                 "Should still return sales units");
+  }
 }

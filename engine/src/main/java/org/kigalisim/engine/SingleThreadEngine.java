@@ -274,10 +274,15 @@ public class SingleThreadEngine implements Engine {
     }
 
     if (isSales) {
-      // Only track lastSalesUnits for sales-related streams that influence recharge displacement
-      // Use the original units, not the converted kg units
-      String unitsToRecordRealized = unitsToRecord.orElse(value.getUnits());
-      streamKeeper.setLastSalesUnits(keyEffective, unitsToRecordRealized);
+      // Track the last specified value for sales-related streams
+      // This preserves user intent across carry-over years
+      streamKeeper.setLastSpecifiedValue(keyEffective, name, value);
+      
+      // Handle stream combinations for Strategy 8
+      handleStreamCombinations(keyEffective, name, value);
+      
+      // Note: We do NOT call setLastSalesUnits here because it would overwrite
+      // the correct value we just set in setLastSpecifiedValue with a zero value
     }
     
     if ("sales".equals(name) || "manufacture".equals(name) || "import".equals(name)) {
@@ -576,7 +581,32 @@ public class SingleThreadEngine implements Engine {
     streamKeeper.setRechargePopulation(scope, volume);
     streamKeeper.setRechargeIntensity(scope, intensity);
 
-    // Determine if explicit recharge should be used based on last sales units
+    // Strategy 8: Check if we have a tracked unit-based sales intent
+    EngineNumber lastSalesValue = streamKeeper.getLastSpecifiedValue(scope, "sales");
+    if (lastSalesValue != null && lastSalesValue.hasEquipmentUnits()) {
+      // Only apply Strategy 8 if we're NOT in the same year as when the value was set
+      // This is a heuristic to detect carry-over years
+      EngineNumber currentImport = streamKeeper.getStream(scope, "import");
+      EngineNumber currentManufacture = streamKeeper.getStream(scope, "manufacture");
+      
+      // Check if both import and manufacture are at their base values (not freshly set this year)
+      boolean isCarryOverYear = true;
+      if (currentImport != null && currentImport.getValue().compareTo(BigDecimal.ZERO) > 0) {
+        // If import matches our tracked value, it was likely just set this year
+        if (currentImport.getValue().compareTo(lastSalesValue.getValue()) == 0) {
+          isCarryOverYear = false;
+        }
+      }
+      
+      if (isCarryOverYear) {
+        // Preserve user's original unit-based intent
+        // Use setStreamFor with the original value - this will automatically add recharge on top
+        setStreamFor("sales", lastSalesValue, Optional.empty(), Optional.of(scope), true, Optional.empty());
+        return; // Skip normal recalc to avoid accumulation
+      }
+    }
+
+    // Fall back to original logic for kg-based or untracked values
     String lastUnits = streamKeeper.getLastSalesUnits(scope);
     boolean useExplicitRecharge = lastUnits == null || !lastUnits.startsWith("unit");
 
@@ -1109,6 +1139,48 @@ public class SingleThreadEngine implements Engine {
    */
   private boolean isZero(BigDecimal target) {
     return target.compareTo(BigDecimal.ZERO) == 0;
+  }
+
+  /**
+   * Handle stream combinations when setting manufacture, import, or sales.
+   * This is part of Strategy 8 to track user intent across carry-over years.
+   *
+   * @param useKey The key containing application and substance
+   * @param streamName The name of the stream being set (manufacture, import, or sales)
+   * @param value The value being set with units
+   */
+  private void handleStreamCombinations(UseKey useKey, String streamName, EngineNumber value) {
+    // Only process unit-based values for combination tracking
+    if (!value.hasEquipmentUnits()) {
+      return;
+    }
+
+    // Only handle manufacture and import streams for combination
+    if (!"manufacture".equals(streamName) && !"import".equals(streamName)) {
+      return;
+    }
+
+    // When setting manufacture or import, combine with the other to create sales intent
+    String otherStream = "manufacture".equals(streamName) ? "import" : "manufacture";
+    EngineNumber otherValue = streamKeeper.getLastSpecifiedValue(useKey, otherStream);
+    
+    if (otherValue != null && otherValue.hasEquipmentUnits()) {
+      // Both streams have unit-based values - combine them
+      // Convert both to the same units (prefer the current stream's units)
+      String targetUnits = value.getUnits();
+      UnitConverter converter = createUnitConverterWithTotal(streamName);
+      EngineNumber otherConverted = converter.convert(otherValue, targetUnits);
+      
+      // Create combined sales value
+      BigDecimal combinedValue = value.getValue().add(otherConverted.getValue());
+      EngineNumber salesIntent = new EngineNumber(combinedValue, targetUnits);
+      
+      // Track the combined sales intent
+      streamKeeper.setLastSpecifiedValue(useKey, "sales", salesIntent);
+    } else {
+      // Only one stream has units - use it as the sales intent
+      streamKeeper.setLastSpecifiedValue(useKey, "sales", value);
+    }
   }
 
 }

@@ -494,6 +494,53 @@ public class StreamKeeper {
   }
 
   /**
+   * Set the last specified value for a stream.
+   *
+   * <p>This tracks the value and units last used when setting streams
+   * to preserve user intent across carry-over years.</p>
+   *
+   * @param useKey The key containing application and substance
+   * @param streamName The name of the stream
+   * @param value The last specified value with units
+   */
+  public void setLastSpecifiedValue(UseKey useKey, String streamName, EngineNumber value) {
+    String key = getKey(useKey);
+    StreamParameterization parameterization = substances.get(key);
+    if (parameterization == null) {
+      throwSubstanceMissing(
+          "setLastSpecifiedValue",
+          useKey.getApplication(),
+          useKey.getSubstance()
+      );
+    }
+    parameterization.setLastSpecifiedValue(streamName, value);
+  }
+
+  /**
+   * Get the last specified value for a stream.
+   *
+   * @param useKey The key containing application and substance
+   * @param streamName The name of the stream
+   * @return The last specified value with units, or null if not set
+   */
+  public EngineNumber getLastSpecifiedValue(UseKey useKey, String streamName) {
+    StreamParameterization parameterization = getParameterization(useKey);
+    return parameterization.getLastSpecifiedValue(streamName);
+  }
+
+  /**
+   * Check if a stream has a last specified value.
+   *
+   * @param useKey The key containing application and substance
+   * @param streamName The name of the stream
+   * @return true if the stream has a last specified value, false otherwise
+   */
+  public boolean hasLastSpecifiedValue(UseKey useKey, String streamName) {
+    StreamParameterization parameterization = getParameterization(useKey);
+    return parameterization.hasLastSpecifiedValue(streamName);
+  }
+
+  /**
    * Set the last sales units for a key.
    *
    * <p>This tracks the units last used when setting sales-related streams
@@ -501,18 +548,12 @@ public class StreamKeeper {
    *
    * @param useKey The key containing application and substance
    * @param units The units to set for sales-related streams
+   * @deprecated Use setLastSpecifiedValue instead
    */
+  @Deprecated
   public void setLastSalesUnits(UseKey useKey, String units) {
-    String key = getKey(useKey);
-    StreamParameterization parameterization = substances.get(key);
-    if (parameterization == null) {
-      throwSubstanceMissing(
-          "setLastSalesUnits",
-          useKey.getApplication(),
-          useKey.getSubstance()
-      );
-    }
-    parameterization.setLastSalesUnits(units);
+    // Convert to new method for backwards compatibility
+    setLastSpecifiedValue(useKey, "sales", new EngineNumber(BigDecimal.ZERO, units));
   }
 
   /**
@@ -520,7 +561,9 @@ public class StreamKeeper {
    *
    * @param useKey The key containing application and substance
    * @return The units string last used to specify a sales-related stream
+   * @deprecated Use getLastSpecifiedValue instead
    */
+  @Deprecated
   public String getLastSalesUnits(UseKey useKey) {
     StreamParameterization parameterization = getParameterization(useKey);
     return parameterization.getLastSalesUnits();

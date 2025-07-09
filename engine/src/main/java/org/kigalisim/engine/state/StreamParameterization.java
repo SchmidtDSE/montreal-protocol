@@ -33,7 +33,7 @@ public class StreamParameterization {
   private EngineNumber yieldRate;
   private EngineNumber retirementRate;
   private EngineNumber displacementRate;
-  private String lastSalesUnits;
+  private final Map<String, EngineNumber> lastSpecifiedValue;
   private final Set<String> enabledStreams;
 
   /**
@@ -42,7 +42,7 @@ public class StreamParameterization {
   public StreamParameterization() {
     this.initialCharge = new HashMap<>();
     this.enabledStreams = new HashSet<>();
-    this.lastSalesUnits = "kg";  // Set initial default
+    this.lastSpecifiedValue = new HashMap<>();
     
     // Initialize all parameters with default values
     ghgIntensity = new EngineNumber(BigDecimal.ZERO, "tCO2e / kg");
@@ -227,28 +227,73 @@ public class StreamParameterization {
   }
 
   /**
-   * Set the last sales units for stream operations.
+   * Set the last specified value for a stream.
    *
-   * <p>This tracks the units last used when setting sales-related streams
-   * to determine if recharge should use explicit or implicit calculations.</p>
+   * <p>This tracks the value and units last used when setting streams
+   * to preserve user intent across carry-over years.</p>
+   *
+   * @param streamName The name of the stream
+   * @param value The last specified value with units
+   */
+  public void setLastSpecifiedValue(String streamName, EngineNumber value) {
+    // Ignore percentage units to avoid impacting last recorded values
+    if (value != null && value.getUnits() != null && value.getUnits().contains("%")) {
+      return;
+    }
+    lastSpecifiedValue.put(streamName, value);
+  }
+
+  /**
+   * Get the last specified value for a stream.
+   *
+   * @param streamName The name of the stream
+   * @return The last specified value with units, or null if not set
+   */
+  public EngineNumber getLastSpecifiedValue(String streamName) {
+    return lastSpecifiedValue.get(streamName);
+  }
+
+  /**
+   * Check if a stream has a last specified value.
+   *
+   * @param streamName The name of the stream
+   * @return true if the stream has a last specified value, false otherwise
+   */
+  public boolean hasLastSpecifiedValue(String streamName) {
+    return lastSpecifiedValue.containsKey(streamName);
+  }
+
+  /**
+   * Set the last sales units for stream operations (legacy compatibility).
    *
    * @param units The units string last used to specify a sales-related stream
+   * @deprecated Use setLastSpecifiedValue instead
    */
+  @Deprecated
   public void setLastSalesUnits(String units) {
     // Ignore percentage units to avoid impacting last recorded units
     if (units != null && units.contains("%")) {
       return;
     }
-    lastSalesUnits = units;
+    // For backward compatibility, create an EngineNumber with zero value
+    lastSpecifiedValue.put("sales", new EngineNumber(BigDecimal.ZERO, units));
   }
 
   /**
-   * Get the last sales units for stream operations.
+   * Get the last sales units for stream operations (legacy compatibility).
    *
    * @return The units string last used to specify a sales-related stream
+   * @deprecated Use getLastSpecifiedValue instead
    */
+  @Deprecated
   public String getLastSalesUnits() {
-    return lastSalesUnits;
+    // For backwards compatibility, check sales stream first
+    EngineNumber salesValue = lastSpecifiedValue.get("sales");
+    if (salesValue != null) {
+      return salesValue.getUnits();
+    }
+    // Default to kg if no value is tracked
+    return "kg";
   }
 
   /**
