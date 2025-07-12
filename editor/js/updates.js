@@ -16,6 +16,7 @@
  * support offline usage.
  */
 class UpdateUtil {
+
   /**
    * Check if an application update is available.
    *
