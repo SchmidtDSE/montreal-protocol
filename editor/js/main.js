@@ -501,13 +501,11 @@ class MainPresenter {
     try {
       const updateAvailable = await self._updateUtil.checkForUpdates();
       if (updateAvailable) {
-        const userChoice = await self._updateUtil.showUpdateDialog();
-        // Note: If user chose 'reload', the page will have already reloaded
-        // and this code won't continue executing
+        await self._updateUtil.showUpdateDialog();
       }
     } catch (error) {
-      // Fail silently - no user-visible errors for update checking
-      console.debug("Update check failed silently:", error);
+      // Fail silently - likely due to offline
+      console.debug("Update check did not respond, possibly offline:", error);
     }
   }
 
