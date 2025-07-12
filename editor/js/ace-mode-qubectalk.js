@@ -13,7 +13,7 @@ ace.define("ace/mode/qubectalk", [
       "substance|uses|variables";
 
     // Keywords from QubecTalk.g4 grammar - command keywords
-    const commandKeywords = "across|as|by|cap|change|charge|during|enable|floor|for|from|get|in|" +
+    const commandKeywords = "across|as|at|by|cap|change|charge|during|enable|eol|floor|for|from|get|in|" +
       "initial|modify|of|recharge|recover|replace|retire|reuse|set|simulate|then|to|trials|" +
       "using|with";
 

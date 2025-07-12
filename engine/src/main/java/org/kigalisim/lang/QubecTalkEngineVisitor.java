@@ -777,6 +777,90 @@ public class QubecTalkEngineVisitor extends QubecTalkBaseVisitor<Fragment> {
    * {@inheritDoc}
    */
   @Override
+  public Fragment visitRecoverStageAllYears(QubecTalkParser.RecoverStageAllYearsContext ctx) {
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    Operation yieldOperation = visit(ctx.yieldVal).getOperation();
+
+    RecoverOperation.RecoverStage stage = parseRecoverStage(ctx.stage.getText());
+    Operation operation = new RecoverOperation(volumeOperation, yieldOperation, stage);
+    return new OperationFragment(operation);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Fragment visitRecoverStageDuration(QubecTalkParser.RecoverStageDurationContext ctx) {
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    Operation yieldOperation = visit(ctx.yieldVal).getOperation();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+
+    RecoverOperation.RecoverStage stage = parseRecoverStage(ctx.stage.getText());
+    Operation operation = new RecoverOperation(volumeOperation, yieldOperation, stage, during);
+    return new OperationFragment(operation);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Fragment visitRecoverStageDisplacementAllYears(QubecTalkParser.RecoverStageDisplacementAllYearsContext ctx) {
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    Operation yieldOperation = visit(ctx.yieldVal).getOperation();
+
+    RecoverOperation.RecoverStage stage = parseRecoverStage(ctx.stage.getText());
+
+    String displaceTarget;
+    if (ctx.string() != null) {
+      displaceTarget = visit(ctx.string()).getString();
+    } else {
+      displaceTarget = ctx.stream().getText();
+    }
+
+    Operation operation = new RecoverOperation(volumeOperation, yieldOperation, stage, displaceTarget);
+    return new OperationFragment(operation);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Fragment visitRecoverStageDisplacementDuration(QubecTalkParser.RecoverStageDisplacementDurationContext ctx) {
+    Operation volumeOperation = visit(ctx.volume).getOperation();
+    Operation yieldOperation = visit(ctx.yieldVal).getOperation();
+    ParsedDuring during = visit(ctx.duration).getDuring();
+
+    RecoverOperation.RecoverStage stage = parseRecoverStage(ctx.stage.getText());
+
+    String displaceTarget;
+    if (ctx.string() != null) {
+      displaceTarget = visit(ctx.string()).getString();
+    } else {
+      displaceTarget = ctx.stream().getText();
+    }
+
+    Operation operation = new RecoverOperation(volumeOperation, yieldOperation, stage, displaceTarget, during);
+    return new OperationFragment(operation);
+  }
+
+  /**
+   * Parse the recovery stage from the context text.
+   */
+  private RecoverOperation.RecoverStage parseRecoverStage(String stageText) {
+    switch (stageText.toLowerCase()) {
+      case "recharge":
+        return RecoverOperation.RecoverStage.RECHARGE;
+      case "eol":
+        return RecoverOperation.RecoverStage.EOL;
+      default:
+        throw new IllegalArgumentException("Unknown recovery stage: " + stageText);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public Fragment visitReplaceAllYears(QubecTalkParser.ReplaceAllYearsContext ctx) {
     Operation volumeOperation = visit(ctx.volume).getOperation();
     String stream = ctx.target.getText();

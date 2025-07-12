@@ -467,4 +467,61 @@ public class KigaliSimFacadeTest {
                       bauEquipmentYear5, policyEquipmentYear5));
 
   }
+
+  /**
+   * Test that the new EOL recycling syntax parses correctly.
+   */
+  @Test
+  public void testEolRecyclingSyntaxParsing() {
+    String codeWithEolRecycling =
+        "start default\n"
+        + "  define application \"Test App\"\n"
+        + "    uses substance \"Test Substance\"\n"
+        + "      recover 10 % with 20 % reuse at eol\n"
+        + "      recover 15 % with 25 % reuse at recharge displacing import\n"
+        + "      recover 5 % with 30 % reuse at eol during years 2025 to 2030\n"
+        + "    end substance\n"
+        + "  end application\n"
+        + "end default\n"
+        + "start simulations\n"
+        + "  simulate \"test\" from years 2020 to 2030\n"
+        + "end simulations";
+
+    ParseResult parseResult = KigaliSimFacade.parse(codeWithEolRecycling);
+    assertNotNull(parseResult, "Parse result should not be null");
+    assertFalse(parseResult.hasErrors(), "Parse result should not have errors for new EOL syntax");
+    assertTrue(parseResult.getProgram().isPresent(), "Parse result should have a program with EOL syntax");
+
+    // Test that the program can be interpreted without errors
+    ParsedProgram program = KigaliSimFacade.interpret(parseResult);
+    assertNotNull(program, "Interpreted program should not be null");
+  }
+
+  /**
+   * Test that the new recharge recycling syntax parses correctly and maintains backward compatibility.
+   */
+  @Test
+  public void testRechargeRecyclingSyntaxParsing() {
+    String codeWithRechargeRecycling =
+        "start default\n"
+        + "  define application \"Test App\"\n"
+        + "    uses substance \"Test Substance\"\n"
+        + "      recover 20 % with 80 % reuse at recharge\n"
+        + "      recover 10 % with 90 % reuse\n" // Test backward compatibility
+        + "    end substance\n"
+        + "  end application\n"
+        + "end default\n"
+        + "start simulations\n"
+        + "  simulate \"test\" from years 2020 to 2030\n"
+        + "end simulations";
+
+    ParseResult parseResult = KigaliSimFacade.parse(codeWithRechargeRecycling);
+    assertNotNull(parseResult, "Parse result should not be null");
+    assertFalse(parseResult.hasErrors(), "Parse result should not have errors for recharge and backward compatible syntax");
+    assertTrue(parseResult.getProgram().isPresent(), "Parse result should have a program with recharge syntax");
+
+    // Test that the program can be interpreted without errors
+    ParsedProgram program = KigaliSimFacade.interpret(parseResult);
+    assertNotNull(program, "Interpreted program should not be null");
+  }
 }
