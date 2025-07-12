@@ -93,44 +93,25 @@ class UpdateUtil {
     const self = this;
     return new Promise((resolve) => {
       const dialog = document.getElementById("update-notice-dialog");
-      if (!dialog) {
-        // Dialog not found, assume continue
-        resolve("continue");
-        return;
-      }
 
       // Set up event handlers
       const reloadButton = dialog.querySelector(".reload-button");
       const continueButton = dialog.querySelector(".cancel-button");
 
-      const cleanup = () => {
-        if (reloadButton) {
-          reloadButton.removeEventListener("click", handleReload);
-        }
-        if (continueButton) {
-          continueButton.removeEventListener("click", handleContinue);
-        }
-        dialog.removeEventListener("close", handleClose);
-      };
-
       const handleReload = (event) => {
         event.preventDefault();
-        cleanup();
         dialog.close();
-        // Reload the page to apply update
         window.location.reload();
         resolve("reload");
       };
 
       const handleContinue = (event) => {
         event.preventDefault();
-        cleanup();
         dialog.close();
         resolve("continue");
       };
 
       const handleClose = () => {
-        cleanup();
         resolve("continue");
       };
 
@@ -144,13 +125,7 @@ class UpdateUtil {
       dialog.addEventListener("close", handleClose);
 
       // Show the dialog
-      try {
-        dialog.showModal();
-      } catch (error) {
-        // Failed to show dialog, cleanup and continue
-        cleanup();
-        resolve("continue");
-      }
+      dialog.showModal();
     });
   }
 }
