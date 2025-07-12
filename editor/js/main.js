@@ -194,7 +194,7 @@ class MainPresenter {
 
     self._onCodeChange();
     self._setupFileButtons();
-    
+
     // Initialize update utility and check for updates (fails silently if offline)
     self._updateUtil = new UpdateUtil();
     self._checkForUpdates();
@@ -490,7 +490,7 @@ class MainPresenter {
 
   /**
    * Checks for application updates and shows dialog if available.
-   * 
+   *
    * This method fails silently on all errors to support offline usage.
    * Only checks for updates in WASM builds, not during engine development.
    *
