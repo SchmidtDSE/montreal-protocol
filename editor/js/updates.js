@@ -1,8 +1,9 @@
 /**
  * Utility for checking and handling application updates in PWA environment.
  *
- * Implements offline-first approach where all network failures are handled
- * silently without showing any errors to the user.
+ * Utility for checking for updates and handling user notification either in
+ * PWA or service. Implements offline-first approach where all network failures
+ * are handled silently without showing any errors to the user.
  *
  * @license BSD, see LICENSE.md.
  */
