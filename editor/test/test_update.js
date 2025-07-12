@@ -62,7 +62,7 @@ function buildUpdateTests() {
       const versionInput = document.createElement("input");
       versionInput.type = "hidden";
       versionInput.id = "app-version";
-      versionInput.value = "1640000000"; // Valid timestamp
+      versionInput.value = "1752320637"; // Valid timestamp
       document.body.appendChild(versionInput);
 
       // Mock fetch to throw network error
@@ -85,7 +85,7 @@ function buildUpdateTests() {
       const versionInput = document.createElement("input");
       versionInput.type = "hidden";
       versionInput.id = "app-version";
-      versionInput.value = "1640000000"; // Valid timestamp
+      versionInput.value = "1752320637"; // Valid timestamp
       document.body.appendChild(versionInput);
 
       // Mock fetch to return 404
@@ -107,7 +107,7 @@ function buildUpdateTests() {
     });
 
     QUnit.test("checkForUpdates returns false when versions are equal", async function (assert) {
-      const timestamp = "1640000000";
+      const timestamp = "1752320637";
       
       // Create version input with timestamp
       const versionInput = document.createElement("input");
@@ -135,8 +135,8 @@ function buildUpdateTests() {
     });
 
     QUnit.test("checkForUpdates returns true when server version is newer", async function (assert) {
-      const currentTimestamp = "1640000000";
-      const newerTimestamp = "1640000001";
+      const currentTimestamp = "1752320637";
+      const newerTimestamp = "1752320640";
       
       // Create version input with older timestamp
       const versionInput = document.createElement("input");
@@ -164,8 +164,8 @@ function buildUpdateTests() {
     });
 
     QUnit.test("checkForUpdates returns false when server version is older", async function (assert) {
-      const currentTimestamp = "1640000001";
-      const olderTimestamp = "1640000000";
+      const currentTimestamp = "1752320640";
+      const olderTimestamp = "1752320637";
       
       // Create version input with newer timestamp
       const versionInput = document.createElement("input");
@@ -204,7 +204,7 @@ function buildUpdateTests() {
       const originalFetch = window.fetch;
       window.fetch = () => Promise.resolve({
         ok: true,
-        text: () => Promise.resolve("1640000000")
+        text: () => Promise.resolve("1752320637")
       });
 
       const {UpdateUtil} = await import("../js/updates.js");
