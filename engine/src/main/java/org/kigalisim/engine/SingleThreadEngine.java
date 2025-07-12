@@ -36,6 +36,7 @@ import org.kigalisim.engine.state.YearMatcher;
 import org.kigalisim.engine.support.DivisionHelper;
 import org.kigalisim.engine.support.ExceptionsGenerator;
 import org.kigalisim.engine.support.RechargeVolumeCalculator;
+import org.kigalisim.lang.operation.RecoverOperation.RecoverStage;
 
 /**
  * Single-threaded implementation of the Engine interface.
@@ -664,6 +665,54 @@ public class SingleThreadEngine implements Engine {
       return;
     }
 
+    streamKeeper.setRecoveryRate(scope, recoveryWithUnits);
+    streamKeeper.setYieldRate(scope, yieldWithUnits);
+
+    // Apply the recovery through normal recycle operation
+    RecalcOperation operation = new RecalcOperationBuilder()
+        .setRecalcKit(createRecalcKit())
+        .recalcSales()
+        .thenPropagateToPopulationChange()
+        .thenPropagateToConsumption()
+        .build();
+    operation.execute(this);
+
+    // Handle displacement using the existing displacement logic
+    UnitConverter unitConverter = createUnitConverterWithTotal(RECYCLE_RECOVER_STREAM);
+    EngineNumber recoveryInKg = unitConverter.convert(recoveryWithUnits, "kg");
+    handleDisplacement(RECYCLE_RECOVER_STREAM, recoveryWithUnits, recoveryInKg.getValue(), displacementTarget);
+  }
+
+  @Override
+  public void recycle(EngineNumber recoveryWithUnits, EngineNumber yieldWithUnits,
+      YearMatcher yearMatcher, RecoverStage recoverStage) {
+    if (!getIsInRange(yearMatcher)) {
+      return;
+    }
+
+    // For now, delegate to existing method regardless of stage
+    // TODO: Implement stage-specific logic for EOL vs RECHARGE timing
+    streamKeeper.setRecoveryRate(scope, recoveryWithUnits);
+    streamKeeper.setYieldRate(scope, yieldWithUnits);
+
+    RecalcOperation operation = new RecalcOperationBuilder()
+        .setRecalcKit(createRecalcKit())
+        .recalcSales()
+        .thenPropagateToPopulationChange()
+        .thenPropagateToConsumption()
+        .build();
+    operation.execute(this);
+  }
+
+  @Override
+  public void recycle(EngineNumber recoveryWithUnits, EngineNumber yieldWithUnits,
+      YearMatcher yearMatcher, RecoverStage recoverStage, String displacementTarget) {
+    if (!getIsInRange(yearMatcher)) {
+      return;
+    }
+
+    // For now, delegate to existing method regardless of stage
+    // TODO: Implement stage-specific logic for EOL vs RECHARGE timing
     streamKeeper.setRecoveryRate(scope, recoveryWithUnits);
     streamKeeper.setYieldRate(scope, yieldWithUnits);
 

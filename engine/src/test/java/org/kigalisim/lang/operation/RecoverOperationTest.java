@@ -293,4 +293,113 @@ public class RecoverOperationTest {
     // Test passes if no exception is thrown
     assertNotNull(operation, "RecoverOperation should execute with displacement and during");
   }
+
+  /**
+   * Test the execute method with stage but no displacement.
+   */
+  @Test
+  public void testExecuteWithStageNoDisplacement() {
+    // Enable import stream to enable sales distribution calculation
+    engine.enable("import", Optional.empty());
+
+    // Set up recovery volume and yield
+    EngineNumber volume = new EngineNumber(BigDecimal.valueOf(100), "kg");
+    Operation volumeOperation = new PreCalculatedOperation(volume);
+
+    EngineNumber yield = new EngineNumber(BigDecimal.valueOf(100), "%");
+    Operation yieldOperation = new PreCalculatedOperation(yield);
+
+    RecoverOperation.RecoverStage stage = RecoverOperation.RecoverStage.EOL;
+    RecoverOperation operation = new RecoverOperation(volumeOperation, yieldOperation, stage);
+
+    // Execute with real machine - just verify it doesn't throw an exception
+    operation.execute(machine);
+
+    // Test passes if no exception is thrown
+    assertNotNull(operation, "RecoverOperation should execute with EOL stage");
+  }
+
+  /**
+   * Test the execute method with stage and displacement.
+   */
+  @Test
+  public void testExecuteWithStageAndDisplacement() {
+    // Enable import stream to enable sales distribution calculation
+    engine.enable("import", Optional.empty());
+
+    // Set up recovery volume and yield
+    EngineNumber volume = new EngineNumber(BigDecimal.valueOf(100), "kg");
+    Operation volumeOperation = new PreCalculatedOperation(volume);
+
+    EngineNumber yield = new EngineNumber(BigDecimal.valueOf(100), "%");
+    Operation yieldOperation = new PreCalculatedOperation(yield);
+
+    RecoverOperation.RecoverStage stage = RecoverOperation.RecoverStage.RECHARGE;
+    String displaceTarget = "manufacture";
+    RecoverOperation operation = new RecoverOperation(volumeOperation, yieldOperation, stage, displaceTarget);
+
+    // Execute with real machine - just verify it doesn't throw an exception
+    operation.execute(machine);
+
+    // Test passes if no exception is thrown
+    assertNotNull(operation, "RecoverOperation should execute with RECHARGE stage and displacement");
+  }
+
+  /**
+   * Test the execute method with stage, displacement, and during.
+   */
+  @Test
+  public void testExecuteWithStageDisplacementAndDuring() {
+    // Enable import stream to enable sales distribution calculation
+    engine.enable("import", Optional.empty());
+
+    // Set up recovery volume and yield
+    EngineNumber volume = new EngineNumber(BigDecimal.valueOf(100), "kg");
+    Operation volumeOperation = new PreCalculatedOperation(volume);
+
+    EngineNumber yield = new EngineNumber(BigDecimal.valueOf(100), "%");
+    Operation yieldOperation = new PreCalculatedOperation(yield);
+
+    // Set up during with no specific time constraints for simplicity
+    ParsedDuring during = new ParsedDuring(Optional.empty(), Optional.empty());
+
+    RecoverOperation.RecoverStage stage = RecoverOperation.RecoverStage.EOL;
+    String displaceTarget = "import";
+    RecoverOperation operation = new RecoverOperation(volumeOperation, yieldOperation, stage, displaceTarget, during);
+
+    // Execute with real machine - just verify it doesn't throw an exception
+    operation.execute(machine);
+
+    // Test passes if no exception is thrown
+    assertNotNull(operation, "RecoverOperation should execute with EOL stage, displacement, and during");
+  }
+
+  /**
+   * Test that stage-aware operations call the correct engine methods.
+   */
+  @Test
+  public void testStageAwareEngineMethodCalls() {
+    // Mock the engine and machine for precise verification
+    Engine mockEngine = mock(Engine.class);
+    PushDownMachine mockMachine = mock(PushDownMachine.class);
+    when(mockMachine.getEngine()).thenReturn(mockEngine);
+
+    // Set up recovery volume and yield
+    EngineNumber volume = new EngineNumber(BigDecimal.valueOf(50), "%");
+    Operation volumeOperation = new PreCalculatedOperation(volume);
+
+    EngineNumber yield = new EngineNumber(BigDecimal.valueOf(80), "%");
+    Operation yieldOperation = new PreCalculatedOperation(yield);
+
+    // Set up the mock machine to return the correct values
+    when(mockMachine.getResult()).thenReturn(volume, yield);
+
+    RecoverOperation.RecoverStage stage = RecoverOperation.RecoverStage.EOL;
+    RecoverOperation operation = new RecoverOperation(volumeOperation, yieldOperation, stage);
+
+    operation.execute(mockMachine);
+
+    // Verify the stage-aware recycle method was called
+    verify(mockEngine).recycle(eq(volume), eq(yield), any(YearMatcher.class), eq(stage));
+  }
 }

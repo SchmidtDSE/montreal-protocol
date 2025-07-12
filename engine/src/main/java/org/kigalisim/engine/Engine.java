@@ -18,6 +18,7 @@ import org.kigalisim.engine.serializer.EngineResult;
 import org.kigalisim.engine.state.Scope;
 import org.kigalisim.engine.state.UseKey;
 import org.kigalisim.engine.state.YearMatcher;
+import org.kigalisim.lang.operation.RecoverOperation.RecoverStage;
 
 /**
  * Interface defining the contract for the Montreal Protocol simulation engine.
@@ -301,6 +302,29 @@ public interface Engine {
    */
   void recycle(EngineNumber recoveryWithUnits, EngineNumber yieldWithUnits,
       YearMatcher yearMatcher, String displacementTarget);
+
+  /**
+   * Recycle or recover a substance at a specific stage.
+   *
+   * @param recoveryWithUnits The recovery rate
+   * @param yieldWithUnits The yield rate
+   * @param yearMatcher Matcher to determine if the change applies to current year
+   * @param recoverStage The stage at which recovery occurs (RECHARGE or EOL)
+   */
+  void recycle(EngineNumber recoveryWithUnits, EngineNumber yieldWithUnits,
+      YearMatcher yearMatcher, RecoverStage recoverStage);
+
+  /**
+   * Recycle or recover a substance at a specific stage with displacement to another stream.
+   *
+   * @param recoveryWithUnits The recovery rate
+   * @param yieldWithUnits The yield rate
+   * @param yearMatcher Matcher to determine if the change applies to current year
+   * @param recoverStage The stage at which recovery occurs (RECHARGE or EOL)
+   * @param displacementTarget The stream or substance to displace (reduce)
+   */
+  void recycle(EngineNumber recoveryWithUnits, EngineNumber yieldWithUnits,
+      YearMatcher yearMatcher, RecoverStage recoverStage, String displacementTarget);
 
   /**
    * Set GHG equivalency for the current application and substance.
