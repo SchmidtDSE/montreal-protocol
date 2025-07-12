@@ -16,6 +16,7 @@
  * support offline usage.
  */
 class UpdateUtil {
+
   /**
    * Check if an application update is available.
    *
@@ -26,7 +27,8 @@ class UpdateUtil {
    * @returns {Promise<boolean>} Promise that resolves to true if update
    *     is available, false otherwise. Always resolves (never rejects).
    */
-  static async checkForUpdates() {
+  async checkForUpdates() {
+    const self = this;
     try {
       // Get current version from hidden input in DOM
       const versionInput = document.getElementById("app-version");
@@ -87,7 +89,8 @@ class UpdateUtil {
    * @returns {Promise<string>} Promise that resolves to 'reload' if user
    *     chooses to reload, 'continue' if user chooses to continue. Never rejects.
    */
-  static async showUpdateDialog() {
+  async showUpdateDialog() {
+    const self = this;
     return new Promise((resolve) => {
       const dialog = document.getElementById("update-notice-dialog");
       if (!dialog) {

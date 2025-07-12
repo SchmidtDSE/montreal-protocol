@@ -15,7 +15,8 @@ function buildUpdateTests() {
       }
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.false(result, "Should return false when no version input exists");
     });
@@ -29,7 +30,8 @@ function buildUpdateTests() {
       document.body.appendChild(versionInput);
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.false(result, "Should return false when version is EPOCH (development mode)");
       
@@ -46,7 +48,8 @@ function buildUpdateTests() {
       document.body.appendChild(versionInput);
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.false(result, "Should return false when version is empty");
       
@@ -67,7 +70,8 @@ function buildUpdateTests() {
       window.fetch = () => Promise.reject(new Error("Network error"));
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.false(result, "Should return false on network error");
       
@@ -92,7 +96,8 @@ function buildUpdateTests() {
       });
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.false(result, "Should return false when version.txt not found");
       
@@ -119,7 +124,8 @@ function buildUpdateTests() {
       });
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.false(result, "Should return false when versions are equal");
       
@@ -147,7 +153,8 @@ function buildUpdateTests() {
       });
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.true(result, "Should return true when server version is newer");
       
@@ -175,7 +182,8 @@ function buildUpdateTests() {
       });
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.false(result, "Should return false when server version is older");
       
@@ -200,7 +208,8 @@ function buildUpdateTests() {
       });
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.checkForUpdates();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.checkForUpdates();
       
       assert.false(result, "Should return false when current version format is invalid");
       
@@ -217,7 +226,8 @@ function buildUpdateTests() {
       }
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.showUpdateDialog();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.showUpdateDialog();
       
       assert.equal(result, "continue", "Should return 'continue' when dialog not found");
     });
@@ -233,9 +243,10 @@ function buildUpdateTests() {
       dialog.showModal = () => {};
       
       const {UpdateUtil} = await import("../js/updates.js");
+      const updateUtil = new UpdateUtil();
       
       // This should resolve quickly since there are no buttons to click
-      const resultPromise = UpdateUtil.showUpdateDialog();
+      const resultPromise = updateUtil.showUpdateDialog();
       
       // Simulate dialog close event
       setTimeout(() => {
@@ -267,7 +278,8 @@ function buildUpdateTests() {
       document.body.appendChild(dialog);
 
       const {UpdateUtil} = await import("../js/updates.js");
-      const result = await UpdateUtil.showUpdateDialog();
+      const updateUtil = new UpdateUtil();
+      const result = await updateUtil.showUpdateDialog();
       
       assert.equal(result, "continue", "Should return 'continue' when showModal throws error");
       

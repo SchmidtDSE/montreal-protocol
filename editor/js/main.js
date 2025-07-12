@@ -195,7 +195,8 @@ class MainPresenter {
     self._onCodeChange();
     self._setupFileButtons();
     
-    // Check for application updates (fails silently if offline)
+    // Initialize update utility and check for updates (fails silently if offline)
+    self._updateUtil = new UpdateUtil();
     self._checkForUpdates();
   }
 
@@ -496,10 +497,11 @@ class MainPresenter {
    * @private
    */
   async _checkForUpdates() {
+    const self = this;
     try {
-      const updateAvailable = await UpdateUtil.checkForUpdates();
+      const updateAvailable = await self._updateUtil.checkForUpdates();
       if (updateAvailable) {
-        const userChoice = await UpdateUtil.showUpdateDialog();
+        const userChoice = await self._updateUtil.showUpdateDialog();
         // Note: If user chose 'reload', the page will have already reloaded
         // and this code won't continue executing
       }
