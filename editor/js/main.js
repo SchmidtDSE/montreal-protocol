@@ -9,6 +9,7 @@ import {ReportDataWrapper} from "report_data";
 import {ResultsPresenter} from "results";
 import {UiEditorPresenter} from "ui_editor";
 import {UiTranslatorCompiler} from "ui_translator";
+import {UpdateUtil} from "updates";
 import {WasmBackend, WasmLayer, BackendResult} from "wasm_backend";
 
 /**
@@ -193,6 +194,9 @@ class MainPresenter {
 
     self._onCodeChange();
     self._setupFileButtons();
+    
+    // Check for application updates (fails silently if offline)
+    self._checkForUpdates();
   }
 
   /**
@@ -481,6 +485,28 @@ class MainPresenter {
     }
 
     self._onBuild(true, false, false);
+  }
+
+  /**
+   * Checks for application updates and shows dialog if available.
+   * 
+   * This method fails silently on all errors to support offline usage.
+   * Only checks for updates in WASM builds, not during engine development.
+   *
+   * @private
+   */
+  async _checkForUpdates() {
+    try {
+      const updateAvailable = await UpdateUtil.checkForUpdates();
+      if (updateAvailable) {
+        const userChoice = await UpdateUtil.showUpdateDialog();
+        // Note: If user chose 'reload', the page will have already reloaded
+        // and this code won't continue executing
+      }
+    } catch (error) {
+      // Fail silently - no user-visible errors for update checking
+      console.debug("Update check failed silently:", error);
+    }
   }
 
   /**
